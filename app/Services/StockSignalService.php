@@ -3,76 +3,80 @@
 namespace App\Services;
 
 use App\Models\StockSignal;
+use App\Models\User;
+use App\Notifications\StockSignalNotification;
+use App\Notifications\StockSignalTelegramNotification;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Notification;
 
 class StockSignalService
 {
-    public function generateSignal(
-        string $stockCode,
-        string $stockName,
-        bool $condition1,
-        bool $condition2,
-        bool $condition3
-    ): StockSignal {
+    public function __construct(
+        private StockPriceProvider $provider,
+    ) {}
 
-        $totalCondition = collect([
-            $condition1,
-            $condition2,
-            $condition3,
-        ])->filter()->count();
+    public function generateSignal(string $stockCode, string $stockName): StockSignal
+    {
+        $prices  = $this->provider->getClosingPrices($stockCode, 200);
+        $volumes = $this->provider->getVolumes($stockCode, 21);
 
-        if ($totalCondition === 3) {
+        $result = StockSignalCalculator::resolveDirection($prices, $volumes);
 
-            $signal = 'BUY';
+        $isBullish = $result['direction'] === 'bullish';
+        $strength  = $result['strength'];
 
-            $signalStrength = 'STRONG';
+        [$signal, $signalStrength, $description] = match (true) {
+            $strength === 3 && $isBullish => ['BUY', 'STRONG', '3 dari 3 kondisi terpenuhi. Sinyal beli kuat.'],
+            $strength === 2 && $isBullish => ['BUY', 'NORMAL', '2 dari 3 kondisi terpenuhi. Sinyal beli normal.'],
+            $strength === 1 && $isBullish => ['BUY', 'WEAK', '1 dari 3 kondisi terpenuhi. Sinyal beli lemah.'],
+            $strength === 3 && !$isBullish => ['SELL', 'STRONG', '3 dari 3 kondisi terpenuhi. Sinyal jual kuat.'],
+            $strength === 2 && !$isBullish => ['SELL', 'NORMAL', '2 dari 3 kondisi terpenuhi. Sinyal jual normal.'],
+            $strength === 1 && !$isBullish => ['SELL', 'WEAK', '1 dari 3 kondisi terpenuhi. Sinyal jual lemah.'],
+            default => ['HOLD', 'NONE', 'Tidak ada kondisi beli/jual yang terpenuhi.'],
+        };
 
-            $description =
-                '3 dari 3 kondisi terpenuhi. ' .
-                'Sinyal beli kuat.';
+        $signalRecord = StockSignal::create([
+            'stock_code'      => $stockCode,
+            'stock_name'      => $stockName,
+            'condition_1'     => $result['condition_1'],
+            'condition_2'     => $result['condition_2'],
+            'condition_3'     => $result['condition_3'],
+            'signal'          => $signal,
+            'signal_strength' => $signalStrength,
+            'description'     => $description,
+        ]);
 
-        } elseif ($totalCondition === 2) {
+        Log::info("Signal generated for {$stockCode}", $signalRecord->toArray());
 
-            $signal = 'BUY';
-
-            $signalStrength = 'NORMAL';
-
-            $description =
-                '2 dari 3 kondisi terpenuhi. ' .
-                'Sinyal beli normal.';
-
-        } elseif ($totalCondition === 1) {
-
-            $signal = 'BUY';
-
-            $signalStrength = 'WEAK';
-
-            $description =
-                '1 dari 3 kondisi terpenuhi. ' .
-                'Sinyal beli lemah.';
-
-        } else {
-
-            $signal = 'HOLD';
-
-            $signalStrength = 'NONE';
-
-            $description =
-                'Tidak ada kondisi beli yang terpenuhi.';
-
+        if ($signal !== 'HOLD') {
+            $this->notify($signalRecord);
         }
 
-        return StockSignal::create([
-            'stock_code' => $stockCode,
-            'stock_name' => $stockName,
+        return $signalRecord;
+    }
 
-            'condition_1' => $condition1,
-            'condition_2' => $condition2,
-            'condition_3' => $condition3,
+    private function notify(StockSignal $signalRecord): void
+    {
+        try {
+            Log::info("Sending notifications for {$signalRecord->stock_code} ({$signalRecord->signal})...");
 
-            'signal' => $signal,
-            'signal_strength' => $signalStrength,
+            $users = User::role('user')->get();
 
-            'description' => $description,
-        ]);
+            foreach ($users as $user) {
+                $user->notify(new StockSignalNotification($signalRecord));
+            }
+
+            Notification::route(
+                'telegram',
+                config('services.telegram-bot-api.chat_id')
+            )->notify(new StockSignalTelegramNotification($signalRecord));
+
+            Log::info("Notifications sent for {$signalRecord->stock_code}");
+        } catch (\Throwable $err) {
+            Log::error("Failed to send notifications for {$signalRecord->stock_code}", [
+                'exception' => $err->getMessage(),
+                'trace'     => $err->getTraceAsString(),
+            ]);
+        }
     }
 }
