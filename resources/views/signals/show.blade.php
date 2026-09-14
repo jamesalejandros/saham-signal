@@ -4,6 +4,165 @@
 
 @section('content')
 
+@php
+    /*
+    |--------------------------------------------------------------------------
+    | Calculate indicators from the same stock price data
+    |--------------------------------------------------------------------------
+    */
+
+    $priceValues = $prices
+        ->pluck('close_price')
+        ->filter(fn ($value) => $value !== null)
+        ->map(fn ($value) => (float) $value)
+        ->values()
+        ->toArray();
+    \Log::info('SIGNAL DETAIL DEBUG', [
+        'stock_code' => $signal->stock_code,
+        'prices_count' => count($priceValues),
+        'prices' => $priceValues,
+        'first_price' => $priceValues[0] ?? null,
+        'last_price' => $priceValues[count($priceValues) - 1] ?? null,
+    ]);
+
+    $volumeValues = $prices
+        ->pluck('volume')
+        ->filter(fn ($value) => $value !== null)
+        ->map(fn ($value) => (float) $value)
+        ->values()
+        ->toArray();
+
+    /*
+    |--------------------------------------------------------------------------
+    | Moving Average
+    |--------------------------------------------------------------------------
+    */
+
+    $calculateMA = function (array $values, int $period): ?float {
+        if (count($values) < $period) {
+            return null;
+        }
+
+        $slice = array_slice($values, -$period);
+
+        return array_sum($slice) / $period;
+    };
+
+    $ma20 = $calculateMA($priceValues, 20);
+    $ma50 = $calculateMA($priceValues, 50);
+    \Log::info('MA DEBUG', [
+        'stock_code' => $signal->stock_code,
+        'price_count' => count($priceValues),
+        'ma20' => $ma20,
+        'ma50' => $ma50,
+    ]);
+    /*
+    |--------------------------------------------------------------------------
+    | RSI
+    |--------------------------------------------------------------------------
+    */
+
+    $calculateRSI = function (array $values, int $period = 14): ?float {
+        if (count($values) < $period + 1) {
+            return null;
+        }
+
+        $slice = array_slice($values, -($period + 1));
+
+        $gains = 0.0;
+        $losses = 0.0;
+
+        for ($i = 1; $i < count($slice); $i++) {
+            $change = $slice[$i] - $slice[$i - 1];
+
+            if ($change > 0) {
+                $gains += $change;
+            } else {
+                $losses += abs($change);
+            }
+        }
+
+        $avgGain = $gains / $period;
+        $avgLoss = $losses / $period;
+
+        if ($avgLoss == 0) {
+            return 100.0;
+        }
+
+        $rs = $avgGain / $avgLoss;
+
+        return 100 - (100 / (1 + $rs));
+    };
+
+    $rsi14 = $calculateRSI($priceValues, 14);
+
+    /*
+    |--------------------------------------------------------------------------
+    | Volume Confirmation
+    |--------------------------------------------------------------------------
+    */
+
+    $currentVolume = null;
+    $averageVolume20 = null;
+    $volumeThreshold = null;
+    $volumeConfirmed = false;
+
+    if (count($volumeValues) >= 21) {
+        $currentVolume = end($volumeValues);
+
+        $historicalVolumes = array_slice(
+            $volumeValues,
+            -21,
+            20
+        );
+
+        $averageVolume20 = array_sum($historicalVolumes) / 20;
+
+        $volumeThreshold = $averageVolume20 * 1.5;
+
+        $volumeConfirmed = $currentVolume > $volumeThreshold;
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Actual indicator states
+    |--------------------------------------------------------------------------
+    */
+
+    $maBullish = $ma20 !== null && $ma50 !== null && $ma20 > $ma50;
+    $maBearish = $ma20 !== null && $ma50 !== null && $ma20 < $ma50;
+
+    $rsiOversold = $rsi14 !== null && $rsi14 < 30;
+    $rsiOverbought = $rsi14 !== null && $rsi14 > 70;
+
+    $isSell = strtoupper($signal->signal) === 'SELL';
+    $isBuy = strtoupper($signal->signal) === 'BUY';
+
+    /*
+    |--------------------------------------------------------------------------
+    | Format helpers
+    |--------------------------------------------------------------------------
+    */
+
+    $formatPrice = function (?float $value): string {
+        return $value === null
+            ? 'N/A'
+            : 'Rp ' . number_format($value, 2, ',', '.');
+    };
+
+    $formatNumber = function (?float $value, int $decimals = 2): string {
+        return $value === null
+            ? 'N/A'
+            : number_format($value, $decimals, ',', '.');
+    };
+
+    $formatVolume = function (?float $value): string {
+        return $value === null
+            ? 'N/A'
+            : number_format($value, 0, ',', '.');
+    };
+@endphp
+
 <div class="mx-auto max-w-4xl space-y-6">
 
     {{-- Header --}}
@@ -45,13 +204,42 @@
 
         </div>
 
-
         <a
             href="{{ route('signals.index') }}"
             class="inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-semibold text-gray-700 shadow-sm transition hover:bg-gray-50"
         >
             ← Kembali
         </a>
+
+    </div>
+
+
+    {{-- 30-Day Price Chart --}}
+    <div class="rounded-xl bg-white p-6 shadow">
+
+        <div class="mb-5">
+
+            <h2 class="text-xl font-bold text-gray-900">
+                Grafik Harga 30 Hari
+            </h2>
+
+            <p class="mt-1 text-sm text-gray-500">
+                Pergerakan harga penutupan {{ $signal->stock_code }} dalam 30 hari terakhir.
+            </p>
+
+        </div>
+
+        @if ($prices->isEmpty())
+
+            <p class="text-sm text-gray-500">
+                Belum ada data harga untuk saham ini.
+            </p>
+
+        @else
+
+            <canvas id="priceChart" height="100"></canvas>
+
+        @endif
 
     </div>
 
@@ -171,107 +359,347 @@
         <div class="mb-5">
 
             <h2 class="text-xl font-bold text-gray-900">
-                Conditions
+                Analysis Conditions
             </h2>
 
             <p class="mt-1 text-sm text-gray-500">
-                Kondisi yang digunakan untuk menghasilkan signal.
+                Indikator yang digunakan untuk menentukan apakah kondisi pasar mendukung BUY atau SELL.
             </p>
 
         </div>
 
 
-        <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
 
 
-            {{-- Condition 1 --}}
+            {{-- ========================================================= --}}
+            {{-- MA CONDITION --}}
+            {{-- ========================================================= --}}
+
             <div
                 class="rounded-lg border p-5
-                {{ $signal->condition_1
-                    ? 'border-green-200 bg-green-50'
-                    : 'border-red-200 bg-red-50' }}"
+                @if ($isSell && $maBearish)
+                    border-red-200 bg-red-50
+                @elseif ($isBuy && $maBullish)
+                    border-green-200 bg-green-50
+                @else
+                    border-gray-200 bg-gray-50
+                @endif"
             >
 
                 <div class="flex items-center justify-between">
 
                     <span class="text-sm font-semibold text-gray-700">
-                        Condition 1
+                        20/50 MA Alignment
                     </span>
 
-                    @if ($signal->condition_1)
+                    @if ($isSell && $maBearish)
+
+                        <span class="flex h-8 w-8 items-center justify-center rounded-full bg-red-600 text-sm font-bold text-white">
+                            ↓
+                        </span>
+
+                    @elseif ($isBuy && $maBullish)
 
                         <span class="flex h-8 w-8 items-center justify-center rounded-full bg-green-600 text-sm font-bold text-white">
-                            ✓
+                            ↑
                         </span>
 
                     @else
 
-                        <span class="flex h-8 w-8 items-center justify-center rounded-full bg-red-500 text-sm font-bold text-white">
-                            ✕
+                        <span class="flex h-8 w-8 items-center justify-center rounded-full bg-gray-400 text-sm font-bold text-white">
+                            —
                         </span>
 
                     @endif
 
                 </div>
 
-                <p
-                    class="mt-3 text-sm font-semibold
-                    {{ $signal->condition_1
-                        ? 'text-green-700'
-                        : 'text-red-700' }}"
-                >
-                    {{ $signal->condition_1 ? 'TRUE' : 'FALSE' }}
-                </p>
+
+                <div class="mt-4">
+
+                    <p class="text-xs font-medium uppercase tracking-wide text-gray-500">
+                        Formula
+                    </p>
+
+                    <p class="mt-1 rounded bg-white px-3 py-2 font-mono text-sm text-gray-800">
+                        MA(20) {{ $maBearish ? '<' : '>' }} MA(50)
+                    </p>
+
+                </div>
+
+
+                <div class="mt-4 space-y-2 text-sm">
+
+                    <div class="flex justify-between">
+                        <span class="text-gray-500">
+                            MA(20)
+                        </span>
+
+                        <span class="font-semibold text-gray-900">
+                            {{ $formatPrice($ma20) }}
+                        </span>
+                    </div>
+
+                    <div class="flex justify-between">
+                        <span class="text-gray-500">
+                            MA(50)
+                        </span>
+
+                        <span class="font-semibold text-gray-900">
+                            {{ $formatPrice($ma50) }}
+                        </span>
+                    </div>
+
+                </div>
+
+
+                <div class="mt-4 border-t border-gray-200 pt-3">
+
+                    @if ($isSell)
+
+                        @if ($maBearish)
+
+                            <p class="text-sm font-semibold text-red-700">
+                                Bearish trend detected.
+                            </p>
+
+                            <p class="mt-1 text-xs leading-5 text-gray-600">
+                                MA(20) berada di bawah MA(50), menunjukkan harga jangka pendek
+                                sedang lebih lemah dibandingkan tren jangka panjang.
+                                Kondisi ini mendukung keputusan untuk menjual atau mengurangi posisi.
+                            </p>
+
+                        @elseif ($ma20 !== null && $ma50 !== null)
+
+                            <p class="text-sm font-semibold text-gray-700">
+                                Bearish trend belum terkonfirmasi.
+                            </p>
+
+                            <p class="mt-1 text-xs leading-5 text-gray-600">
+                                MA(20) masih berada di atas MA(50), sehingga indikator ini
+                                belum memberikan alasan bearish yang kuat untuk SELL.
+                            </p>
+
+                        @else
+
+                            <p class="text-xs leading-5 text-gray-600">
+                                Data belum mencukupi untuk menghitung MA(50).
+                            </p>
+
+                        @endif
+
+                    @else
+
+                        @if ($maBullish)
+
+                            <p class="text-sm font-semibold text-green-700">
+                                Bullish trend detected.
+                            </p>
+
+                            <p class="mt-1 text-xs leading-5 text-gray-600">
+                                MA(20) berada di atas MA(50), menunjukkan momentum harga
+                                jangka pendek lebih kuat dibandingkan tren jangka panjang.
+                            </p>
+
+                        @elseif ($ma20 !== null && $ma50 !== null)
+
+                            <p class="text-sm font-semibold text-gray-700">
+                                Bullish trend belum terkonfirmasi.
+                            </p>
+
+                            <p class="mt-1 text-xs leading-5 text-gray-600">
+                                MA(20) berada di bawah MA(50).
+                            </p>
+
+                        @else
+
+                            <p class="text-xs leading-5 text-gray-600">
+                                Data belum mencukupi untuk menghitung MA(50).
+                            </p>
+
+                        @endif
+
+                    @endif
+
+                </div>
 
             </div>
 
 
-            {{-- Condition 2 --}}
+            {{-- ========================================================= --}}
+            {{-- RSI CONDITION --}}
+            {{-- ========================================================= --}}
+
             <div
                 class="rounded-lg border p-5
-                {{ $signal->condition_2
-                    ? 'border-green-200 bg-green-50'
-                    : 'border-red-200 bg-red-50' }}"
+                @if ($isSell && $rsiOverbought)
+                    border-red-200 bg-red-50
+                @elseif ($isBuy && $rsiOversold)
+                    border-green-200 bg-green-50
+                @else
+                    border-gray-200 bg-gray-50
+                @endif"
             >
 
                 <div class="flex items-center justify-between">
 
                     <span class="text-sm font-semibold text-gray-700">
-                        Condition 2
+                        RSI (14)
                     </span>
 
-                    @if ($signal->condition_2)
+                    @if ($isSell && $rsiOverbought)
+
+                        <span class="flex h-8 w-8 items-center justify-center rounded-full bg-red-600 text-sm font-bold text-white">
+                            ↓
+                        </span>
+
+                    @elseif ($isBuy && $rsiOversold)
 
                         <span class="flex h-8 w-8 items-center justify-center rounded-full bg-green-600 text-sm font-bold text-white">
-                            ✓
+                            ↑
                         </span>
 
                     @else
 
-                        <span class="flex h-8 w-8 items-center justify-center rounded-full bg-red-500 text-sm font-bold text-white">
-                            ✕
+                        <span class="flex h-8 w-8 items-center justify-center rounded-full bg-gray-400 text-sm font-bold text-white">
+                            —
                         </span>
 
                     @endif
 
                 </div>
 
-                <p
-                    class="mt-3 text-sm font-semibold
-                    {{ $signal->condition_2
-                        ? 'text-green-700'
-                        : 'text-red-700' }}"
-                >
-                    {{ $signal->condition_2 ? 'TRUE' : 'FALSE' }}
-                </p>
+
+                <div class="mt-4">
+
+                    <p class="text-xs font-medium uppercase tracking-wide text-gray-500">
+                        Formula
+                    </p>
+
+                    <p class="mt-1 rounded bg-white px-3 py-2 font-mono text-sm text-gray-800">
+
+                        @if ($isSell)
+                            RSI(14) &gt; 70
+                        @else
+                            RSI(14) &lt; 30
+                        @endif
+
+                    </p>
+
+                </div>
+
+
+                <div class="mt-4">
+
+                    <div class="flex justify-between text-sm">
+
+                        <span class="text-gray-500">
+                            Current RSI
+                        </span>
+
+                        <span class="font-semibold text-gray-900">
+                            {{ $formatNumber($rsi14, 2) }}
+                        </span>
+
+                    </div>
+
+                    <div class="mt-2 flex justify-between text-xs text-gray-400">
+
+                        <span>
+                            Oversold &lt; 30
+                        </span>
+
+                        <span>
+                            Overbought &gt; 70
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="mt-4 border-t border-gray-200 pt-3">
+
+                    @if ($isSell)
+
+                        @if ($rsiOverbought)
+
+                            <p class="text-sm font-semibold text-red-700">
+                                Overbought condition detected.
+                            </p>
+
+                            <p class="mt-1 text-xs leading-5 text-gray-600">
+                                RSI berada di atas 70, menunjukkan harga telah mengalami
+                                momentum kenaikan yang kuat dan berada pada kondisi
+                                overbought. Ini dapat menjadi alasan untuk mengambil
+                                keuntungan atau menjual sebelum terjadi koreksi.
+                            </p>
+
+                        @elseif ($rsi14 !== null)
+
+                            <p class="text-sm font-semibold text-gray-700">
+                                Overbought belum terkonfirmasi.
+                            </p>
+
+                            <p class="mt-1 text-xs leading-5 text-gray-600">
+                                RSI belum melewati 70, sehingga indikator ini sendiri
+                                belum menunjukkan kondisi overbought.
+                            </p>
+
+                        @else
+
+                            <p class="text-xs leading-5 text-gray-600">
+                                Data belum mencukupi untuk menghitung RSI(14).
+                            </p>
+
+                        @endif
+
+                    @else
+
+                        @if ($rsiOversold)
+
+                            <p class="text-sm font-semibold text-green-700">
+                                Oversold condition detected.
+                            </p>
+
+                            <p class="mt-1 text-xs leading-5 text-gray-600">
+                                RSI berada di bawah 30, menunjukkan tekanan jual yang
+                                tinggi dan kondisi oversold.
+                            </p>
+
+                        @elseif ($rsi14 !== null)
+
+                            <p class="text-sm font-semibold text-gray-700">
+                                Oversold belum terkonfirmasi.
+                            </p>
+
+                            <p class="mt-1 text-xs leading-5 text-gray-600">
+                                RSI belum berada di bawah 30.
+                            </p>
+
+                        @else
+
+                            <p class="text-xs leading-5 text-gray-600">
+                                Data belum mencukupi untuk menghitung RSI(14).
+                            </p>
+
+                        @endif
+
+                    @endif
+
+                </div>
 
             </div>
 
 
-            {{-- Condition 3 --}}
+            {{-- ========================================================= --}}
+            {{-- VOLUME CONDITION --}}
+            {{-- ========================================================= --}}
+
             <div
                 class="rounded-lg border p-5
-                {{ $signal->condition_3
+                {{ $volumeConfirmed
                     ? 'border-green-200 bg-green-50'
                     : 'border-red-200 bg-red-50' }}"
             >
@@ -279,10 +707,10 @@
                 <div class="flex items-center justify-between">
 
                     <span class="text-sm font-semibold text-gray-700">
-                        Condition 3
+                        Volume Confirmation
                     </span>
 
-                    @if ($signal->condition_3)
+                    @if ($volumeConfirmed)
 
                         <span class="flex h-8 w-8 items-center justify-center rounded-full bg-green-600 text-sm font-bold text-white">
                             ✓
@@ -298,18 +726,144 @@
 
                 </div>
 
-                <p
-                    class="mt-3 text-sm font-semibold
-                    {{ $signal->condition_3
-                        ? 'text-green-700'
-                        : 'text-red-700' }}"
-                >
-                    {{ $signal->condition_3 ? 'TRUE' : 'FALSE' }}
-                </p>
+
+                <div class="mt-4">
+
+                    <p class="text-xs font-medium uppercase tracking-wide text-gray-500">
+                        Formula
+                    </p>
+
+                    <p class="mt-1 rounded bg-white px-3 py-2 font-mono text-sm text-gray-800">
+                        Volume &gt; 1.5 × Average Volume(20)
+                    </p>
+
+                </div>
+
+
+                <div class="mt-4 space-y-2 text-sm">
+
+                    <div class="flex justify-between">
+
+                        <span class="text-gray-500">
+                            Current Volume
+                        </span>
+
+                        <span class="font-semibold text-gray-900">
+                            {{ $formatVolume($currentVolume) }}
+                        </span>
+
+                    </div>
+
+                    <div class="flex justify-between">
+
+                        <span class="text-gray-500">
+                            Avg. Volume(20)
+                        </span>
+
+                        <span class="font-semibold text-gray-900">
+                            {{ $formatVolume($averageVolume20) }}
+                        </span>
+
+                    </div>
+
+                    <div class="flex justify-between">
+
+                        <span class="text-gray-500">
+                            Required Volume
+                        </span>
+
+                        <span class="font-semibold text-gray-900">
+                            {{ $formatVolume($volumeThreshold) }}
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="mt-4 border-t border-gray-200 pt-3">
+
+                    @if ($volumeConfirmed)
+
+                        <p class="text-sm font-semibold text-green-700">
+                            High trading activity detected.
+                        </p>
+
+                        @if ($isSell)
+
+                            <p class="mt-1 text-xs leading-5 text-gray-600">
+                                Volume saat ini melebihi 1,5 kali rata-rata volume 20 periode.
+                                Aktivitas perdagangan yang tinggi menunjukkan bahwa pergerakan
+                                harga sedang mendapatkan partisipasi pasar yang besar.
+                                Dalam kombinasi dengan indikator bearish, kondisi ini
+                                memperkuat alasan untuk SELL.
+                            </p>
+
+                        @else
+
+                            <p class="mt-1 text-xs leading-5 text-gray-600">
+                                Volume saat ini melebihi 1,5 kali rata-rata volume 20 periode,
+                                menunjukkan adanya aktivitas perdagangan yang tinggi.
+                            </p>
+
+                        @endif
+
+                    @else
+
+                        <p class="text-sm font-semibold text-gray-700">
+                            Volume confirmation tidak terpenuhi.
+                        </p>
+
+                        <p class="mt-1 text-xs leading-5 text-gray-600">
+                            Volume saat ini belum melebihi 1,5 kali rata-rata volume
+                            20 periode, sehingga belum terdapat konfirmasi dari
+                            aktivitas perdagangan.
+                        </p>
+
+                    @endif
+
+                </div>
 
             </div>
 
         </div>
+
+
+        {{-- SELL explanation --}}
+        @if ($isSell)
+
+            <div class="mt-5 rounded-lg border border-red-200 bg-red-50 p-5">
+
+                <h3 class="font-bold text-red-800">
+                    Mengapa SELL?
+                </h3>
+
+                <p class="mt-2 text-sm leading-6 text-red-700">
+
+                    Signal SELL menunjukkan adanya indikasi bahwa harga saham
+                    memiliki risiko penurunan atau koreksi berdasarkan kombinasi
+                    indikator yang digunakan.
+
+                    @if ($maBearish)
+                        MA(20) berada di bawah MA(50), yang menunjukkan kondisi tren bearish.
+                    @endif
+
+                    @if ($rsiOverbought)
+                        RSI(14) berada di atas 70, yang menunjukkan kondisi overbought
+                        dan potensi terjadinya koreksi.
+                    @endif
+
+                    @if ($volumeConfirmed)
+                        Volume perdagangan juga berada di atas 1,5 kali rata-rata
+                        volume 20 periode, sehingga pergerakan tersebut mendapatkan
+                        aktivitas pasar yang tinggi.
+                    @endif
+
+                </p>
+
+            </div>
+
+        @endif
 
     </div>
 
@@ -346,5 +900,89 @@
 
 </div>
 
+
+@if ($prices->isNotEmpty())
+
+    @push('scripts')
+
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+
+        <script>
+
+            const ctx = document.getElementById('priceChart');
+
+            new Chart(ctx, {
+
+                type: 'line',
+
+                data: {
+
+                    labels: @json(
+                        $prices
+                            ->pluck('date')
+                            ->map(fn ($d) => \Carbon\Carbon::parse($d)->format('d M'))
+                    ),
+
+                    datasets: [{
+
+                        label: 'Harga Penutupan',
+
+                        data: @json(
+                            $prices->pluck('close_price')
+                        ),
+
+                        borderColor: 'rgb(37, 99, 235)',
+
+                        backgroundColor: 'rgba(37, 99, 235, 0.1)',
+
+                        borderWidth: 2,
+
+                        tension: 0.3,
+
+                        fill: true,
+
+                        pointRadius: 2
+
+                    }]
+
+                },
+
+                options: {
+
+                    responsive: true,
+
+                    plugins: {
+
+                        legend: {
+                            display: false
+                        }
+
+                    },
+
+                    scales: {
+
+                        y: {
+
+                            ticks: {
+
+                                callback: (value) =>
+                                    'Rp ' +
+                                    Number(value).toLocaleString('id-ID')
+
+                            }
+
+                        }
+
+                    }
+
+                }
+
+            });
+
+        </script>
+
+    @endpush
+
+@endif
 
 @endsection

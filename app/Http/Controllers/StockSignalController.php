@@ -137,10 +137,15 @@ class StockSignalController extends Controller
     }
 
     public function show(StockSignal $signal)
-    {
-        return view(
-            'signals.show',
-            compact('signal')
-        );
-    }
+{
+    $prices = \App\Models\StockPrice::where('stock_code', $signal->stock_code)
+        ->orderBy('date')
+        ->latest('date') // newest first to grab the most recent 30...
+        ->take(50)
+        ->get()
+        ->sortBy('date') // ...then re-sort oldest-first for the chart's x-axis
+        ->values();
+
+    return view('signals.show', compact('signal', 'prices'));
+}
 }
