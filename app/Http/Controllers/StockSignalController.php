@@ -85,41 +85,41 @@ class StockSignalController extends Controller
         );
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | Web Notification
-        |--------------------------------------------------------------------------
-        |
-        | Kirim notification ke SEMUA user dengan role "user".
-        |
-        */
+        // /*
+        // |--------------------------------------------------------------------------
+        // | Web Notification
+        // |--------------------------------------------------------------------------
+        // |
+        // | Kirim notification ke SEMUA user dengan role "user".
+        // |
+        // */
 
-        $users = User::role('user')->get();
+        // $users = User::role('user')->get();
 
-        foreach ($users as $user) {
+        // foreach ($users as $user) {
 
-            $user->notify(
-                new StockSignalNotification($signal)
-            );
+        //     $user->notify(
+        //         new StockSignalNotification($signal)
+        //     );
 
-        }
+        // }
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | Telegram Group Notification
-        |--------------------------------------------------------------------------
-        |
-        | Kirim SATU kali ke Telegram Group.
-        |
-        */
+        // /*
+        // |--------------------------------------------------------------------------
+        // | Telegram Group Notification
+        // |--------------------------------------------------------------------------
+        // |
+        // | Kirim SATU kali ke Telegram Group.
+        // |
+        // */
 
-        Notification::route(
-            'telegram',
-            config('services.telegram-bot-api.chat_id')
-        )->notify(
-            new StockSignalTelegramNotification($signal)
-        );
+        // Notification::route(
+        //     'telegram',
+        //     config('services.telegram-bot-api.chat_id')
+        // )->notify(
+        //     new StockSignalTelegramNotification($signal)
+        // );
 
 
         /*
