@@ -10,4 +10,4 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 
-Schedule::job(new SendDummyStockSignalsJob(5))->everyFiveMinute();
+Schedule::job(new SendDummyStockSignalsJob(5))->everyFiveMinutes();
