@@ -149,7 +149,7 @@ class StockSignalService
         |
         */
 
-        if ($signal !== 'HOLD') {
+        if ($signal !== 'HOLD' && $signal !== "WEAK") {
             $this->notify($signalRecord);
         }
 
@@ -166,170 +166,29 @@ class StockSignalService
         string $signalStrength,
         int $strength
     ): string {
-        /*
-        |--------------------------------------------------------------------------
-        | HOLD
-        |--------------------------------------------------------------------------
-        */
-
         if ($signal === 'HOLD') {
-            return implode(' ', [
-                'Tidak ada kondisi BUY atau SELL yang cukup kuat.',
-                'MA, RSI, dan volume belum memberikan konfirmasi yang memadai.',
-                'Investor disarankan menunggu sampai terdapat kondisi yang lebih jelas sebelum mengambil keputusan.',
+            return implode("\n", [
+                '- HOLD: belum ada konfirmasi BUY atau SELL yang cukup kuat.',
+                '- MA, RSI, dan volume belum mendukung arah yang jelas.',
+                '- Tunggu konfirmasi berikutnya.',
             ]);
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | Ringkasan awal
-        |--------------------------------------------------------------------------
-        */
+        $points = [
+            "- {$signal} {$signalStrength}: {$strength}/3 kondisi terpenuhi.",
+            $result['condition_1']
+                ? ($signal === 'BUY' ? '- MA20 > MA50: tren bullish terkonfirmasi.' : '- MA20 < MA50: tren bearish terkonfirmasi.')
+                : '- MA20 dan MA50: belum mengonfirmasi tren.',
+            $result['condition_2']
+                ? ($signal === 'BUY' ? '- RSI oversold: ada peluang rebound.' : '- RSI overbought: ada risiko koreksi.')
+                : '- RSI: belum memberi konfirmasi tambahan.',
+            $result['condition_3']
+                ? '- Volume: meningkat dan mendukung pergerakan harga.'
+                : '- Volume: belum meningkat signifikan.',
+            "- Kesimpulan: sinyal {$signal} dengan kekuatan {$signalStrength}.",
+        ];
 
-        $description = "{$signal} {$signalStrength}: {$strength} dari 3 kondisi terpenuhi.";
-
-        /*
-        |--------------------------------------------------------------------------
-        | Penjelasan Moving Average
-        |--------------------------------------------------------------------------
-        */
-
-        if ($result['condition_1']) {
-
-            if ($signal === 'BUY') {
-                $description .= ' ';
-                $description .= 'MA20 berada di atas MA50, yang menunjukkan bahwa ';
-                $description .= 'tren harga jangka pendek lebih kuat dibandingkan ';
-                $description .= 'tren jangka panjang. Kondisi ini mendukung momentum bullish.';
-            } else {
-                $description .= ' ';
-                $description .= 'MA20 berada di bawah MA50, yang menunjukkan bahwa ';
-                $description .= 'tren harga jangka pendek lebih lemah dibandingkan ';
-                $description .= 'tren jangka panjang. Kondisi ini mendukung momentum bearish ';
-                $description .= 'dan dapat menjadi alasan untuk mengurangi atau menjual posisi.';
-            }
-
-        } else {
-
-            if ($signal === 'BUY') {
-                $description .= ' ';
-                $description .= 'MA20 belum berada pada posisi bullish terhadap MA50, ';
-                $description .= 'sehingga tren jangka pendek belum memberikan konfirmasi ';
-                $description .= 'kuat untuk pembelian.';
-            } else {
-                $description .= ' ';
-                $description .= 'MA20 belum berada pada posisi bearish terhadap MA50, ';
-                $description .= 'sehingga tren belum memberikan konfirmasi kuat untuk penjualan.';
-            }
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | Penjelasan RSI
-        |--------------------------------------------------------------------------
-        */
-
-        if ($result['condition_2']) {
-
-            if ($signal === 'BUY') {
-                $description .= ' ';
-                $description .= 'RSI berada pada area oversold, ';
-                $description .= 'yang menunjukkan tekanan jual relatif tinggi ';
-                $description .= 'dan dapat memberikan peluang terjadinya pemulihan harga.';
-            } else {
-                $description .= ' ';
-                $description .= 'RSI berada pada area overbought, ';
-                $description .= 'yang menunjukkan bahwa harga telah mengalami tekanan beli ';
-                $description .= 'yang cukup tinggi dan berpotensi mengalami koreksi.';
-            }
-
-        } else {
-
-            if ($signal === 'BUY') {
-                $description .= ' ';
-                $description .= 'RSI belum berada pada area oversold, ';
-                $description .= 'sehingga indikator momentum belum memberikan konfirmasi tambahan ';
-                $description .= 'untuk peluang pembelian.';
-            } else {
-                $description .= ' ';
-                $description .= 'RSI belum berada pada area overbought, ';
-                $description .= 'sehingga indikator momentum belum memberikan konfirmasi tambahan ';
-                $description .= 'untuk peluang penjualan.';
-            }
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | Penjelasan Volume
-        |--------------------------------------------------------------------------
-        */
-
-        if ($result['condition_3']) {
-
-            if ($signal === 'BUY') {
-                $description .= ' ';
-                $description .= 'Volume perdagangan meningkat secara signifikan dibandingkan ';
-                $description .= 'rata-rata volume sebelumnya, sehingga pergerakan bullish ';
-                $description .= 'mendapatkan konfirmasi dari aktivitas perdagangan.';
-            } else {
-                $description .= ' ';
-                $description .= 'Volume perdagangan meningkat secara signifikan dibandingkan ';
-                $description .= 'rata-rata volume sebelumnya, sehingga pergerakan bearish ';
-                $description .= 'mendapatkan konfirmasi dari aktivitas perdagangan.';
-            }
-
-        } else {
-
-            $description .= ' ';
-            $description .= 'Volume perdagangan belum menunjukkan peningkatan signifikan ';
-            $description .= 'dibandingkan rata-rata sebelumnya, sehingga belum memberikan ';
-            $description .= 'konfirmasi tambahan terhadap pergerakan harga.';
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | Kesimpulan
-        |--------------------------------------------------------------------------
-        */
-
-        if ($signal === 'BUY') {
-
-            $description .= ' ';
-
-            if ($signalStrength === 'STRONG') {
-                $description .= 'Dengan seluruh kondisi terpenuhi, sistem memberikan ';
-                $description .= 'konfirmasi BUY yang kuat.';
-            } elseif ($signalStrength === 'NORMAL') {
-                $description .= 'Dengan dua kondisi terpenuhi, terdapat dukungan yang cukup ';
-                $description .= 'untuk sinyal BUY, meskipun belum seluruh indikator memberikan ';
-                $description .= 'konfirmasi.';
-            } else {
-                $description .= 'Karena hanya satu kondisi yang terpenuhi, sinyal BUY ';
-                $description .= 'masih tergolong lemah dan sebaiknya tidak dianggap sebagai ';
-                $description .= 'konfirmasi pembelian yang kuat.';
-            }
-
-        } else {
-
-            $description .= ' ';
-
-            if ($signalStrength === 'STRONG') {
-                $description .= 'Dengan seluruh kondisi terpenuhi, sistem memberikan ';
-                $description .= 'konfirmasi SELL yang kuat. Kondisi ini menunjukkan bahwa ';
-                $description .= 'tekanan bearish cukup dominan dan menjual atau mengurangi ';
-                $description .= 'posisi dapat dipertimbangkan.';
-            } elseif ($signalStrength === 'NORMAL') {
-                $description .= 'Dengan dua kondisi terpenuhi, terdapat dukungan yang cukup ';
-                $description .= 'untuk sinyal SELL, meskipun belum seluruh indikator memberikan ';
-                $description .= 'konfirmasi.';
-            } else {
-                $description .= 'Karena hanya satu kondisi yang terpenuhi, sinyal SELL ';
-                $description .= 'masih tergolong lemah dan sebaiknya tidak dianggap sebagai ';
-                $description .= 'konfirmasi penjualan yang kuat.';
-            }
-        }
-
-        return $description;
+        return implode("\n", $points);
     }
 
     /**
