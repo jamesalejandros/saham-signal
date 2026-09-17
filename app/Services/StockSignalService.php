@@ -3,10 +3,12 @@
 namespace App\Services;
 
 use App\Models\StockSignal;
+use App\Models\Stock;
 use App\Models\User;
 use App\Notifications\StockSignalNotification;
 use App\Notifications\StockSignalTelegramNotification;
 use Illuminate\Support\Facades\Log;
+
 use Illuminate\Support\Facades\Notification;
 use Throwable;
 
@@ -16,7 +18,7 @@ class StockSignalService
         private StockPriceProvider $provider,
     ) {}
 
-    public function generateSignal(string $stockCode, string $stockName): StockSignal
+    public function generateSignal(string $stockCode): StockSignal
     {
         /*
         |--------------------------------------------------------------------------
@@ -121,7 +123,6 @@ class StockSignalService
 
         $signalRecord = StockSignal::create([
             'stock_code' => $stockCode,
-            'stock_name' => $stockName,
 
             'condition_1' => $result['condition_1'],
             'condition_2' => $result['condition_2'],
@@ -139,6 +140,7 @@ class StockSignalService
             'description' => $description,
         ]);
 
+        $stock = Stock::where("stock_code", $stockCode)->first();
         /*
         |--------------------------------------------------------------------------
         | 6. Kirim notifikasi

@@ -29,11 +29,12 @@ class StockSignalTelegramNotification extends Notification
     {
         $signalId = (string)$this->stockSignal->id;
         $appUrl ="http:://localhost/signals/".$signalId;
+        $stockName = $this->stockSignal->stock?->stock_name ?? 'Unknown stock';
         Log::info("Signal generated for {$appUrl}");
         $message =
             "📈 STOCK SIGNAL\n\n" .
             "Stock: {$this->stockSignal->stock_code}\n" .
-            "Name: {$this->stockSignal->stock_name}\n" .
+            "Name: {$stockName}\n" .
             "Signal: {$this->stockSignal->signal}\n" .
             "Strength: {$this->stockSignal->signal_strength}\n\n" .
             "details : {$appUrl}";

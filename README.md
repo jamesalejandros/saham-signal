@@ -7,6 +7,21 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
+## lakukan ini PENTINK
+
+lakukan ini boi 
+    
+    php artisan install:api
+    
+    composer require serpapi/serpapi-php
+
+    php artisan migrate --path=database/migrations/2026_09_17_103139_create_stocks_table.php
+    php artisan db:seed --class=StockSeeder
+    php artisan migrate 
+tambahkan api key tar gw kasih di wa, kontak gw kalo lupa
+
+
+
 ## About Laravel
 
 Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:

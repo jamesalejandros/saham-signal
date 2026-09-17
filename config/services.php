@@ -15,13 +15,17 @@ return [
     */
 
     'telegram-bot-api' => [
-    'token' => env('TELEGRAM_BOT_TOKEN'),
-    'chat_id' => env('TELEGRAM_GROUP_CHAT_ID'),
-],
+        'token' => env('TELEGRAM_BOT_TOKEN'),
+        'chat_id' => env('TELEGRAM_GROUP_CHAT_ID'),
+    ],
 
 
     'postmark' => [
         'key' => env('POSTMARK_API_KEY'),
+    ],
+    
+    'groq' =>[
+        'key' => env('GROQ_API_KEY'),
     ],
 
     'resend' => [

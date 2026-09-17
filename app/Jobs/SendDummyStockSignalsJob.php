@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Models\Stock;
 use App\Services\StockSignalService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -20,23 +21,20 @@ class SendDummyStockSignalsJob implements ShouldQueue
 
     public function handle(StockSignalService $service): void
     {
-        $dummyStocks = [
-            ['code' => 'BBCA', 'name' => 'Bank Central Asia Tbk'],
-            ['code' => 'BBRI', 'name' => 'Bank Rakyat Indonesia Tbk'],
-            ['code' => 'TLKM', 'name' => 'Telkom Indonesia Tbk'],
-            ['code' => 'ASII', 'name' => 'Astra International Tbk'],
-            ['code' => 'UNVR', 'name' => 'Unilever Indonesia Tbk'],
-            ['code' => 'GOTO', 'name' => 'GoTo Gojek Tokopedia Tbk'],
-            ['code' => 'BMRI', 'name' => 'Bank Mandiri Tbk'],
-            ['code' => 'ANTM', 'name' => 'Aneka Tambang Tbk'],
-        ];
+        Stock::query()->update([
+            'summary' => null,
+            'summary_updated' => null,
+        ]);
 
-        $picked = collect($dummyStocks)->shuffle()->take($this->count);
+        $stocks = Stock::query()
+            ->inRandomOrder()
+            ->take($this->count)
+            ->get();
 
-        foreach ($picked as $stock) {
-            $service->generateSignal($stock['code'], $stock['name']);
+        foreach ($stocks as $stock) {
+            $service->generateSignal($stock->stock_code);
         }
 
-        Log::info("Dummy batch complete: {$picked->count()} signals generated.");
+        Log::info("Stock batch complete: {$stocks->count()} signals generated.");
     }
 }

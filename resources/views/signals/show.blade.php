@@ -242,8 +242,6 @@
         @endif
 
     </div>
-
-
     {{-- Stock Information --}}
     <div class="overflow-hidden rounded-xl bg-white shadow">
 
@@ -264,7 +262,7 @@
                 </span>
 
                 <p class="text-lg text-gray-600">
-                    {{ $signal->stock_name }}
+                    {{ $stock_name }}
                 </p>
 
             </div>
@@ -829,7 +827,40 @@
         </div>
 
 
-        {{-- SELL explanation --}}
+        {{-- Related news --}}
+        <div class="card mt-4 border-0 bg-light shadow-sm">
+
+            <div class="card-body p-4">
+
+                <div class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3">
+
+                    <div>
+                        <h3 class="h5 mb-1">Berita Terkini</h3>
+                        <p class="mb-0 text-muted">
+                            Cari berita terbaru yang berkaitan dengan {{ $signal->stock_code }}.
+                        </p>
+                    </div>
+
+                    <button
+                        type="button"
+                        class="btn btn-primary"
+                        onclick="getStockNews('{{ $signal->id }}', '{{ $signal->stock_code }}', this)"
+                    >
+                        Search News
+                    </button>
+
+                </div>
+
+                <div
+                    id="news-{{ $signal->id }}"
+                    class="mt-3"
+                    aria-live="polite"
+                ></div>
+
+            </div>
+
+        </div>
+
         @if ($isSell)
 
             <div class="mt-5 rounded-lg border border-red-200 bg-red-50 p-5">
@@ -897,7 +928,57 @@
         </a>
 
     </div>
+    <script >
+        async function getStockNews(signalId, stockCode, button) {
 
+        const container = document.getElementById(`news-${signalId}`);
+        const originalButtonText = button.innerHTML;
+
+        button.disabled = true;
+        button.innerHTML = '<span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>Searching...';
+        container.innerHTML = '<div class="alert alert-info mb-0" role="status">Searching for the latest news...</div>';
+        
+
+
+
+        try {
+            const response = await fetch("{{ route('signals.news') }}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                    "Accept": "application/json"
+                },
+                body: JSON.stringify({
+                    stock_code: stockCode,
+                    signal_id: signalId
+                })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || "Failed to search news");
+            }
+
+            container.innerHTML = `
+                <div class="alert alert-success mb-0" role="alert">
+                    ${data.summary}
+                </div>
+            `;
+
+        } catch (error) {
+            container.innerHTML = `
+                <div class="alert alert-danger mb-0" role="alert">
+                    ${error.message}
+                </div>
+            `;
+        } finally {
+            button.disabled = false;
+            button.innerHTML = originalButtonText;
+        }
+    }
+    </script>
 </div>
 
 
