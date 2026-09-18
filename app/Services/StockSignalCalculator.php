@@ -9,7 +9,7 @@ class StockSignalCalculator
     public static function movingAverage(array $prices, int $period): ?float
     {
         if (count($prices) < $period) {
-            return null; // not enough data
+            return null; 
         }
 
         $slice = array_slice($prices, -$period);
@@ -120,6 +120,16 @@ class StockSignalCalculator
 
         $buyStrength  = count(array_filter($bullish));
         $sellStrength = count(array_filter($bearish));
+
+        if ($buyStrength === $sellStrength) {
+            return [
+                'direction' => 'neutral',
+                'strength' => $buyStrength,
+                'condition_1' => $bullish[0],
+                'condition_2' => $bullish[1],
+                'condition_3' => $bullish[2],
+            ];
+        }
 
         if ($buyStrength >= $sellStrength) {
             return [

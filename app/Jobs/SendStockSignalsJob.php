@@ -12,13 +12,12 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 
-class SendDummyStockSignalsJob implements ShouldQueue
+class SendStockSignalsJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public function __construct(
        
-        public int $count = 5,
     ) {}
 
     public function handle(StockSignalService $service): void
@@ -27,12 +26,10 @@ class SendDummyStockSignalsJob implements ShouldQueue
             'summary' => null,
             'summary_updated' => null,
         ]);
-        $provider = new StockPriceProvider;
         $stocks = Stock::all();
-        $provider->importLatestPricesForAllStocks(50);
-        // foreach ($stocks as $stock) {
-        //     $service->generateSignal($stock->stock_code);
-        // }
+        foreach ($stocks as $stock) {
+            $service->generateSignal($stock->stock_code);
+        }
 
         Log::info("Stock batch complete: {$stocks->count()} signals generated.");
     }

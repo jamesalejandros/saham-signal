@@ -28,6 +28,21 @@ lakukan ini boi
 tambahkan api key tar gw kasih di wa, kontak gw kalo lupa
 
 
+stockpriceprovider di services udh bisa konek ke sectors tpai jalan cuma sekali setiap hari
+
+
+## untuk jalanin yang di schedule secara manual pake  
+
+
+>>php artisan tinker
+# Untuk prices sectors
+Kosongkan dulu table stock pricess jika masih pake data dummy
+>>$provider = new \App\Services\StockPriceProvider;
+>>$provider->importLatestPricesForAllStocks(50);
+# Untuk generate signal
+>>App\Jobs\SendStockSignalsJob::dispatchSync();
+
+
 
 ## About Laravel
 

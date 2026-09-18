@@ -58,6 +58,7 @@ class StockSignalService
         );
 
         $isBullish = $result['direction'] === 'bullish';
+        $isBearish = $result['direction'] === 'bearish';
         $strength = $result['strength'];
 
         /*
@@ -85,13 +86,13 @@ class StockSignalService
             $strength === 1 && $isBullish =>
                 ['BUY', 'WEAK'],
 
-            $strength === 3 && !$isBullish =>
+            $strength === 3 && $isBearish =>
                 ['SELL', 'STRONG'],
 
-            $strength === 2 && !$isBullish =>
+            $strength === 2 && $isBearish =>
                 ['SELL', 'NORMAL'],
 
-            $strength === 1 && !$isBullish =>
+            $strength === 1 && $isBearish =>
                 ['SELL', 'WEAK'],
 
             default =>
@@ -151,7 +152,7 @@ class StockSignalService
         |
         */
 
-        if ($signal !== 'HOLD' && $signal !== "WEAK") {
+       if ($signal !== 'HOLD' && $signalStrength !== 'WEAK') {
             $this->notify($signalRecord);
         }
 
