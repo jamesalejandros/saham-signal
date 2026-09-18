@@ -29,14 +29,13 @@ class StockSignalNotification extends Notification
 
         return $channels;
     }
-
     public function toDatabase(object $notifiable): array
     {
+        $stockName = $this->stockSignal->stock?->stock_name ?? 'Unknown stock';
+
         return [
             'stock_code' => $this->stockSignal->stock_code,
-
-            'stock_name' => $this->stockSignal->stock_name,
-
+            'stock_name'=> $stockName,
             'signal' => $this->stockSignal->signal,
 
             'signal_strength' => $this->stockSignal->signal_strength,
@@ -47,10 +46,11 @@ class StockSignalNotification extends Notification
 
     public function toTelegram(object $notifiable): TelegramMessage
     {
+        $stockName = $this->stockSignal->stock?->stock_name ?? 'Unknown stock';
         $message =
             "📈 STOCK SIGNAL\n\n" .
             "Stock: {$this->stockSignal->stock_code}\n" .
-            "Name: {$this->stockSignal->stock_name}\n" .
+            "Name: {$stockName}\n" .
             "Signal: {$this->stockSignal->signal}\n" .
             "Strength: {$this->stockSignal->signal_strength}\n\n" .
             "{$this->stockSignal->description}";

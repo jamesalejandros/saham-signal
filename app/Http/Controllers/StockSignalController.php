@@ -88,15 +88,15 @@ class StockSignalController extends Controller
         // |
         // */
 
-        // $users = User::role('user')->get();
+        $users = User::role('user')->get();
 
-        // foreach ($users as $user) {
+        foreach ($users as $user) {
 
-        //     $user->notify(
-        //         new StockSignalNotification($signal)
-        //     );
+            $user->notify(
+                new StockSignalNotification($signal)
+            );
 
-        // }
+        }
 
 
         // /*
@@ -108,12 +108,12 @@ class StockSignalController extends Controller
         // |
         // */
 
-        // Notification::route(
-        //     'telegram',
-        //     config('services.telegram-bot-api.chat_id')
-        // )->notify(
-        //     new StockSignalTelegramNotification($signal)
-        // );
+        Notification::route(
+            'telegram',
+            config('services.telegram-bot-api.chat_id')
+        )->notify(
+            new StockSignalTelegramNotification($signal)
+        );
 
 
         /*
