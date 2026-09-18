@@ -143,33 +143,33 @@ class StockSignalController extends Controller
 
         if ($search !== '') {
 
-    $query->where(function ($q) use ($search) {
+            $query->where(function ($q) use ($search) {
 
-        $q->where(
-            'stock_signals.stock_code',
-            'like',
-            "%{$search}%"
-        );
-
-        $q->orWhereExists(function ($subQuery) use ($search) {
-
-            $subQuery->selectRaw('1')
-                ->from('stocks')
-                ->whereColumn(
-                    'stocks.stock_code',
-                    'stock_signals.stock_code'
-                )
-                ->where(
-                    'stocks.stock_name',
+                $q->where(
+                    'stock_signals.stock_code',
                     'like',
                     "%{$search}%"
                 );
 
-        });
+                $q->orWhereExists(function ($subQuery) use ($search) {
 
-    });
+                    $subQuery->selectRaw('1')
+                        ->from('stocks')
+                        ->whereColumn(
+                            'stocks.stock_code',
+                            'stock_signals.stock_code'
+                        )
+                        ->where(
+                            'stocks.stock_name',
+                            'like',
+                            "%{$search}%"
+                        );
 
-}
+                });
+
+            });
+
+        }
 
 
         /*
@@ -613,7 +613,7 @@ class StockSignalController extends Controller
         $newsText = $newsItems
             ->map(
                 fn($item) =>
-                "- {$item['title']}: {$item['snippet']}"
+                    "- {$item['title']}: {$item['snippet']}"
             )
             ->implode("\n");
 
@@ -628,26 +628,26 @@ class StockSignalController extends Controller
         $conditionLines = [
 
             $stockSignal->condition_1
-                ? (
-                    $stockSignal->signal === 'BUY'
-                        ? 'MA20 berada di atas MA50 (tren bullish terkonfirmasi).'
-                        : 'MA20 berada di bawah MA50 (tren bearish terkonfirmasi).'
-                )
-                : 'MA20 dan MA50 belum mengonfirmasi arah tren yang jelas.',
+            ? (
+                $stockSignal->signal === 'BUY'
+                ? 'MA20 berada di atas MA50 (tren bullish terkonfirmasi).'
+                : 'MA20 berada di bawah MA50 (tren bearish terkonfirmasi).'
+            )
+            : 'MA20 dan MA50 belum mengonfirmasi arah tren yang jelas.',
 
 
             $stockSignal->condition_2
-                ? (
-                    $stockSignal->signal === 'BUY'
-                        ? 'RSI menunjukkan kondisi oversold (potensi rebound harga).'
-                        : 'RSI menunjukkan kondisi overbought (potensi koreksi harga).'
-                )
-                : 'RSI belum memberikan konfirmasi tambahan terhadap arah harga.',
+            ? (
+                $stockSignal->signal === 'BUY'
+                ? 'RSI menunjukkan kondisi oversold (potensi rebound harga).'
+                : 'RSI menunjukkan kondisi overbought (potensi koreksi harga).'
+            )
+            : 'RSI belum memberikan konfirmasi tambahan terhadap arah harga.',
 
 
             $stockSignal->condition_3
-                ? 'Volume perdagangan meningkat signifikan, mendukung validitas pergerakan harga.'
-                : 'Volume perdagangan belum menunjukkan peningkatan signifikan.',
+            ? 'Volume perdagangan meningkat signifikan, mendukung validitas pergerakan harga.'
+            : 'Volume perdagangan belum menunjukkan peningkatan signifikan.',
         ];
 
         $conditionsText = implode(
@@ -742,4 +742,365 @@ class StockSignalController extends Controller
             'summary_updated' => $now,
         ]);
     }
+
+    public function dashboard()
+{
+    /*
+    |--------------------------------------------------------------------------
+    | SUMMARY CARDS
+    |--------------------------------------------------------------------------
+    */
+
+    $totalSignals = StockSignal::count();
+
+    $totalBuy = StockSignal::where('signal', 'BUY')->count();
+
+    $totalSell = StockSignal::where('signal', 'SELL')->count();
+
+    $totalStrong = StockSignal::where(
+        'signal_strength',
+        'STRONG'
+    )->count();
+
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | TOP 3 BUY
+    |--------------------------------------------------------------------------
+    |
+    | PRIORITAS:
+    |
+    | STRONG
+    | MEDIUM
+    | WEAK
+    |
+    | Jika STRONG tidak ada, otomatis mengambil MEDIUM.
+    | Jika MEDIUM tidak ada, otomatis mengambil WEAK.
+    |
+    | Jika strength sama, signal terbaru diprioritaskan.
+    |
+    */
+
+    $topBuySignals = StockSignal::where(
+        'signal',
+        'BUY'
+    )
+        ->orderByRaw("
+            CASE signal_strength
+                WHEN 'STRONG' THEN 1
+                WHEN 'MEDIUM' THEN 2
+                WHEN 'WEAK' THEN 3
+                ELSE 4
+            END
+        ")
+        ->latest('created_at')
+        ->take(3)
+        ->get();
+
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | TOP 3 SELL
+    |--------------------------------------------------------------------------
+    */
+
+    $topSellSignals = StockSignal::where(
+        'signal',
+        'SELL'
+    )
+        ->orderByRaw("
+            CASE signal_strength
+                WHEN 'STRONG' THEN 1
+                WHEN 'MEDIUM' THEN 2
+                WHEN 'WEAK' THEN 3
+                ELSE 4
+            END
+        ")
+        ->latest('created_at')
+        ->take(3)
+        ->get();
+
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | BUILD CHART DATA
+    |--------------------------------------------------------------------------
+    */
+
+    $buildChartData = function ($signals) {
+
+        return $signals->map(function ($signal) {
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | AMBIL 50 HARGA TERBARU
+            |--------------------------------------------------------------------------
+            |
+            | Ambil dari yang paling baru,
+            | kemudian diurutkan kembali dari tanggal lama ke baru
+            | untuk chart.
+            |
+            */
+
+            $prices = \App\Models\StockPrice::where(
+                'stock_code',
+                $signal->stock_code
+            )
+                ->orderByDesc('date')
+                ->take(50)
+                ->get()
+                ->sortBy('date')
+                ->values();
+
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | STOCK
+            |--------------------------------------------------------------------------
+            */
+
+            $stock = Stock::where(
+                'stock_code',
+                $signal->stock_code
+            )->first();
+
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | RETURN DATA
+            |--------------------------------------------------------------------------
+            */
+
+            return [
+
+                'id' => $signal->id,
+
+                'stock_code' => $signal->stock_code,
+
+                'stock_name' => $stock?->stock_name,
+
+                'signal' => $signal->signal,
+
+                'signal_strength' => $signal->signal_strength,
+
+                'condition_score' =>
+                    (int) $signal->condition_1 +
+                    (int) $signal->condition_2 +
+                    (int) $signal->condition_3,
+
+                'condition_1' =>
+                    (bool) $signal->condition_1,
+
+                'condition_2' =>
+                    (bool) $signal->condition_2,
+
+                'condition_3' =>
+                    (bool) $signal->condition_3,
+
+                'created_at' =>
+                    $signal->created_at?->format(
+                        'd M Y H:i'
+                    ),
+
+                'url' => route(
+                    'signals.show',
+                    $signal
+                ),
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | PRICE DATA
+                |--------------------------------------------------------------------------
+                */
+
+                'prices' => $prices->map(function ($price) {
+
+                    return [
+
+                        'date' =>
+                            \Carbon\Carbon::parse(
+                                $price->date
+                            )->format('d M'),
+
+                        'close_price' =>
+                            (float) $price->close_price,
+
+                        'volume' =>
+                            $price->volume !== null
+                                ? (int) $price->volume
+                                : null,
+
+                    ];
+
+                })->values(),
+
+            ];
+
+        })->values();
+
+    };
+
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | CHART DATA
+    |--------------------------------------------------------------------------
+    */
+
+    $buyChartData = $buildChartData(
+        $topBuySignals
+    );
+
+    $sellChartData = $buildChartData(
+        $topSellSignals
+    );
+
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | SIGNAL TERBARU
+    |--------------------------------------------------------------------------
+    */
+
+    $latestSignals = StockSignal::query()
+        ->latest('created_at')
+        ->take(10)
+        ->get();
+
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | HARGA TERAKHIR
+    |--------------------------------------------------------------------------
+    |
+    | Ambil harga terbaru untuk setiap saham
+    | yang muncul pada 10 signal terbaru.
+    |
+    */
+
+    $latestStockCodes = $latestSignals
+        ->pluck('stock_code')
+        ->unique()
+        ->values();
+
+
+
+    $latestPrices = \App\Models\StockPrice::query()
+        ->whereIn(
+            'stock_code',
+            $latestStockCodes
+        )
+        ->orderByDesc('date')
+        ->get()
+        ->groupBy('stock_code')
+        ->map(function ($prices) {
+
+            return $prices->first();
+
+        });
+
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | DISTRIBUSI STRENGTH
+    |--------------------------------------------------------------------------
+    */
+
+    $strengthDistribution = [
+
+        'STRONG' => StockSignal::where(
+            'signal_strength',
+            'STRONG'
+        )->count(),
+
+        'MEDIUM' => StockSignal::where(
+            'signal_strength',
+            'MEDIUM'
+        )->count(),
+
+        'WEAK' => StockSignal::where(
+            'signal_strength',
+            'WEAK'
+        )->count(),
+
+    ];
+
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | RINGKASAN CONDITION
+    |--------------------------------------------------------------------------
+    */
+
+    $conditionSummary = [
+
+        'condition_1' => StockSignal::where(
+            'condition_1',
+            true
+        )->count(),
+
+        'condition_2' => StockSignal::where(
+            'condition_2',
+            true
+        )->count(),
+
+        'condition_3' => StockSignal::where(
+            'condition_3',
+            true
+        )->count(),
+
+    ];
+
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | RETURN DASHBOARD
+    |--------------------------------------------------------------------------
+    */
+
+    return view(
+        'dashboard',
+        compact(
+
+            'totalSignals',
+
+            'totalBuy',
+
+            'totalSell',
+
+            'totalStrong',
+
+            'topBuySignals',
+
+            'topSellSignals',
+
+            'buyChartData',
+
+            'sellChartData',
+
+            'latestSignals',
+
+            'latestPrices',
+
+            'strengthDistribution',
+
+            'conditionSummary'
+
+        )
+    );
+}
+
 }
