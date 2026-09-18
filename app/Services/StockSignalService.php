@@ -216,7 +216,7 @@ class StockSignalService
             */
 
             $users = User::role('user')->get();
-
+            Log::info($users);
             foreach ($users as $user) {
                 $user->notify(
                     new StockSignalNotification($signalRecord)
