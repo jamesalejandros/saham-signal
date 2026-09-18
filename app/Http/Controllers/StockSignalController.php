@@ -522,11 +522,10 @@ class StockSignalController extends Controller
         $stock = Stock::where('stock_code', $signal->stock_code)->first();
 
         $prices = \App\Models\StockPrice::where('stock_code', $signal->stock_code)
-            ->orderBy('date')
-            ->latest('date') // newest first to grab the most recent 30...
+            ->orderByDesc('date')   // newest first
             ->take(50)
             ->get()
-            ->sortBy('date') // ...then re-sort oldest-first for the chart's x-axis
+            ->sortBy('date')        // re-sort ascending for chart + indicator calculations
             ->values();
 
         $stock_name = $stock['stock_name'];
