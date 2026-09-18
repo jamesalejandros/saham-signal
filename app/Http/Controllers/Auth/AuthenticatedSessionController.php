@@ -19,7 +19,6 @@ class AuthenticatedSessionController extends Controller
         return view('auth.login');
     }
 
-
     /**
      * Handle an incoming authentication request.
      */
@@ -33,7 +32,6 @@ class AuthenticatedSessionController extends Controller
 
         $request->authenticate();
 
-
         /*
         |--------------------------------------------------------------------------
         | Regenerate Session
@@ -42,16 +40,29 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-
         /*
         |--------------------------------------------------------------------------
-        | Redirect to Dashboard
+        | Redirect to Intended URL
         |--------------------------------------------------------------------------
+        |
+        | Jika user sebelumnya mencoba mengakses halaman tertentu
+        | sebelum login, Laravel akan mengembalikannya ke halaman tersebut.
+        |
+        | Contoh:
+        | /signals/102
+        |      ↓
+        | /login
+        |      ↓
+        | login berhasil
+        |      ↓
+        | /signals/102
+        |
+        | Jika tidak ada intended URL, fallback ke dashboard.
+        |
         */
 
-        return redirect()->route('dashboard');
+        return redirect()->intended(route('dashboard'));
     }
-
 
     /**
      * Destroy an authenticated session.

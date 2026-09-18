@@ -15,8 +15,13 @@ lakukan ini boi
     
     composer require serpapi/serpapi-php
 
+    composer require spatie/laravel-permission
+    composer require laravel-notification-channels/telegram
+    composer require laravel/breeze --dev
+
     php artisan migrate --path=database/migrations/2026_09_17_103139_create_stocks_table.php
     php artisan db:seed --class=StockSeeder
+    php artisan db:seed --class=StockPriceSeeder
     php artisan migrate 
 tambahkan api key tar gw kasih di wa, kontak gw kalo lupa
 

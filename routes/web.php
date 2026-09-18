@@ -5,7 +5,7 @@ use App\Http\Controllers\NotificationTestController;
 use App\Http\Controllers\StockSignalController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\DashboardController;
 
 /*
 |--------------------------------------------------------------------------
@@ -137,6 +137,9 @@ Route::middleware('auth')->group(function () {
         '/notifications/{id}/read',
         [NotificationController::class, 'read']
     )->name('notifications.read');
+
+    Route::post('/notifications/mark-all-as-read', [NotificationController::class, 'markAllAsRead'])
+        ->name('notifications.markAllAsRead');
 
 
 

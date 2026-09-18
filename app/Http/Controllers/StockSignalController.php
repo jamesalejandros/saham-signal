@@ -18,13 +18,303 @@ use Illuminate\Support\Facades\Notification;
 
 class StockSignalController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $signals = StockSignal::latest()->get();
+        /*
+        |--------------------------------------------------------------------------
+        | Search
+        |--------------------------------------------------------------------------
+        |
+        | Search berdasarkan:
+        | - stock_code
+        | - stock_name
+        |
+        */
+
+        $search = trim($request->input('search', ''));
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Filters
+        |--------------------------------------------------------------------------
+        |
+        | Signal:
+        | - BUY
+        | - SELL
+        | - HOLD
+        |
+        | Strength:
+        | - STRONG
+        | - NORMAL
+        | - WEAK
+        | - NONE
+        |
+        | Condition:
+        | - true
+        | - false
+        |
+        */
+
+        $signalFilter = $request->input('signal');
+
+        $strengthFilter = $request->input('signal_strength');
+
+        $condition1Filter = $request->input('condition_1');
+
+        $condition2Filter = $request->input('condition_2');
+
+        $condition3Filter = $request->input('condition_3');
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Sorting
+        |--------------------------------------------------------------------------
+        |
+        | Hanya kolom yang diperbolehkan yang bisa digunakan
+        | sebagai sorting agar tidak ada arbitrary column dari request.
+        |
+        */
+
+        $allowedSorts = [
+
+            'id' => 'id',
+
+            'stock_code' => 'stock_code',
+
+            'stock_name' => 'stock_name',
+
+            'condition_1' => 'condition_1',
+
+            'condition_2' => 'condition_2',
+
+            'condition_3' => 'condition_3',
+
+            'signal' => 'signal',
+
+            'signal_strength' => 'signal_strength',
+
+            'created_at' => 'created_at',
+
+        ];
+
+
+        $sort = $request->input('sort', 'created_at');
+
+        if (!array_key_exists($sort, $allowedSorts)) {
+
+            $sort = 'created_at';
+
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Sort Direction
+        |--------------------------------------------------------------------------
+        */
+
+        $direction = strtolower(
+            $request->input('direction', 'desc')
+        );
+
+        if (!in_array($direction, ['asc', 'desc'], true)) {
+
+            $direction = 'desc';
+
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Query
+        |--------------------------------------------------------------------------
+        */
+
+        $query = StockSignal::query();
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Search
+        |--------------------------------------------------------------------------
+        */
+
+        if ($search !== '') {
+
+    $query->where(function ($q) use ($search) {
+
+        $q->where(
+            'stock_signals.stock_code',
+            'like',
+            "%{$search}%"
+        );
+
+        $q->orWhereExists(function ($subQuery) use ($search) {
+
+            $subQuery->selectRaw('1')
+                ->from('stocks')
+                ->whereColumn(
+                    'stocks.stock_code',
+                    'stock_signals.stock_code'
+                )
+                ->where(
+                    'stocks.stock_name',
+                    'like',
+                    "%{$search}%"
+                );
+
+        });
+
+    });
+
+}
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Signal Filter
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            $signalFilter !== null &&
+            $signalFilter !== ''
+        ) {
+
+            $query->where(
+                'signal',
+                $signalFilter
+            );
+
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Signal Strength Filter
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            $strengthFilter !== null &&
+            $strengthFilter !== ''
+        ) {
+
+            $query->where(
+                'signal_strength',
+                $strengthFilter
+            );
+
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Condition 1 Filter
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            $condition1Filter !== null &&
+            $condition1Filter !== ''
+        ) {
+
+            $query->where(
+                'condition_1',
+                $condition1Filter === 'true' ? 1 : 0
+            );
+
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Condition 2 Filter
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            $condition2Filter !== null &&
+            $condition2Filter !== ''
+        ) {
+
+            $query->where(
+                'condition_2',
+                $condition2Filter === 'true' ? 1 : 0
+            );
+
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Condition 3 Filter
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            $condition3Filter !== null &&
+            $condition3Filter !== ''
+        ) {
+
+            $query->where(
+                'condition_3',
+                $condition3Filter === 'true' ? 1 : 0
+            );
+
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Sorting
+        |--------------------------------------------------------------------------
+        */
+
+        $query->orderBy(
+            $allowedSorts[$sort],
+            $direction
+        );
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Pagination
+        |--------------------------------------------------------------------------
+        |
+        | 20 signal per halaman.
+        |
+        | withQueryString() menjaga search, filter, dan sorting
+        | ketika user berpindah halaman pagination.
+        |
+        */
+
+        $signals = $query
+            ->paginate(20)
+            ->withQueryString();
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Return View
+        |--------------------------------------------------------------------------
+        */
 
         return view(
             'signals.index',
-            compact('signals')
+            compact(
+                'signals',
+                'search',
+                'signalFilter',
+                'strengthFilter',
+                'condition1Filter',
+                'condition2Filter',
+                'condition3Filter',
+                'sort',
+                'direction'
+            )
         );
     }
 
@@ -33,10 +323,8 @@ class StockSignalController extends Controller
         return view('signals.create');
     }
 
-    public function store(
-        Request $request,
-        StockSignalService $service
-    ) {
+    public function store(Request $request)
+    {
         /*
         |--------------------------------------------------------------------------
         | Validate Request
@@ -44,6 +332,7 @@ class StockSignalController extends Controller
         */
 
         $validated = $request->validate([
+
             'stock_code' => [
                 'required',
                 'string',
@@ -64,29 +353,108 @@ class StockSignalController extends Controller
                 'nullable',
                 'boolean',
             ],
+
+            'signal' => [
+                'required',
+                'string',
+                'in:BUY,SELL,HOLD',
+            ],
+
+            'signal_strength' => [
+                'required',
+                'string',
+                'in:STRONG,MEDIUM,WEAK,NONE',
+            ],
+
+            'description' => [
+                'nullable',
+                'string',
+            ],
+
         ]);
 
 
         /*
         |--------------------------------------------------------------------------
-        | Generate Stock Signal
+        | Normalize Stock Code
         |--------------------------------------------------------------------------
+        |
+        | Foreign key stock_signals.stock_code harus sama dengan
+        | stocks.stock_code.
+        |
         */
 
-        $signal = $service->generateSignal(
-            stockCode: $validated['stock_code'],
-
-        );
+        $stockCode = strtoupper(trim($validated['stock_code']));
 
 
-        // /*
-        // |--------------------------------------------------------------------------
-        // | Web Notification
-        // |--------------------------------------------------------------------------
-        // |
-        // | Kirim notification ke SEMUA user dengan role "user".
-        // |
-        // */
+        /*
+        |--------------------------------------------------------------------------
+        | Check Stock Exists
+        |--------------------------------------------------------------------------
+        |
+        | Karena stock_signals.stock_code memiliki foreign key ke
+        | stocks.stock_code, pastikan stock tersebut memang tersedia.
+        |
+        */
+
+        $stock = Stock::where('stock_code', $stockCode)->first();
+
+        if (!$stock) {
+
+            return back()
+                ->withInput()
+                ->withErrors([
+                    'stock_code' => "Stock code {$stockCode} belum terdaftar di tabel stocks.",
+                ]);
+
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Create Manual Stock Signal
+        |--------------------------------------------------------------------------
+        |
+        | TIDAK menggunakan StockSignalService.
+        |
+        | Semua nilai berasal langsung dari form:
+        |
+        | - condition_1
+        | - condition_2
+        | - condition_3
+        | - signal
+        | - signal_strength
+        | - description
+        |
+        */
+
+        $signal = StockSignal::create([
+
+            'stock_code' => $stockCode,
+
+            'condition_1' => $request->boolean('condition_1'),
+
+            'condition_2' => $request->boolean('condition_2'),
+
+            'condition_3' => $request->boolean('condition_3'),
+
+            'signal' => $validated['signal'],
+
+            'signal_strength' => $validated['signal_strength'],
+
+            'description' => $validated['description'] ?? null,
+
+        ]);
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Web Notification
+        |--------------------------------------------------------------------------
+        |
+        | Logic notification website tetap dipertahankan.
+        |
+        */
 
         $users = User::role('user')->get();
 
@@ -99,21 +467,37 @@ class StockSignalController extends Controller
         }
 
 
-        // /*
-        // |--------------------------------------------------------------------------
-        // | Telegram Group Notification
-        // |--------------------------------------------------------------------------
-        // |
-        // | Kirim SATU kali ke Telegram Group.
-        // |
-        // */
+        /*
+        |--------------------------------------------------------------------------
+        | Telegram Notification
+        |--------------------------------------------------------------------------
+        |
+        | Telegram tidak boleh menggagalkan proses penyimpanan signal.
+        |
+        */
 
-        Notification::route(
-            'telegram',
-            config('services.telegram-bot-api.chat_id')
-        )->notify(
-            new StockSignalTelegramNotification($signal)
-        );
+        try {
+
+            Notification::route(
+                'telegram',
+                config('services.telegram-bot-api.chat_id')
+            )->notify(
+                    new StockSignalTelegramNotification($signal)
+                );
+
+        } catch (\Throwable $e) {
+
+            Log::error('Telegram notification failed', [
+
+                'stock_code' => $signal->stock_code,
+
+                'signal_id' => $signal->id,
+
+                'message' => $e->getMessage(),
+
+            ]);
+
+        }
 
 
         /*
@@ -126,11 +510,13 @@ class StockSignalController extends Controller
             ->route('signals.index')
             ->with(
                 'success',
-                'Signal berhasil dibuat. Notification dikirim ke website dan Telegram Group.'
+                'Signal manual berhasil dibuat.'
             );
     }
 
-    
+
+
+
     public function show(StockSignal $signal)
     {
         $stock = Stock::where('stock_code', $signal->stock_code)->first();
@@ -142,12 +528,21 @@ class StockSignalController extends Controller
             ->get()
             ->sortBy('date') // ...then re-sort oldest-first for the chart's x-axis
             ->values();
+
         $stock_name = $stock['stock_name'];
-        return view('signals.show', compact('signal', 'prices', 'stock_name'));
+
+        return view(
+            'signals.show',
+            compact(
+                'signal',
+                'prices',
+                'stock_name'
+            )
+        );
     }
-    
-    
-  
+
+
+
     public function news(Request $request)
     {
         $request->validate([
@@ -170,16 +565,19 @@ class StockSignalController extends Controller
         }
 
         $today = (new DateTime())->format('Y-m-d');
+
         $summaryDate = $stock->summary_updated
             ? (new DateTime($stock->summary_updated))->format('Y-m-d')
             : null;
 
         if (!empty($stock->summary) && $summaryDate === $today) {
+
             return response()->json([
                 'summary' => $stock->summary,
                 'cached' => true,
                 'summary_updated' => $stock->summary_updated,
             ]);
+
         }
 
         Log::info("starting search....");
@@ -192,9 +590,11 @@ class StockSignalController extends Controller
             'kl' => 'id-en',
         ]);
 
-        $newsItems = collect($results->news_results ?? $results->organic_results ?? [])
+        $newsItems = collect(
+            $results->news_results ?? $results->organic_results ?? []
+        )
             ->take(5)
-            ->map(fn ($item) => [
+            ->map(fn($item) => [
                 'title' => $item->title ?? '',
                 'snippet' => $item->snippet ?? '',
                 'source' => $item->source ?? ($item->link ?? ''),
@@ -203,11 +603,18 @@ class StockSignalController extends Controller
         Log::info($newsItems);
 
         if ($newsItems->isEmpty()) {
-            return response()->json(['message' => 'No news found for this stock'], 404);
+
+            return response()->json([
+                'message' => 'No news found for this stock'
+            ], 404);
+
         }
 
         $newsText = $newsItems
-            ->map(fn ($item) => "- {$item['title']}: {$item['snippet']}")
+            ->map(
+                fn($item) =>
+                "- {$item['title']}: {$item['snippet']}"
+            )
             ->implode("\n");
 
         /*
@@ -219,18 +626,37 @@ class StockSignalController extends Controller
         */
 
         $conditionLines = [
+
             $stockSignal->condition_1
-                ? ($stockSignal->signal === 'BUY' ? 'MA20 berada di atas MA50 (tren bullish terkonfirmasi).' : 'MA20 berada di bawah MA50 (tren bearish terkonfirmasi).')
+                ? (
+                    $stockSignal->signal === 'BUY'
+                        ? 'MA20 berada di atas MA50 (tren bullish terkonfirmasi).'
+                        : 'MA20 berada di bawah MA50 (tren bearish terkonfirmasi).'
+                )
                 : 'MA20 dan MA50 belum mengonfirmasi arah tren yang jelas.',
+
+
             $stockSignal->condition_2
-                ? ($stockSignal->signal === 'BUY' ? 'RSI menunjukkan kondisi oversold (potensi rebound harga).' : 'RSI menunjukkan kondisi overbought (potensi koreksi harga).')
+                ? (
+                    $stockSignal->signal === 'BUY'
+                        ? 'RSI menunjukkan kondisi oversold (potensi rebound harga).'
+                        : 'RSI menunjukkan kondisi overbought (potensi koreksi harga).'
+                )
                 : 'RSI belum memberikan konfirmasi tambahan terhadap arah harga.',
+
+
             $stockSignal->condition_3
                 ? 'Volume perdagangan meningkat signifikan, mendukung validitas pergerakan harga.'
                 : 'Volume perdagangan belum menunjukkan peningkatan signifikan.',
         ];
 
-        $conditionsText = implode("\n", array_map(fn ($line) => "- {$line}", $conditionLines));
+        $conditionsText = implode(
+            "\n",
+            array_map(
+                fn($line) => "- {$line}",
+                $conditionLines
+            )
+        );
 
         $prompt = <<<PROMPT
             Kamu adalah asisten analisis saham. Tugasmu adalah menjelaskan KENAPA sebuah saham mendapat sinyal {$stockSignal->signal} (kekuatan: {$stockSignal->signal_strength}), dengan menghubungkan berita terbaru dan kondisi teknikal yang ada.
@@ -253,32 +679,54 @@ class StockSignalController extends Controller
 
         $apiResponse = Http::withToken(config('services.groq.key'))
             ->acceptJson()
-            ->post('https://api.groq.com/openai/v1/chat/completions', [
-                'model' => 'qwen/qwen3.8-27b',
-                'messages' => [
-                    [
-                        'role' => 'user',
-                        'content' => $prompt,
+            ->post(
+                'https://api.groq.com/openai/v1/chat/completions',
+                [
+                    'model' => 'qwen/qwen3.8-27b',
+                    'messages' => [
+                        [
+                            'role' => 'user',
+                            'content' => $prompt,
+                        ],
                     ],
-                ],
-            ]);
+                ]
+            );
 
         if ($apiResponse->failed()) {
-            Log::error('Groq summarization failed', [
-                'stock_code' => $stockCode,
-                'status' => $apiResponse->status(),
-                'body' => $apiResponse->body(),
-            ]);
 
-            return response()->json(['message' => 'Failed to generate summary'], 500);
+            Log::error(
+                'Groq summarization failed',
+                [
+                    'stock_code' => $stockCode,
+                    'status' => $apiResponse->status(),
+                    'body' => $apiResponse->body(),
+                ]
+            );
+
+            return response()->json([
+                'message' => 'Failed to generate summary'
+            ], 500);
+
         }
 
         $result = $apiResponse->json();
+
         $summary = $result['choices'][0]['message']['content'] ?? null;
 
         if (!$summary) {
-            Log::error('Groq response missing summary content', ['stock_code' => $stockCode, 'response' => $result]);
-            return response()->json(['message' => 'Failed to parse summary'], 500);
+
+            Log::error(
+                'Groq response missing summary content',
+                [
+                    'stock_code' => $stockCode,
+                    'response' => $result
+                ]
+            );
+
+            return response()->json([
+                'message' => 'Failed to parse summary'
+            ], 500);
+
         }
 
         $now = (new DateTime())->format('Y-m-d H:i:s');

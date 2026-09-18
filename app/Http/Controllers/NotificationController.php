@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\Log;
-
 class NotificationController extends Controller
 {
     public function index()
@@ -26,6 +24,15 @@ class NotificationController extends Controller
             ->findOrFail($id);
 
         $notification->markAsRead();
+
+        return back();
+    }
+
+    public function markAllAsRead()
+    {
+        auth()->user()
+            ->unreadNotifications
+            ->markAsRead();
 
         return back();
     }
