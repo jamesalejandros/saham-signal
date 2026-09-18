@@ -16,11 +16,9 @@ Schedule::call(function () {
 })
     ->dailyAt('17:30')
     ->timezone('Asia/Jakarta')
-    ->weekdays()
-    ->withoutOverlapping();
+    ->weekdays();
 
 Schedule::job(new SendStockSignalsJob())
     ->dailyAt('17:35')
     ->timezone('Asia/Jakarta')
-    ->weekdays()
-    ->withoutOverlapping();
+    ->weekdays();
