@@ -535,7 +535,7 @@
 
                             'STRONG' => 'purple',
 
-                            'MEDIUM' => 'blue',
+                            'NORMAL' => 'blue',
 
                             default => 'gray',
 
@@ -591,108 +591,146 @@
 
 
 
-    {{-- CONDITION SUMMARY --}}
-    <div class="rounded-xl border border-gray-200 bg-white shadow-sm">
+    {{-- SCORE DISTRIBUTION --}}
+<div class="rounded-xl border border-gray-200 bg-white shadow-sm">
 
-        <div class="border-b border-gray-200 px-5 py-4">
+    <div class="border-b border-gray-200 px-5 py-4">
 
-            <h2 class="font-bold text-gray-900">
-                Ringkasan Kondisi
-            </h2>
+        <h2 class="font-bold text-gray-900">
+            Distribusi Score Signal
+        </h2>
 
-            <p class="text-xs text-gray-500">
-                Jumlah signal yang memenuhi setiap kondisi
-            </p>
-
-        </div>
-
-
-        <div class="grid grid-cols-1 divide-y sm:grid-cols-3 sm:divide-x sm:divide-y-0">
-
-
-            {{-- CONDITION 1 --}}
-            <div class="p-5">
-
-                <div class="flex items-center justify-between">
-
-                    <div>
-
-                        <p class="text-sm font-medium text-gray-500">
-                            Condition 1
-                        </p>
-
-                        <p class="mt-1 text-2xl font-bold text-gray-900">
-                            {{ $conditionSummary['condition_1'] ?? 0 }}
-                        </p>
-
-                    </div>
-
-
-                    <span class="rounded-lg bg-blue-100 px-3 py-2 text-sm font-bold text-blue-700">
-                        C1
-                    </span>
-
-                </div>
-
-            </div>
-
-
-            {{-- CONDITION 2 --}}
-            <div class="p-5">
-
-                <div class="flex items-center justify-between">
-
-                    <div>
-
-                        <p class="text-sm font-medium text-gray-500">
-                            Condition 2
-                        </p>
-
-                        <p class="mt-1 text-2xl font-bold text-gray-900">
-                            {{ $conditionSummary['condition_2'] ?? 0 }}
-                        </p>
-
-                    </div>
-
-
-                    <span class="rounded-lg bg-indigo-100 px-3 py-2 text-sm font-bold text-indigo-700">
-                        C2
-                    </span>
-
-                </div>
-
-            </div>
-
-
-            {{-- CONDITION 3 --}}
-            <div class="p-5">
-
-                <div class="flex items-center justify-between">
-
-                    <div>
-
-                        <p class="text-sm font-medium text-gray-500">
-                            Condition 3
-                        </p>
-
-                        <p class="mt-1 text-2xl font-bold text-gray-900">
-                            {{ $conditionSummary['condition_3'] ?? 0 }}
-                        </p>
-
-                    </div>
-
-
-                    <span class="rounded-lg bg-cyan-100 px-3 py-2 text-sm font-bold text-cyan-700">
-                        C3
-                    </span>
-
-                </div>
-
-            </div>
-
-        </div>
+        <p class="text-xs text-gray-500">
+            Jumlah signal berdasarkan kondisi teknikal yang terpenuhi
+        </p>
 
     </div>
+
+
+    <div class="space-y-5 p-5">
+
+        @php
+
+            $scoreConfig = [
+
+                3 => [
+                    'label' => '3/3',
+                    'description' => 'Semua kondisi terpenuhi',
+                    'color' => 'green',
+                ],
+
+                2 => [
+                    'label' => '2/3',
+                    'description' => 'Dua kondisi terpenuhi',
+                    'color' => 'blue',
+                ],
+
+                1 => [
+                    'label' => '1/3',
+                    'description' => 'Satu kondisi terpenuhi',
+                    'color' => 'yellow',
+                ],
+
+                0 => [
+                    'label' => '0/3',
+                    'description' => 'Tidak ada kondisi terpenuhi',
+                    'color' => 'gray',
+                ],
+
+            ];
+
+        @endphp
+
+
+        @foreach($scoreConfig as $score => $config)
+
+            @php
+
+                $count = $scoreDistribution[$score] ?? 0;
+
+                $percentage = $totalSignals > 0
+                    ? ($count / $totalSignals) * 100
+                    : 0;
+
+            @endphp
+
+
+            <div>
+
+                {{-- LABEL --}}
+                <div class="mb-2 flex items-center justify-between">
+
+                    <div class="flex items-center gap-3">
+
+                        <span class="
+                            inline-flex h-9 w-12
+                            items-center justify-center
+                            rounded-lg
+                            text-sm font-bold
+
+                            {{ $config['color'] === 'green'
+                                ? 'bg-green-100 text-green-700'
+                                : ($config['color'] === 'blue'
+                                    ? 'bg-blue-100 text-blue-700'
+                                    : ($config['color'] === 'yellow'
+                                        ? 'bg-yellow-100 text-yellow-700'
+                                        : 'bg-gray-100 text-gray-600')
+                                )
+                            }}
+                        ">
+                            {{ $config['label'] }}
+                        </span>
+
+
+                        <div>
+
+                            <p class="text-sm font-medium text-gray-700">
+                                {{ $config['description'] }}
+                            </p>
+
+                            <p class="text-xs text-gray-400">
+                                {{ number_format($percentage, 1, ',', '.') }}%
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <span class="text-sm font-bold text-gray-900">
+                        {{ $count }}
+                    </span>
+
+                </div>
+
+
+                {{-- PROGRESS BAR --}}
+                <div class="h-2 overflow-hidden rounded-full bg-gray-100">
+
+                    <div
+                        class="h-full rounded-full transition-all duration-500
+                            {{ $config['color'] === 'green'
+                                ? 'bg-green-500'
+                                : ($config['color'] === 'blue'
+                                    ? 'bg-blue-500'
+                                    : ($config['color'] === 'yellow'
+                                        ? 'bg-yellow-500'
+                                        : 'bg-gray-400')
+                                )
+                            }}"
+                        style="width: {{ $percentage }}%">
+                    </div>
+
+                </div>
+
+            </div>
+
+        @endforeach
+
+    </div>
+
+</div>
+
 
 </div>
 

@@ -522,10 +522,11 @@ class StockSignalController extends Controller
         $stock = Stock::where('stock_code', $signal->stock_code)->first();
 
         $prices = \App\Models\StockPrice::where('stock_code', $signal->stock_code)
-            ->orderByDesc('date')   // newest first
+            ->orderBy('date')
+            ->latest('date') // newest first to grab the most recent 30...
             ->take(50)
             ->get()
-            ->sortBy('date')        // re-sort ascending for chart + indicator calculations
+            ->sortBy('date') // ...then re-sort oldest-first for the chart's x-axis
             ->values();
 
         $stock_name = $stock['stock_name'];
@@ -788,7 +789,7 @@ class StockSignalController extends Controller
         ->orderByRaw("
             CASE signal_strength
                 WHEN 'STRONG' THEN 1
-                WHEN 'MEDIUM' THEN 2
+                WHEN 'NORMAL' THEN 2
                 WHEN 'WEAK' THEN 3
                 ELSE 4
             END
@@ -812,7 +813,7 @@ class StockSignalController extends Controller
         ->orderByRaw("
             CASE signal_strength
                 WHEN 'STRONG' THEN 1
-                WHEN 'MEDIUM' THEN 2
+                WHEN 'NORMAL' THEN 2
                 WHEN 'WEAK' THEN 3
                 ELSE 4
             END
@@ -1023,9 +1024,9 @@ class StockSignalController extends Controller
             'STRONG'
         )->count(),
 
-        'MEDIUM' => StockSignal::where(
+        'NORMAL' => StockSignal::where(
             'signal_strength',
-            'MEDIUM'
+            'NORMAL'
         )->count(),
 
         'WEAK' => StockSignal::where(
@@ -1038,29 +1039,47 @@ class StockSignalController extends Controller
 
 
     /*
-    |--------------------------------------------------------------------------
-    | RINGKASAN CONDITION
-    |--------------------------------------------------------------------------
-    */
+|--------------------------------------------------------------------------
+| DISTRIBUSI SCORE SIGNAL
+|--------------------------------------------------------------------------
+|
+| Menghitung berapa banyak kondisi yang terpenuhi
+| untuk setiap signal:
+|
+| 3/3 = semua kondisi terpenuhi
+| 2/3 = dua kondisi terpenuhi
+| 1/3 = satu kondisi terpenuhi
+| 0/3 = tidak ada kondisi terpenuhi
+|
+*/
 
-    $conditionSummary = [
+$scoreDistribution = [
 
-        'condition_1' => StockSignal::where(
-            'condition_1',
-            true
-        )->count(),
+    0 => 0,
+    1 => 0,
+    2 => 0,
+    3 => 0,
 
-        'condition_2' => StockSignal::where(
-            'condition_2',
-            true
-        )->count(),
+];
 
-        'condition_3' => StockSignal::where(
-            'condition_3',
-            true
-        )->count(),
+StockSignal::query()
+    ->select([
+        'condition_1',
+        'condition_2',
+        'condition_3',
+    ])
+    ->get()
+    ->each(function ($signal) use (&$scoreDistribution) {
 
-    ];
+        $score =
+            (int) $signal->condition_1 +
+            (int) $signal->condition_2 +
+            (int) $signal->condition_3;
+
+        $scoreDistribution[$score]++;
+
+    });
+
 
 
 
@@ -1096,7 +1115,7 @@ class StockSignalController extends Controller
 
             'strengthDistribution',
 
-            'conditionSummary'
+            'scoreDistribution'
 
         )
     );

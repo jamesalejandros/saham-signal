@@ -309,10 +309,10 @@
                     </option>
 
                     <option
-                        value="MEDIUM"
-                        @selected(old('signal_strength') === 'MEDIUM')
+                        value="NORMAL"
+                        @selected(old('signal_strength') === 'NORMAL')
                     >
-                        MEDIUM
+                        NORMAL
                     </option>
 
                     <option

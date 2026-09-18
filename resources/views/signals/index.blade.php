@@ -125,11 +125,6 @@
                                 NORMAL
                             </option>
 
-                            <option value="MEDIUM"
-                                {{ $strengthFilter === 'MEDIUM' ? 'selected' : '' }}>
-                                MEDIUM
-                            </option>
-
                             <option value="WEAK"
                                 {{ $strengthFilter === 'WEAK' ? 'selected' : '' }}>
                                 WEAK
@@ -753,12 +748,6 @@
 
                                         <span class="rounded-full bg-blue-100 px-3 py-1 text-xs font-bold text-blue-700">
                                             NORMAL
-                                        </span>
-
-                                    @elseif($signal->signal_strength === 'MEDIUM')
-
-                                        <span class="rounded-full bg-blue-100 px-3 py-1 text-xs font-bold text-blue-700">
-                                            MEDIUM
                                         </span>
 
                                     @elseif($signal->signal_strength === 'WEAK')
