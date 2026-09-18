@@ -19,10 +19,12 @@ lakukan ini boi
     composer require laravel-notification-channels/telegram
     composer require laravel/breeze --dev
 
+    php artisan migrate
     php artisan migrate --path=database/migrations/2026_09_17_103139_create_stocks_table.php
+    php artisan db:seed
     php artisan db:seed --class=StockSeeder
     php artisan db:seed --class=StockPriceSeeder
-    php artisan migrate 
+    
 tambahkan api key tar gw kasih di wa, kontak gw kalo lupa
 
 
