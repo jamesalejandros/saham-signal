@@ -11,20 +11,20 @@
 
 lakukan ini boi 
     
-    php artisan install:api
-    
-    composer require serpapi/serpapi-php
-
+    composer require laravel/sanctum
     composer require spatie/laravel-permission
     composer require laravel-notification-channels/telegram
     composer require laravel/breeze --dev
+    php artisan install:api
+    
+    composer require serpapi/serpapi-php
 
     php artisan migrate
     php artisan migrate --path=database/migrations/2026_09_17_103139_create_stocks_table.php
     php artisan db:seed
     php artisan db:seed --class=StockSeeder
     php artisan db:seed --class=StockPriceSeeder
-    
+
 tambahkan api key tar gw kasih di wa, kontak gw kalo lupa
 
 
