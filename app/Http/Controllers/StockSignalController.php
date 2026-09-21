@@ -19,304 +19,248 @@ use Illuminate\Support\Facades\Notification;
 class StockSignalController extends Controller
 {
     public function index(Request $request)
-    {
-        /*
-        |--------------------------------------------------------------------------
-        | Search
-        |--------------------------------------------------------------------------
-        |
-        | Search berdasarkan:
-        | - stock_code
-        | - stock_name
-        |
-        */
+{
+    $search = trim($request->input('search', ''));
 
-        $search = trim($request->input('search', ''));
+    /*
+    |--------------------------------------------------------------------------
+    | Filters
+    |--------------------------------------------------------------------------
+    */
 
+    $signalFilter = $request->input('signal');
 
-        /*
-        |--------------------------------------------------------------------------
-        | Filters
-        |--------------------------------------------------------------------------
-        |
-        | Signal:
-        | - BUY
-        | - SELL
-        | - HOLD
-        |
-        | Strength:
-        | - STRONG
-        | - NORMAL
-        | - WEAK
-        | - NONE
-        |
-        | Condition:
-        | - true
-        | - false
-        |
-        */
+    $strengthFilter = $request->input('signal_strength');
 
-        $signalFilter = $request->input('signal');
+    $condition1Filter = $request->input('condition_1');
 
-        $strengthFilter = $request->input('signal_strength');
+    $condition2Filter = $request->input('condition_2');
 
-        $condition1Filter = $request->input('condition_1');
+    $condition3Filter = $request->input('condition_3');
 
-        $condition2Filter = $request->input('condition_2');
-
-        $condition3Filter = $request->input('condition_3');
+    $myStocksFilter = $request->input('my_stocks');
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | Sorting
-        |--------------------------------------------------------------------------
-        |
-        | Hanya kolom yang diperbolehkan yang bisa digunakan
-        | sebagai sorting agar tidak ada arbitrary column dari request.
-        |
-        */
+    /*
+    |--------------------------------------------------------------------------
+    | Sorting
+    |--------------------------------------------------------------------------
+    */
 
-        $allowedSorts = [
+    $allowedSorts = [
 
-            'id' => 'id',
+        'id' => 'id',
+        'stock_code' => 'stock_code',
+        'stock_name' => 'stock_name',
+        'condition_1' => 'condition_1',
+        'condition_2' => 'condition_2',
+        'condition_3' => 'condition_3',
+        'signal' => 'signal',
+        'signal_strength' => 'signal_strength',
+        'created_at' => 'created_at',
 
-            'stock_code' => 'stock_code',
+    ];
 
-            'stock_name' => 'stock_name',
+    $sort = $request->input('sort', 'created_at');
 
-            'condition_1' => 'condition_1',
+    if (!array_key_exists($sort, $allowedSorts)) {
+        $sort = 'created_at';
+    }
 
-            'condition_2' => 'condition_2',
+    $direction = strtolower(
+        $request->input('direction', 'desc')
+    );
 
-            'condition_3' => 'condition_3',
-
-            'signal' => 'signal',
-
-            'signal_strength' => 'signal_strength',
-
-            'created_at' => 'created_at',
-
-        ];
-
-
-        $sort = $request->input('sort', 'created_at');
-
-        if (!array_key_exists($sort, $allowedSorts)) {
-
-            $sort = 'created_at';
-
-        }
+    if (!in_array($direction, ['asc', 'desc'], true)) {
+        $direction = 'desc';
+    }
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | Sort Direction
-        |--------------------------------------------------------------------------
-        */
+    /*
+    |--------------------------------------------------------------------------
+    | Query
+    |--------------------------------------------------------------------------
+    */
 
-        $direction = strtolower(
-            $request->input('direction', 'desc')
-        );
-
-        if (!in_array($direction, ['asc', 'desc'], true)) {
-
-            $direction = 'desc';
-
-        }
+    $query = StockSignal::query();
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | Query
-        |--------------------------------------------------------------------------
-        */
+    /*
+    |--------------------------------------------------------------------------
+    | Search
+    |--------------------------------------------------------------------------
+    */
 
-        $query = StockSignal::query();
+    if ($search !== '') {
 
+        $query->where(function ($q) use ($search) {
 
-        /*
-        |--------------------------------------------------------------------------
-        | Search
-        |--------------------------------------------------------------------------
-        */
+            $q->where(
+                'stock_signals.stock_code',
+                'like',
+                "%{$search}%"
+            );
 
-        if ($search !== '') {
+            $q->orWhereExists(function ($subQuery) use ($search) {
 
-            $query->where(function ($q) use ($search) {
-
-                $q->where(
-                    'stock_signals.stock_code',
-                    'like',
-                    "%{$search}%"
-                );
-
-                $q->orWhereExists(function ($subQuery) use ($search) {
-
-                    $subQuery->selectRaw('1')
-                        ->from('stocks')
-                        ->whereColumn(
-                            'stocks.stock_code',
-                            'stock_signals.stock_code'
-                        )
-                        ->where(
-                            'stocks.stock_name',
-                            'like',
-                            "%{$search}%"
-                        );
-
-                });
+                $subQuery->selectRaw('1')
+                    ->from('stocks')
+                    ->whereColumn(
+                        'stocks.stock_code',
+                        'stock_signals.stock_code'
+                    )
+                    ->where(
+                        'stocks.stock_name',
+                        'like',
+                        "%{$search}%"
+                    );
 
             });
 
-        }
+        });
+    }
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | Signal Filter
-        |--------------------------------------------------------------------------
-        */
+    /*
+    |--------------------------------------------------------------------------
+    | Signal
+    |--------------------------------------------------------------------------
+    */
 
-        if (
-            $signalFilter !== null &&
-            $signalFilter !== ''
-        ) {
+    if ($signalFilter !== null && $signalFilter !== '') {
 
-            $query->where(
-                'signal',
-                $signalFilter
-            );
-
-        }
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | Signal Strength Filter
-        |--------------------------------------------------------------------------
-        */
-
-        if (
-            $strengthFilter !== null &&
-            $strengthFilter !== ''
-        ) {
-
-            $query->where(
-                'signal_strength',
-                $strengthFilter
-            );
-
-        }
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | Condition 1 Filter
-        |--------------------------------------------------------------------------
-        */
-
-        if (
-            $condition1Filter !== null &&
-            $condition1Filter !== ''
-        ) {
-
-            $query->where(
-                'condition_1',
-                $condition1Filter === 'true' ? 1 : 0
-            );
-
-        }
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | Condition 2 Filter
-        |--------------------------------------------------------------------------
-        */
-
-        if (
-            $condition2Filter !== null &&
-            $condition2Filter !== ''
-        ) {
-
-            $query->where(
-                'condition_2',
-                $condition2Filter === 'true' ? 1 : 0
-            );
-
-        }
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | Condition 3 Filter
-        |--------------------------------------------------------------------------
-        */
-
-        if (
-            $condition3Filter !== null &&
-            $condition3Filter !== ''
-        ) {
-
-            $query->where(
-                'condition_3',
-                $condition3Filter === 'true' ? 1 : 0
-            );
-
-        }
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | Sorting
-        |--------------------------------------------------------------------------
-        */
-
-        $query->orderBy(
-            $allowedSorts[$sort],
-            $direction
-        );
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | Pagination
-        |--------------------------------------------------------------------------
-        |
-        | 20 signal per halaman.
-        |
-        | withQueryString() menjaga search, filter, dan sorting
-        | ketika user berpindah halaman pagination.
-        |
-        */
-
-        $signals = $query
-            ->paginate(20)
-            ->withQueryString();
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | Return View
-        |--------------------------------------------------------------------------
-        */
-
-        return view(
-            'signals.index',
-            compact(
-                'signals',
-                'search',
-                'signalFilter',
-                'strengthFilter',
-                'condition1Filter',
-                'condition2Filter',
-                'condition3Filter',
-                'sort',
-                'direction'
-            )
+        $query->where(
+            'signal',
+            $signalFilter
         );
     }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Strength
+    |--------------------------------------------------------------------------
+    */
+
+    if ($strengthFilter !== null && $strengthFilter !== '') {
+
+        $query->where(
+            'signal_strength',
+            $strengthFilter
+        );
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Condition 1
+    |--------------------------------------------------------------------------
+    */
+
+    if ($condition1Filter !== null && $condition1Filter !== '') {
+
+        $query->where(
+            'condition_1',
+            $condition1Filter === 'true' ? 1 : 0
+        );
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Condition 2
+    |--------------------------------------------------------------------------
+    */
+
+    if ($condition2Filter !== null && $condition2Filter !== '') {
+
+        $query->where(
+            'condition_2',
+            $condition2Filter === 'true' ? 1 : 0
+        );
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Condition 3
+    |--------------------------------------------------------------------------
+    */
+
+    if ($condition3Filter !== null && $condition3Filter !== '') {
+
+        $query->where(
+            'condition_3',
+            $condition3Filter === 'true' ? 1 : 0
+        );
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Saham Pilihan Saya
+    |--------------------------------------------------------------------------
+    */
+
+    if ($myStocksFilter === '1') {
+
+        $userStockCodes = $request->user()
+            ->stocks()
+            ->pluck('stocks.stock_code');
+
+        $query->whereIn(
+            'stock_signals.stock_code',
+            $userStockCodes
+        );
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Sorting
+    |--------------------------------------------------------------------------
+    */
+
+    $query->orderBy(
+        $allowedSorts[$sort],
+        $direction
+    );
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Pagination
+    |--------------------------------------------------------------------------
+    */
+
+    $signals = $query
+        ->paginate(20)
+        ->withQueryString();
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Return View
+    |--------------------------------------------------------------------------
+    */
+
+    return view(
+        'signals.index',
+        compact(
+            'signals',
+            'search',
+            'signalFilter',
+            'strengthFilter',
+            'condition1Filter',
+            'condition2Filter',
+            'condition3Filter',
+            'myStocksFilter',
+            'sort',
+            'direction'
+        )
+    );
+}
+
 
     public function create()
     {
@@ -456,15 +400,21 @@ class StockSignalController extends Controller
         |
         */
 
-        $users = User::role('user')->get();
+        $users = User::whereHas('stocks', function ($query) use ($signal) {
+    $query->where(
+        'stocks.stock_code',
+        $signal->stock_code
+    );
+})
+->get();
 
-        foreach ($users as $user) {
+foreach ($users as $user) {
+    $user->notify(
+        new StockSignalNotification($signal)
+    );
+}
 
-            $user->notify(
-                new StockSignalNotification($signal)
-            );
 
-        }
 
 
         /*

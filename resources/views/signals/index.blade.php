@@ -43,59 +43,87 @@
                 <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
 
                     {{-- Search --}}
-                    <div class="lg:col-span-2">
+<div class="lg:col-span-2">
 
-                        <label for="search"
-                            class="mb-1 block text-sm font-semibold text-gray-700">
-                            Search Stock
-                        </label>
+    <label for="search"
+        class="mb-1 block text-sm font-semibold text-gray-700">
+        Search Stock
+    </label>
 
-                        <input
-                            type="text"
-                            name="search"
-                            id="search"
-                            value="{{ $search }}"
-                            placeholder="Cari stock code atau stock name..."
-                            class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200">
+    <input
+        type="text"
+        name="search"
+        id="search"
+        value="{{ $search }}"
+        placeholder="Cari stock code atau stock name..."
+        class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200">
 
-                    </div>
+</div>
 
 
-                    {{-- Signal Filter --}}
-                    <div>
+{{-- My Stocks Filter --}}
+<div>
 
-                        <label for="signal"
-                            class="mb-1 block text-sm font-semibold text-gray-700">
-                            Signal
-                        </label>
+    <label for="my_stocks"
+        class="mb-1 block text-sm font-semibold text-gray-700">
+        Saham
+    </label>
 
-                        <select
-                            name="signal"
-                            id="signal"
-                            class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200">
+    <select
+        name="my_stocks"
+        id="my_stocks"
+        class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200">
 
-                            <option value="">
-                                All Signals
-                            </option>
+        <option value="">
+            Semua Saham
+        </option>
 
-                            <option value="BUY"
-                                {{ $signalFilter === 'BUY' ? 'selected' : '' }}>
-                                BUY
-                            </option>
+        <option value="1"
+            {{ $myStocksFilter === '1' ? 'selected' : '' }}>
+            Saham Pilihan Saya
+        </option>
 
-                            <option value="SELL"
-                                {{ $signalFilter === 'SELL' ? 'selected' : '' }}>
-                                SELL
-                            </option>
+    </select>
 
-                            <option value="HOLD"
-                                {{ $signalFilter === 'HOLD' ? 'selected' : '' }}>
-                                HOLD
-                            </option>
+</div>
 
-                        </select>
 
-                    </div>
+{{-- Signal Filter --}}
+<div>
+
+    <label for="signal"
+        class="mb-1 block text-sm font-semibold text-gray-700">
+        Signal
+    </label>
+
+    <select
+        name="signal"
+        id="signal"
+        class="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200">
+
+        <option value="">
+            All Signals
+        </option>
+
+        <option value="BUY"
+            {{ $signalFilter === 'BUY' ? 'selected' : '' }}>
+            BUY
+        </option>
+
+        <option value="SELL"
+            {{ $signalFilter === 'SELL' ? 'selected' : '' }}>
+            SELL
+        </option>
+
+        <option value="HOLD"
+            {{ $signalFilter === 'HOLD' ? 'selected' : '' }}>
+            HOLD
+        </option>
+
+    </select>
+
+</div>
+
 
 
                     {{-- Strength Filter --}}
@@ -307,13 +335,15 @@
 
 
             @if(
-                $search !== '' ||
-                $signalFilter !== null && $signalFilter !== '' ||
-                $strengthFilter !== null && $strengthFilter !== '' ||
-                $condition1Filter !== null && $condition1Filter !== '' ||
-                $condition2Filter !== null && $condition2Filter !== '' ||
-                $condition3Filter !== null && $condition3Filter !== ''
-            )
+    $search !== '' ||
+    $signalFilter !== null && $signalFilter !== '' ||
+    $strengthFilter !== null && $strengthFilter !== '' ||
+    $condition1Filter !== null && $condition1Filter !== '' ||
+    $condition2Filter !== null && $condition2Filter !== '' ||
+    $condition3Filter !== null && $condition3Filter !== '' ||
+    $myStocksFilter !== null && $myStocksFilter !== ''
+)
+
 
                 <div class="text-sm text-blue-600">
 
@@ -802,13 +832,15 @@
                                         </p>
 
                                         @if(
-                                            $search !== '' ||
-                                            $signalFilter !== null && $signalFilter !== '' ||
-                                            $strengthFilter !== null && $strengthFilter !== '' ||
-                                            $condition1Filter !== null && $condition1Filter !== '' ||
-                                            $condition2Filter !== null && $condition2Filter !== '' ||
-                                            $condition3Filter !== null && $condition3Filter !== ''
-                                        )
+    $search !== '' ||
+    $signalFilter !== null && $signalFilter !== '' ||
+    $strengthFilter !== null && $strengthFilter !== '' ||
+    $condition1Filter !== null && $condition1Filter !== '' ||
+    $condition2Filter !== null && $condition2Filter !== '' ||
+    $condition3Filter !== null && $condition3Filter !== '' ||
+    $myStocksFilter !== null && $myStocksFilter !== ''
+)
+
 
                                             <p class="mt-1 text-sm">
                                                 Tidak ada signal yang sesuai dengan search atau filter yang dipilih.

@@ -28,6 +28,10 @@ class StockSignal extends Model
 
     public function stock(): BelongsTo
     {
-        return $this->belongsTo(Stock::class, 'stock_code', 'stock_code');
+        return $this->belongsTo(
+            Stock::class,
+            'stock_code',
+            'stock_code'
+        );
     }
 }

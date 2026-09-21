@@ -6,6 +6,38 @@ use App\Http\Controllers\StockSignalController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\UserStockSignalController;
+
+Route::middleware('auth')->group(function () {
+
+    Route::get(
+        '/user/stocks',
+        [UserStockSignalController::class, 'index']
+    )->name('user.stocks.index');
+
+    Route::put(
+        '/user/stocks',
+        [UserStockSignalController::class, 'update']
+    )->name('user.stocks.update');
+
+    Route::post(
+        '/user/stocks',
+        [UserStockSignalController::class, 'store']
+    )->name('user.stocks.store');
+
+    Route::delete(
+        '/user/stocks/{stockCode}',
+        [UserStockSignalController::class, 'destroy']
+    )->name('user.stocks.destroy');
+
+    Route::get(
+        '/user/stocks/selected',
+        [UserStockSignalController::class, 'selected']
+    )->name('user.stocks.selected');
+
+});
+
+
 
 /*
 |--------------------------------------------------------------------------
@@ -101,9 +133,10 @@ Route::middleware('auth')->group(function () {
         */
 
         Route::get(
-            '/notification-test',
-            [NotificationTestController::class, 'send']
-        )->name('notification.test');
+    '/notification-test',
+    [NotificationTestController::class, 'send']
+)->name('notification.test');
+
 
     });
 

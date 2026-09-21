@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 
@@ -32,6 +33,23 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    /**
+     * Saham yang dipilih user untuk mendapatkan
+     * seluruh notifikasi stock signal.
+     */
+    public function stocks(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            Stock::class,
+            'user_stocks',
+            'user_id',
+            'stock_code',
+            'id',
+            'stock_code'
+        )->withTimestamps();
+    }
+
 
     /**
      * Digunakan oleh Telegram notification channel.

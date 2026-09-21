@@ -216,13 +216,21 @@ class StockSignalService
             |
             */
 
-            $users = User::role('user')->get();
-            Log::info($users);
-            foreach ($users as $user) {
-                $user->notify(
-                    new StockSignalNotification($signalRecord)
-                );
-            }
+            $users = User::role('user')
+    ->whereHas('stocks', function ($query) use ($signalRecord) {
+        $query->where(
+            'stocks.stock_code',
+            $signalRecord->stock_code
+        );
+    })
+    ->get();
+
+foreach ($users as $user) {
+    $user->notify(
+        new StockSignalNotification($signalRecord)
+    );
+}
+
 
             /*
             |--------------------------------------------------------------------------
