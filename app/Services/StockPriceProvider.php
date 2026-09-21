@@ -7,6 +7,7 @@ use App\Models\StockPrice;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
+
 class StockPriceProvider
 {
     protected string $apiKey;
@@ -47,10 +48,12 @@ class StockPriceProvider
      */
     public function importLatestPricesForAllStocks(int $days = 50): void
     {
-        $stocks = Stock::pluck('stock_code');
-
-        foreach ($stocks as $stockCode) {
-            $this->importLatestPrices($stockCode, $days);
+        $stocks = Stock::has('users')->with('users')->get();
+        Log::info($stocks);
+        $count = $stocks->count();
+        Log::info($count);
+        foreach ($stocks as $stock) {
+            $this->importLatestPrices($stock->stock_code, $days);
         }
     }
 
