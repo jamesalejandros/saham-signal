@@ -1,6 +1,21 @@
 <!DOCTYPE html> <html lang="{{ str_replace('_', '-', app()->getLocale()) }}"> <head>
 <meta charset="utf-8">
 
+<script>
+    /* =========================================================
+       Anti-flash: terapkan status sidebar (collapsed/expanded)
+       SEBELUM halaman dirender, supaya tidak ada "kedipan"
+       sidebar melebar lalu menyempit saat reload.
+       ========================================================= */
+    (function () {
+        try {
+            if (localStorage.getItem('ss_sidebar_collapsed') === '1') {
+                document.documentElement.classList.add('ss-sidebar-collapsed');
+            }
+        } catch (e) {}
+    })();
+</script>
+
 <meta
     name="viewport"
     content="width=device-width, initial-scale=1"
@@ -17,6 +32,42 @@
 
 <!-- Tailwind CDN -->
 <script src="https://cdn.tailwindcss.com"></script>
+<script>
+    /* =========================================================
+       SAHAM SIGNAL — Palet Tampilan (biru muda → biru sedang → biru tua)
+       Hanya remap warna Tailwind di sisi tampilan. Tidak ada logika
+       aplikasi yang berubah — seluruh class (bg-blue-600, text-blue-700,
+       dst) tetap dipakai apa adanya di semua halaman.
+       ========================================================= */
+    tailwind.config = {
+        theme: {
+            extend: {
+                colors: {
+                    blue: {
+                        50: '#eaf3fe', 100: '#d3e7fd', 200: '#a8cffb',
+                        300: '#7db7f9', 400: '#4f9ff6', 500: '#2196f3',
+                        600: '#1b7fdb', 700: '#1565c0', 800: '#124f9c', 900: '#0d47a1'
+                    },
+                    purple: {
+                        50: '#e7edfb', 100: '#c9d8f5', 200: '#93b1ea',
+                        300: '#5f8ade', 400: '#3768c9', 500: '#1f4fa8',
+                        600: '#173e86', 700: '#102c64', 800: '#0a1d43', 900: '#081733'
+                    },
+                    green: {
+                        50: '#ecfdf5', 100: '#d1fae5', 200: '#a7f3d0',
+                        300: '#6ee7b7', 400: '#34d399', 500: '#10b981',
+                        600: '#059669', 700: '#047857', 800: '#065f46'
+                    },
+                    red: {
+                        50: '#fff1f4', 100: '#ffe1e8', 200: '#fecdd8',
+                        300: '#fda4b8', 400: '#fb7194', 500: '#f43f7f',
+                        600: '#e11d6f', 700: '#be1361', 800: '#9d174d'
+                    }
+                }
+            }
+        }
+    };
+</script>
 
 <!-- Bootstrap CSS -->
 <link
@@ -27,6 +78,166 @@
 >
 
 <style>
+
+    /* =========================================================
+       SAHAM SIGNAL — Tampilan Umum (Dashboard / Signal / Notifikasi)
+       Biru plain (solid), tanpa gradasi sama sekali. Hanya visual,
+       tidak menyentuh markup fungsional / logika halaman manapun.
+       ========================================================= */
+
+    body.ss-app-bg {
+        background: #e3f2fd;
+        min-height: 100vh;
+    }
+
+    /* Kartu putih generik dipakai di seluruh dashboard/signal/notifikasi */
+    .bg-white.shadow-sm,
+    .bg-white.shadow,
+    .bg-white.ring-1.ring-gray-200 {
+        border-color: rgba(33, 150, 243, 0.10);
+        box-shadow: 0 8px 22px -14px rgba(33, 150, 243, 0.18), 0 3px 8px -6px rgba(13, 71, 161, 0.08) !important;
+    }
+
+    .border-gray-200 { border-color: rgba(33, 150, 243, 0.14) !important; }
+    .border-gray-100 { border-color: rgba(33, 150, 243, 0.09) !important; }
+    .divide-gray-100 > :not([hidden]) ~ :not([hidden]) { border-color: rgba(33, 150, 243, 0.09) !important; }
+    .divide-gray-200 > :not([hidden]) ~ :not([hidden]) { border-color: rgba(33, 150, 243, 0.14) !important; }
+
+    /* Heading — warna biru plain, tanpa gradasi */
+    h1.font-bold, h1.text-2xl, h1.text-xl, h1.text-3xl {
+        color: #2196f3;
+        letter-spacing: -0.01em;
+    }
+
+    /* Tombol & badge — biru plain (solid), tanpa gradasi */
+    .bg-blue-600 {
+        background-image: none !important;
+        background-color: #2196f3 !important;
+        border-color: transparent !important;
+    }
+    .hover\:bg-blue-700:hover {
+        background-image: none !important;
+        background-color: #1565c0 !important;
+    }
+
+    /* Tombol Logout (gray-800) — biru plain senada, tanpa gradasi */
+    .bg-gray-800 {
+        background-image: none !important;
+        background-color: #0d47a1 !important;
+    }
+    .hover\:bg-gray-700:hover {
+        background-image: none !important;
+        background-color: #0a3a80 !important;
+    }
+
+    /* Topbar (nav) */
+    nav.ss-topbar {
+        background: rgba(255, 255, 255, 0.88);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        border-bottom: 1px solid rgba(33, 150, 243, 0.12);
+    }
+
+    /* Sidebar */
+    .ss-sidebar-inner {
+        background: rgba(255, 255, 255, 0.94);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border-right: 1px solid rgba(33, 150, 243, 0.10);
+    }
+
+    /* Link aktif sidebar (bg-blue-50 text-blue-700) — biru plain */
+    .ss-sidebar-inner a.bg-blue-50.text-blue-700,
+    a.bg-blue-50.text-blue-700 {
+        background: #e3f2fd !important;
+        color: #1565c0 !important;
+        box-shadow: inset 0 0 0 1px rgba(33,150,243,0.14);
+    }
+
+    /* Scrollbar — biru plain */
+    ::-webkit-scrollbar { width: 10px; height: 10px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb {
+        background: #2196f3;
+        border-radius: 999px;
+    }
+
+    /* Fokus ring lembut */
+    .focus\:ring-blue-500:focus,
+    .focus\:ring-blue-200:focus {
+        --tw-ring-color: rgba(33, 150, 243, 0.40) !important;
+    }
+
+    /* =========================================================
+       SIDEBAR TOGGLE (collapse / expand)
+       Sidebar default 16rem. Saat di-toggle (class
+       "ss-sidebar-collapsed" pada <html>), sidebar menyempit jadi
+       hanya menampilkan ikon, dan konten utama melebar mengisi
+       ruang yang kosong.
+       ========================================================= */
+
+    :root { --ss-sidebar-w: 16rem; }
+    html.ss-sidebar-collapsed { --ss-sidebar-w: 4.75rem; }
+
+    .ss-sidebar-aside {
+        width: var(--ss-sidebar-w);
+        transition: width 0.25s ease;
+    }
+
+    @media (min-width: 768px) {
+        .ss-main-content {
+            margin-left: var(--ss-sidebar-w);
+            transition: margin-left 0.25s ease;
+        }
+    }
+
+    /* Sembunyikan label teks & konten sekunder saat sidebar diciutkan */
+    html.ss-sidebar-collapsed .ss-sidebar-label,
+    html.ss-sidebar-collapsed .ss-sidebar-expand-only {
+        display: none !important;
+    }
+
+    html.ss-sidebar-collapsed #ss-sidebar-mini-avatar {
+        display: flex !important;
+    }
+
+    html.ss-sidebar-collapsed .ss-sidebar-inner nav a,
+    html.ss-sidebar-collapsed .ss-sidebar-inner .ss-sidebar-section-title {
+        justify-content: center;
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
+
+    html.ss-sidebar-collapsed .ss-sidebar-inner nav a svg {
+        margin: 0 auto;
+    }
+
+    #ss-sidebar-toggle svg {
+        transition: transform 0.25s ease;
+    }
+
+    html.ss-sidebar-collapsed #ss-sidebar-toggle svg {
+        transform: rotate(180deg);
+    }
+
+    /* Hilangkan segitiga bawaan <summary> pada dropdown notifikasi & profil */
+    nav.ss-topbar summary::-webkit-details-marker { display: none; }
+    nav.ss-topbar summary { list-style: none; }
+    nav.ss-topbar summary::marker { content: ""; }
+
+    /* Dropdown profil */
+    details.ss-profile-dropdown > div {
+        display: none;
+    }
+    details.ss-profile-dropdown[open] > div {
+        display: block;
+        animation: ssDropdownIn 0.15s ease-out;
+    }
+    @keyframes ssDropdownIn {
+        from { opacity: 0; transform: translateY(-6px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
 
     /* =========================================================
        TELEGRAM POPUP
@@ -76,11 +287,7 @@
 
         text-align: center;
 
-        background: linear-gradient(
-            135deg,
-            #229ed9 0%,
-            #168ac0 100%
-        );
+        background: #2196f3;
 
         color: white;
     }
@@ -276,7 +483,7 @@
 
 </style>
 
-</head> <body class="bg-gray-100 text-gray-900">
+</head> <body class="ss-app-bg bg-gray-100 text-gray-900">
 <div class="min-h-screen">
 
     @auth
@@ -291,13 +498,13 @@
 
         <!-- Main Content -->
 
-        <main class="pt-16 md:ml-64">
+        <main class="ss-main-content pt-16">
 
             <div class="min-h-[calc(100vh-4rem)]">
 
                 <div class="py-8">
 
-                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="w-full px-4 sm:px-6 lg:px-8 2xl:px-10">
 
                         @if(session('success'))
 

@@ -1,5 +1,5 @@
-<aside class="fixed left-0 top-16 bottom-0 z-40 hidden w-64 md:flex md:flex-col">
-<div class="flex h-full flex-col border-r border-gray-200 bg-white">
+<aside class="ss-sidebar-aside fixed left-0 top-16 bottom-0 z-40 hidden md:flex md:flex-col">
+<div class="ss-sidebar-inner flex h-full flex-col border-r border-gray-200 bg-white">
 
     <!-- Sidebar Header
 
@@ -50,7 +50,7 @@
                     />
                 </svg>
 
-                <span>
+                <span class="ss-sidebar-label">
                     Dashboard
                 </span>
 
@@ -82,7 +82,7 @@
                     />
                 </svg>
 
-                <span>
+                <span class="ss-sidebar-label">
                     Signal Saham
                 </span>
 
@@ -114,7 +114,7 @@
                     />
                 </svg>
 
-                <span>
+                <span class="ss-sidebar-label">
                     Notification
                 </span>
 
@@ -130,7 +130,7 @@
 
                 <!-- Administration -->
 
-                <div class="px-3 pb-2">
+                <div class="ss-sidebar-label px-3 pb-2">
 
                     <p class="text-xs font-semibold uppercase tracking-wider text-gray-400">
                         Administration
@@ -164,7 +164,7 @@
                         />
                     </svg>
 
-                    <span>
+                    <span class="ss-sidebar-label">
                         User Management
                     </span>
 
@@ -190,10 +190,10 @@
          TELEGRAM GROUP CARD
          ===================================================== -->
 
-    <div class="shrink-0 px-4 pb-3">
+    <div class="ss-sidebar-expand-only shrink-0 px-4 pb-3">
 
         <div
-            class="overflow-hidden rounded-xl border border-blue-100 bg-gradient-to-br from-sky-50 to-blue-50"
+            class="overflow-hidden rounded-xl border border-blue-100 bg-blue-50"
         >
 
             <!-- Telegram Card Content -->
@@ -276,33 +276,62 @@
          SIDEBAR FOOTER
          ===================================================== -->
 
-    <div class="shrink-0 border-t border-gray-200 p-4">
+    <div class="ss-sidebar-expand-only shrink-0 border-t border-gray-200 p-3">
 
-        <div class="rounded-lg bg-gray-50 p-3">
+        <div
+            class="flex items-center gap-3 rounded-xl p-2.5"
+            style="background: #e3f2fd;"
+        >
 
-            <p class="text-xs font-medium text-gray-500">
-                Login sebagai
-            </p>
+            <span
+                class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-bold text-white shadow-sm"
+                style="background: #2196f3;"
+            >
+                {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+            </span>
 
-            <p class="mt-1 truncate text-sm font-semibold text-gray-900">
-                {{ auth()->user()->name }}
-            </p>
+            <div class="min-w-0 flex-1">
 
-            <p class="mt-1 text-xs text-gray-500">
+                <p class="truncate text-sm font-semibold text-gray-900">
+                    {{ auth()->user()->name }}
+                </p>
+
+                <p class="truncate text-[11px] text-gray-500">
+                    {{ auth()->user()->email }}
+                </p>
+
+            </div>
+
+            <span
+                class="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold"
+                style="{{ auth()->user()->hasRole('admin')
+                    ? 'background: rgba(33,150,243,0.15); color:#1565c0;'
+                    : 'background: rgba(148,163,184,0.18); color:#475569;' }}"
+            >
 
                 @if(auth()->user()->hasRole('admin'))
-
-                    Administrator
-
+                    Admin
                 @else
-
                     User
-
                 @endif
 
-            </p>
+            </span>
 
         </div>
+
+    </div>
+
+    <!-- Avatar ringkas, hanya tampil saat sidebar diciutkan -->
+
+    <div class="hidden shrink-0 items-center justify-center border-t border-gray-200 p-3" id="ss-sidebar-mini-avatar">
+
+        <span
+            class="flex h-9 w-9 items-center justify-center rounded-full text-sm font-bold text-white"
+            style="background: #2196f3;"
+            title="{{ auth()->user()->name }}"
+        >
+            {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+        </span>
 
     </div>
 

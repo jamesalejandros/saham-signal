@@ -18,36 +18,52 @@
     {{-- SUMMARY CARDS --}}
     <div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
 
-        <div class="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-            <p class="text-sm text-gray-500">Total Signal</p>
-
+        <div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+            <div class="flex items-center justify-between">
+                <p class="text-sm text-gray-500">Total Signal</p>
+                <span class="flex h-9 w-9 items-center justify-center rounded-xl text-white" style="background:#2196f3;">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="h-4.5 w-4.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3v18h18M7 15l4-6 3 4 5-8"/></svg>
+                </span>
+            </div>
             <p class="mt-2 text-3xl font-bold text-gray-900">
                 {{ $totalSignals }}
             </p>
         </div>
 
 
-        <div class="rounded-xl border border-green-200 bg-green-50 p-5 shadow-sm">
-            <p class="text-sm text-green-700">Total BUY</p>
-
+        <div class="rounded-2xl border border-green-200 bg-green-50 p-5 shadow-sm">
+            <div class="flex items-center justify-between">
+                <p class="text-sm text-green-700">Total BUY</p>
+                <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-green-600 text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="h-4.5 w-4.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 17l6-6 4 4 8-8"/></svg>
+                </span>
+            </div>
             <p class="mt-2 text-3xl font-bold text-green-700">
                 {{ $totalBuy }}
             </p>
         </div>
 
 
-        <div class="rounded-xl border border-red-200 bg-red-50 p-5 shadow-sm">
-            <p class="text-sm text-red-700">Total SELL</p>
-
+        <div class="rounded-2xl border border-red-200 bg-red-50 p-5 shadow-sm">
+            <div class="flex items-center justify-between">
+                <p class="text-sm text-red-700">Total SELL</p>
+                <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-red-600 text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="h-4.5 w-4.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 7l6 6 4-4 8 8"/></svg>
+                </span>
+            </div>
             <p class="mt-2 text-3xl font-bold text-red-700">
                 {{ $totalSell }}
             </p>
         </div>
 
 
-        <div class="rounded-xl border border-purple-200 bg-purple-50 p-5 shadow-sm">
-            <p class="text-sm text-purple-700">STRONG</p>
-
+        <div class="rounded-2xl border border-purple-200 bg-purple-50 p-5 shadow-sm">
+            <div class="flex items-center justify-between">
+                <p class="text-sm text-purple-700">STRONG</p>
+                <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-purple-600 text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="h-4.5 w-4.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                </span>
+            </div>
             <p class="mt-2 text-3xl font-bold text-purple-700">
                 {{ $totalStrong }}
             </p>

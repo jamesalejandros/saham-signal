@@ -1,4 +1,4 @@
-<nav class="fixed top-0 left-0 right-0 z-50 h-16 bg-white border-b border-gray-200">
+<nav class="ss-topbar fixed top-0 left-0 right-0 z-50 h-16 bg-white border-b border-gray-200">
 
     <div class="px-4 sm:px-6 lg:px-8">
 
@@ -8,11 +8,47 @@
 
             <div class="flex items-center">
 
+                @auth
+                    <!-- Sidebar Toggle -->
+
+                    <button
+                        id="ss-sidebar-toggle"
+                        type="button"
+                        title="Ciutkan / lebarkan sidebar"
+                        class="mr-3 hidden h-10 w-10 shrink-0 items-center justify-center rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-900 md:flex"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke-width="1.5"
+                            stroke="currentColor"
+                            class="h-5 w-5"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5"
+                            />
+                        </svg>
+                    </button>
+                @endauth
+
                 <a
                     href="{{ route('dashboard') }}"
-                    class="text-xl font-bold text-gray-900"
+                    class="flex items-center gap-2.5"
                 >
-                    Saham Signal
+                    <span
+                        class="flex h-9 w-9 items-center justify-center rounded-xl text-white shadow-sm"
+                        style="background: #2196f3;"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="h-5 w-5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 17l6-6 4 4 8-8M15 7h6v6" />
+                        </svg>
+                    </span>
+                    <span class="text-xl font-extrabold tracking-tight" style="color: #2196f3;">
+                        Saham Signal
+                    </span>
                 </a>
 
             </div>
@@ -364,46 +400,151 @@
                 </button>
 
 
-                <!-- User -->
+                <!-- Profile Dropdown -->
 
-                <div class="hidden sm:block text-right">
+                <details class="relative ss-profile-dropdown">
 
-                    <div class="text-sm font-medium text-gray-900">
-                        {{ auth()->user()->name }}
-                    </div>
-
-                    <div class="text-xs text-gray-500">
-
-                        {{ auth()->user()->email }}
-
-                        @if(auth()->user()->hasRole('admin'))
-                            · Admin
-                        @else
-                            · User
-                        @endif
-
-                    </div>
-
-                </div>
-
-
-                <!-- Logout -->
-
-                <form
-                    method="POST"
-                    action="{{ route('logout') }}"
-                >
-
-                    @csrf
-
-                    <button
-                        type="submit"
-                        class="rounded-md bg-gray-800 px-3 py-2 text-sm font-medium text-white hover:bg-gray-700"
+                    <summary
+                        class="flex cursor-pointer list-none items-center gap-2.5 rounded-full py-1 pl-1 pr-2 hover:bg-gray-100 sm:pr-3"
                     >
-                        Logout
-                    </button>
 
-                </form>
+                        <span
+                            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-sm font-bold text-white shadow-sm"
+                            style="background: #2196f3;"
+                        >
+                            {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                        </span>
+
+                        <div class="hidden text-left sm:block">
+
+                            <div class="text-sm font-semibold leading-tight text-gray-900">
+                                {{ auth()->user()->name }}
+                            </div>
+
+                            <div class="text-xs leading-tight text-gray-500">
+
+                                @if(auth()->user()->hasRole('admin'))
+                                    Administrator
+                                @else
+                                    User
+                                @endif
+
+                            </div>
+
+                        </div>
+
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke-width="2"
+                            stroke="currentColor"
+                            class="hidden h-4 w-4 shrink-0 text-gray-400 sm:block"
+                        >
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                        </svg>
+
+                    </summary>
+
+
+                    <!-- Dropdown Panel -->
+
+                    <div
+                        class="absolute right-0 z-50 mt-3 w-64 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-xl"
+                    >
+
+                        <!-- Profile Header -->
+
+                        <div
+                            class="px-4 py-4"
+                            style="background: #e3f2fd;"
+                        >
+
+                            <div class="flex items-center gap-3">
+
+                                <span
+                                    class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-base font-bold text-white shadow-sm"
+                                    style="background: #2196f3;"
+                                >
+                                    {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                                </span>
+
+                                <div class="min-w-0">
+
+                                    <p class="truncate text-sm font-semibold text-gray-900">
+                                        {{ auth()->user()->name }}
+                                    </p>
+
+                                    <p class="truncate text-xs text-gray-500">
+                                        {{ auth()->user()->email }}
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+                            <span
+                                class="mt-3 inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-semibold"
+                                style="{{ auth()->user()->hasRole('admin')
+                                    ? 'background: rgba(33,150,243,0.15); color:#1565c0;'
+                                    : 'background: rgba(148,163,184,0.18); color:#475569;' }}"
+                            >
+
+                                @if(auth()->user()->hasRole('admin'))
+                                    Administrator
+                                @else
+                                    User
+                                @endif
+
+                            </span>
+
+                        </div>
+
+
+                        <!-- Actions -->
+
+                        <div class="p-2">
+
+                            <form
+                                method="POST"
+                                action="{{ route('logout') }}"
+                            >
+
+                                @csrf
+
+                                <button
+                                    type="submit"
+                                    class="flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-medium text-red-600 transition hover:bg-red-50"
+                                >
+
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke-width="1.5"
+                                        stroke="currentColor"
+                                        class="h-5 w-5 shrink-0"
+                                    >
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l3 3m0 0l-3 3m3-3H3"
+                                        />
+                                    </svg>
+
+                                    <span>
+                                        Logout
+                                    </span>
+
+                                </button>
+
+                            </form>
+
+                        </div>
+
+                    </div>
+
+                </details>
 
             </div>
 
@@ -588,6 +729,26 @@
 
 
 <script>
+
+    /* =========================================================
+       SIDEBAR TOGGLE (collapse / expand)
+       ========================================================= */
+
+    document.getElementById('ss-sidebar-toggle')?.addEventListener('click', function () {
+
+        document.documentElement.classList.toggle('ss-sidebar-collapsed');
+
+        try {
+
+            localStorage.setItem(
+                'ss_sidebar_collapsed',
+                document.documentElement.classList.contains('ss-sidebar-collapsed') ? '1' : '0'
+            );
+
+        } catch (e) {}
+
+    });
+
 
     function openStockSignalModal() {
 
