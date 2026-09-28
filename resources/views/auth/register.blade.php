@@ -1,7 +1,7 @@
 <x-guest-layout>
     <div class="mb-7">
         <span class="ss-heading-gradient text-xs font-bold uppercase tracking-widest">Mulai Perjalanan Anda</span>
-        <h1 class="mt-1 text-2xl font-extrabold text-gray-900">Buat Akun Baru 🚀</h1>
+        <h1 class="mt-1 text-2xl font-extrabold text-gray-900">Buat Akun Baru</h1>
         <p class="mt-2 text-sm text-gray-500">
             Daftar sekarang dan mulai pantau sinyal saham favorit Anda.
         </p>
