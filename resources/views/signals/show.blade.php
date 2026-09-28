@@ -901,19 +901,154 @@
 
     </div>
 
-    <div class="flex justify-end">
+    <div class="flex justify-center">
 
-        <a
-            href="https://stockbit.com/symbol/{{ urlencode($signal->stock_code) }}"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+    <a
+        href="https://stockbit.com/symbol/{{ urlencode($signal->stock_code) }}"
+        target="_blank"
+        rel="noopener noreferrer"
+        style="
+            width: 100%;
+            max-width: 42rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.65rem;
+            padding: 0.75rem 1.25rem;
+            border-radius: 0.75rem;
+            background: #292929;
+            color: #ffffff;
+            font-size: 0.95rem;
+            font-weight: 700;
+            line-height: 1.25rem;
+            text-decoration: none;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+            transition: all 0.2s ease;
+            border: 1px solid #3a3a3a;
+        "
+        onmouseover="
+            this.style.background='#1f1f1f';
+            this.style.boxShadow='0 5px 12px rgba(0,0,0,0.22)';
+            this.style.transform='translateY(-1px)';
+        "
+        onmouseout="
+            this.style.background='#292929';
+            this.style.boxShadow='0 3px 8px rgba(0,0,0,0.15)';
+            this.style.transform='translateY(0)';
+        "
+    >
+
+        {{-- Mini Logo Stockbit --}}
+
+        <span
+            aria-hidden="true"
+            style="
+                position: relative;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                width: 25px;
+                height: 20px;
+            "
+        >
+
+            {{-- Red --}}
+
+            <span
+                style="
+                    position: absolute;
+                    width: 11px;
+                    height: 4px;
+                    background: #ef5350;
+                    transform: rotate(45deg);
+                    top: 4px;
+                    left: 2px;
+                    border-radius: 2px;
+                "
+            ></span>
+
+
+            {{-- Blue --}}
+
+            <span
+                style="
+                    position: absolute;
+                    width: 11px;
+                    height: 4px;
+                    background: #42a5f5;
+                    transform: rotate(-45deg);
+                    top: 4px;
+                    left: 8px;
+                    border-radius: 2px;
+                "
+            ></span>
+
+
+            {{-- Yellow --}}
+
+            <span
+                style="
+                    position: absolute;
+                    width: 10px;
+                    height: 4px;
+                    background: #fdd835;
+                    transform: rotate(45deg);
+                    top: 9px;
+                    left: 7px;
+                    border-radius: 2px;
+                "
+            ></span>
+
+
+            {{-- Green --}}
+
+            <span
+                style="
+                    position: absolute;
+                    width: 10px;
+                    height: 4px;
+                    background: #66bb6a;
+                    transform: rotate(-45deg);
+                    top: 9px;
+                    right: 1px;
+                    border-radius: 2px;
+                "
+            ></span>
+
+        </span>
+
+
+        {{-- Stockbit Text --}}
+
+        <span
+            style="
+                letter-spacing: -0.04em;
+                font-size: 1rem;
+                font-weight: 700;
+            "
         >
             Stockbit
-            <span aria-hidden="true">↗</span>
-        </a>
+        </span>
 
-    </div>
+
+        {{-- External Link --}}
+
+        <span
+            aria-hidden="true"
+            style="
+                margin-left: 0.15rem;
+                font-size: 1rem;
+                font-weight: 600;
+                opacity: 0.75;
+            "
+        >
+            ↗
+        </span>
+
+    </a>
+
+</div>
+
 
 
     {{-- Description --}}
