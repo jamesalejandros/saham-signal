@@ -5,8 +5,6 @@
 /* ==========================================================================
    Saham Signal — Design System
    Palet: biru plain (solid), tanpa gradasi sama sekali.
-   Catatan: file ini HANYA berisi tampilan (warna, animasi, komponen visual).
-   Tidak ada perubahan terhadap logika/markup fungsional aplikasi.
    ========================================================================== */
 
 [x-cloak] {
@@ -25,52 +23,125 @@
     --ss-blue-800: #124f9c;
     --ss-blue-900: #0d47a1;
 
-    /* Warna brand utama — plain/solid, tidak ada gradasi */
     --ss-brand: var(--ss-blue-500);
     --ss-brand-hover: var(--ss-blue-700);
 
-    --ss-shadow-soft: 0 20px 45px -18px rgba(21, 101, 192, 0.28), 0 8px 20px -12px rgba(13, 71, 161, 0.18);
-    --ss-shadow-card: 0 10px 30px -12px rgba(33, 150, 243, 0.16);
+    --ss-shadow-soft:
+        0 20px 45px -18px rgba(21, 101, 192, 0.28),
+        0 8px 20px -12px rgba(13, 71, 161, 0.18);
+
+    --ss-shadow-card:
+        0 10px 30px -12px rgba(33, 150, 243, 0.16);
 }
+
+
+/* ==========================================================================
+   GLOBAL
+   ========================================================================== */
 
 body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
 
+
+/* ==========================================================================
+   UTILITIES
+   ========================================================================== */
+
 @layer utilities {
+
     @keyframes fade-in-up {
-        0%   { opacity: 0; transform: translateY(18px); }
-        100% { opacity: 1; transform: translateY(0); }
+        0% {
+            opacity: 0;
+            transform: translateY(18px);
+        }
+
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
+
 
     @keyframes fade-in {
-        0%   { opacity: 0; }
-        100% { opacity: 1; }
+        0% {
+            opacity: 0;
+        }
+
+        100% {
+            opacity: 1;
+        }
     }
+
 
     @keyframes blob {
-        0%, 100% { transform: translate(0px, 0px) scale(1); }
-        33%      { transform: translate(24px, -30px) scale(1.12); }
-        66%      { transform: translate(-18px, 18px) scale(0.94); }
+        0%,
+        100% {
+            transform: translate(0px, 0px) scale(1);
+        }
+
+        33% {
+            transform: translate(24px, -30px) scale(1.12);
+        }
+
+        66% {
+            transform: translate(-18px, 18px) scale(0.94);
+        }
     }
+
 
     @keyframes ticker-bar {
-        0%, 100% { transform: scaleY(0.4); }
-        50%      { transform: scaleY(1); }
+        0%,
+        100% {
+            transform: scaleY(0.4);
+        }
+
+        50% {
+            transform: scaleY(1);
+        }
     }
+
 
     @keyframes ss-shimmer {
-        0%   { background-position: 0% 50%; }
-        50%  { background-position: 100% 50%; }
-        100% { background-position: 0% 50%; }
+        0% {
+            background-position: 0% 50%;
+        }
+
+        50% {
+            background-position: 100% 50%;
+        }
+
+        100% {
+            background-position: 0% 50%;
+        }
     }
 
-    .animate-fade-in-up { animation: fade-in-up 0.7s ease-out both; }
-    .animate-fade-in    { animation: fade-in 0.9s ease-out both; }
-    .animate-blob       { animation: blob 9s infinite ease-in-out; }
-    .animation-delay-2000 { animation-delay: 2s; }
-    .animation-delay-4000 { animation-delay: 4s; }
+
+    .animate-fade-in-up {
+        animation: fade-in-up 0.7s ease-out both;
+    }
+
+
+    .animate-fade-in {
+        animation: fade-in 0.9s ease-out both;
+    }
+
+
+    .animate-blob {
+        animation: blob 9s infinite ease-in-out;
+    }
+
+
+    .animation-delay-2000 {
+        animation-delay: 2s;
+    }
+
+
+    .animation-delay-4000 {
+        animation-delay: 4s;
+    }
+
 
     .ticker-bar {
         transform-origin: bottom;
@@ -78,16 +149,18 @@ body {
     }
 }
 
+
 /* ==========================================================================
-   Panel brand kiri (guest layout)
+   BRAND PANEL
    ========================================================================== */
 
 .ss-brand-panel {
     background: var(--ss-brand);
 }
 
+
 /* ==========================================================================
-   Kartu form (login / register)
+   AUTH CARD
    ========================================================================== */
 
 .ss-auth-card {
@@ -97,7 +170,11 @@ body {
     border: 1px solid rgba(33, 150, 243, 0.08);
 }
 
-/* Label field */
+
+/* ==========================================================================
+   LABEL
+   ========================================================================== */
+
 .ss-label {
     display: block;
     font-size: 0.8125rem;
@@ -106,163 +183,513 @@ body {
     letter-spacing: 0.01em;
 }
 
-/* Wrapper input + icon: menjamin ikon selalu center-vertikal terhadap teks,
-   terlepas dari tinggi input / kondisi build CSS. */
+
+/* ==========================================================================
+   FIELD
+   ========================================================================== */
+
 .ss-field {
     position: relative;
     display: flex;
     align-items: center;
 }
 
+
 .ss-field-icon {
     position: absolute;
     left: 0;
     top: 50%;
+
     transform: translateY(-50%);
+
     display: flex;
     align-items: center;
     justify-content: center;
+
     width: 2.75rem;
     height: 2.75rem;
+
     color: #9aa8c2;
+
     pointer-events: none;
 }
+
 
 .ss-field-icon svg {
     width: 1.15rem;
     height: 1.15rem;
 }
 
+
 .ss-field-toggle {
     position: absolute;
     right: 0;
     top: 50%;
+
     transform: translateY(-50%);
+
     display: flex;
     align-items: center;
     justify-content: center;
+
     width: 2.75rem;
     height: 2.75rem;
+
     color: #9aa8c2;
     background: none;
     border: none;
+
     cursor: pointer;
+
     transition: color 0.15s ease;
 }
 
-.ss-field-toggle:hover { color: #1565c0; }
 
-/* Input dasar (dipakai di semua x-text-input, termasuk halaman lain seperti
-   forgot/reset password agar tampilannya tetap konsisten). */
+.ss-field-toggle:hover {
+    color: #1565c0;
+}
+
+
+/* ==========================================================================
+   INPUT
+   ========================================================================== */
+
 .ss-input {
     display: block;
     width: 100%;
     height: 2.75rem;
+
     line-height: 1.3;
+
     border-radius: 0.85rem;
     border: 1.5px solid #dce7f7;
+
     background-color: #f7faff;
+
     padding-top: 0;
     padding-bottom: 0;
     padding-left: 1rem;
     padding-right: 1rem;
+
     font-size: 0.9rem;
     color: #1c2836;
-    transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+
+    transition:
+        border-color 0.15s ease,
+        box-shadow 0.15s ease,
+        background-color 0.15s ease;
 }
 
-.ss-input::placeholder { color: #a3b1c6; }
+
+.ss-input::placeholder {
+    color: #a3b1c6;
+}
+
 
 .ss-input:focus {
     outline: none;
+
     border-color: var(--ss-blue-400);
+
     background-color: #ffffff;
-    box-shadow: 0 0 0 4px rgba(33, 150, 243, 0.14);
+
+    box-shadow:
+        0 0 0 4px rgba(33, 150, 243, 0.14);
 }
 
-.ss-input.ss-input-icon      { padding-left: 2.75rem; }
-.ss-input.ss-input-icon-both { padding-left: 2.75rem; padding-right: 2.75rem; }
 
-/* Tombol utama — biru plain, tanpa gradasi */
+.ss-input.ss-input-icon {
+    padding-left: 2.75rem;
+}
+
+
+.ss-input.ss-input-icon-both {
+    padding-left: 2.75rem;
+    padding-right: 2.75rem;
+}
+
+
+/* ==========================================================================
+   PRIMARY BUTTON
+   ========================================================================== */
+
 .ss-btn-gradient {
     position: relative;
+
     display: flex;
     align-items: center;
     justify-content: center;
+
     width: 100%;
     height: 2.85rem;
+
     border-radius: 0.9rem;
     border: none;
+
     color: #ffffff;
+
     font-weight: 600;
     font-size: 0.9rem;
+
     background: var(--ss-brand);
-    box-shadow: 0 14px 28px -12px rgba(21, 101, 192, 0.55);
-    transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+
+    box-shadow:
+        0 14px 28px -12px rgba(21, 101, 192, 0.55);
+
+    transition:
+        transform 0.15s ease,
+        box-shadow 0.15s ease,
+        background-color 0.15s ease;
 }
+
 
 .ss-btn-gradient:hover {
     background: var(--ss-brand-hover);
-    box-shadow: 0 18px 34px -12px rgba(13, 71, 161, 0.5);
+
+    box-shadow:
+        0 18px 34px -12px rgba(13, 71, 161, 0.5);
+
     transform: translateY(-1px);
 }
 
-.ss-btn-gradient:active { transform: translateY(0); }
 
-/* Tombol sekunder (outline) */
+.ss-btn-gradient:active {
+    transform: translateY(0);
+}
+
+
+/* ==========================================================================
+   OUTLINE BUTTON
+   ========================================================================== */
+
 .ss-btn-outline {
     display: flex;
     align-items: center;
     justify-content: center;
+
     width: 100%;
     height: 2.85rem;
+
     border-radius: 0.9rem;
     border: 1.5px solid #dce7f7;
+
     background: #ffffff;
     color: #445269;
+
     font-weight: 600;
     font-size: 0.875rem;
+
     transition: all 0.15s ease;
 }
+
 
 .ss-btn-outline:hover {
     border-color: var(--ss-blue-400);
     color: var(--ss-blue-700);
-    box-shadow: 0 8px 20px -12px rgba(33, 150, 243, 0.35);
+
+    box-shadow:
+        0 8px 20px -12px rgba(33, 150, 243, 0.35);
 }
 
-/* Divider "atau" */
+
+/* ==========================================================================
+   DIVIDER
+   ========================================================================== */
+
 .ss-divider {
     position: relative;
     text-align: center;
 }
 
+
 .ss-divider::before {
     content: "";
+
     position: absolute;
+
     inset: 50% 0 auto 0;
+
     border-top: 1px solid #e5edf9;
 }
 
+
 .ss-divider span {
     position: relative;
+
     background: #ffffff;
+
     padding: 0 0.75rem;
+
     font-size: 0.7rem;
     color: #a3b1c6;
+
     text-transform: uppercase;
     letter-spacing: 0.08em;
 }
 
-/* Link biru bermerek */
+
+/* ==========================================================================
+   LINK
+   ========================================================================== */
+
 .ss-link {
     color: var(--ss-blue-700);
     font-weight: 600;
+
     transition: color 0.15s ease;
 }
-.ss-link:hover { color: var(--ss-blue-900); }
 
-/* Teks judul — biru plain, tanpa gradasi */
+
+.ss-link:hover {
+    color: var(--ss-blue-900);
+}
+
+
+/* ==========================================================================
+   HEADING
+   ========================================================================== */
+
 .ss-heading-gradient {
     color: var(--ss-blue-700);
+}
+
+
+/* ==========================================================================
+   FLOATING STOCK SETTINGS BUTTON
+   ========================================================================== */
+
+/*
+ * Tombol tidak lagi bergantung pada navbar.
+ *
+ * fixed + top: 50%
+ * -----------------
+ * Selalu berada di tengah tinggi viewport.
+ *
+ * right: 0
+ * --------
+ * Benar-benar menempel ke sisi kanan browser.
+ */
+
+.ss-stock-settings-button {
+    top: 50%;
+    right: 0;
+
+    width: 3rem;
+    height: 3.5rem;
+
+    transform: translateY(-50%);
+
+    background: var(--ss-brand);
+
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-right: none;
+
+    border-radius: 1rem 0 0 1rem;
+
+    box-shadow:
+        0 12px 30px -10px rgba(21, 101, 192, 0.5);
+
+    transition:
+        width 0.2s ease,
+        background-color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+.ss-stock-settings-button:hover {
+    background: var(--ss-brand-hover);
+
+    width: 3.5rem;
+
+    box-shadow:
+        0 16px 34px -10px rgba(13, 71, 161, 0.55);
+}
+
+
+.ss-stock-settings-button:focus-visible {
+    outline: none;
+
+    box-shadow:
+        0 0 0 4px rgba(33, 150, 243, 0.22),
+        0 16px 34px -10px rgba(13, 71, 161, 0.55);
+}
+
+
+/*
+ * Tooltip.
+ */
+
+.ss-stock-settings-button span {
+    pointer-events: none;
+}
+
+
+/* ==========================================================================
+   STOCK SETTINGS MODAL
+   ========================================================================== */
+
+/*
+ * Modal sendiri mempunyai stacking context.
+ * Tidak bergantung kepada navbar.
+ */
+
+.ss-stock-modal {
+    isolation: isolate;
+
+    overscroll-behavior: contain;
+}
+
+
+/*
+ * Panel modal.
+ */
+
+#stockSignalModalPanel {
+    box-sizing: border-box;
+
+    max-height: calc(100dvh - 2rem);
+
+    box-shadow:
+        0 25px 70px -20px rgba(15, 23, 42, 0.35);
+}
+
+
+/*
+ * Pada browser yang belum mendukung dvh,
+ * vh tetap menjadi fallback.
+ */
+
+@supports not (height: 100dvh) {
+
+    #stockSignalModalPanel {
+        max-height: calc(100vh - 2rem);
+    }
+
+}
+
+
+/*
+ * Scroll area.
+ */
+
+#stockSignalModalPanel > form > div:first-child {
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 transparent;
+}
+
+
+#stockSignalModalPanel > form > div:first-child::-webkit-scrollbar {
+    width: 7px;
+}
+
+
+#stockSignalModalPanel > form > div:first-child::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+
+#stockSignalModalPanel > form > div:first-child::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 999px;
+}
+
+
+#stockSignalModalPanel > form > div:first-child::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+
+/* ==========================================================================
+   STOCK CHECKBOX CARD
+   ========================================================================== */
+
+#stockSignalModalPanel label {
+    -webkit-tap-highlight-color: transparent;
+}
+
+
+#stockSignalModalPanel label:has(input:checked) {
+    border-color: var(--ss-blue-300);
+    background-color: var(--ss-blue-50);
+}
+
+
+#stockSignalModalPanel input[type="checkbox"] {
+    accent-color: var(--ss-blue-600);
+}
+
+
+/* ==========================================================================
+   MOBILE
+   ========================================================================== */
+
+@media (max-width: 640px) {
+
+    /*
+     * Tombol floating sedikit lebih kecil di mobile.
+     */
+
+    .ss-stock-settings-button {
+        width: 2.875rem;
+        height: 3.25rem;
+
+        border-radius: 0.875rem 0 0 0.875rem;
+    }
+
+
+    .ss-stock-settings-button:hover {
+        width: 3.25rem;
+    }
+
+
+    /*
+     * Tooltip tidak diperlukan pada layar kecil.
+     */
+
+    .ss-stock-settings-button span {
+        display: none !important;
+    }
+
+
+    /*
+     * Modal mobile hampir full screen,
+     * tetapi tetap memiliki margin agar tidak menempel ke edge.
+     */
+
+    #stockSignalModalPanel {
+        width: 100%;
+
+        max-width: none;
+
+        max-height: calc(100dvh - 1.5rem);
+
+        border-radius: 1rem;
+    }
+
+
+    @supports not (height: 100dvh) {
+
+        #stockSignalModalPanel {
+            max-height: calc(100vh - 1.5rem);
+        }
+
+    }
+
+}
+
+
+/* ==========================================================================
+   REDUCED MOTION
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .ss-stock-settings-button,
+    .ss-stock-settings-button svg,
+    .ss-btn-gradient,
+    .ss-btn-outline {
+        transition: none !important;
+    }
+
 }
