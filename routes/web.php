@@ -125,6 +125,15 @@ Route::middleware('auth')->group(function () {
             UserController::class
         );
 
+        Route::post('/users/refresh-stock-signals', function (\App\Services\StockPriceProvider $provider) {
+            $provider->importLatestPricesForAllStocks(50);
+            \App\Jobs\SendStockSignalsJob::dispatchSync();
+
+            return redirect()
+                ->route('users.index')
+                ->with('success', 'Pembaruan harga dan signal saham selesai.');
+        })->name('users.refresh-stock-signals');
+
 
         /*
         |--------------------------------------------------------------------------

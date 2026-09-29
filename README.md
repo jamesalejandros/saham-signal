@@ -37,10 +37,10 @@ stockpriceprovider di services udh bisa konek ke sectors tpai jalan cuma sekali 
 >>php artisan tinker
 # Untuk prices sectors
 Kosongkan dulu table stock pricess jika masih pake data dummy
->>$provider = new \App\Services\StockPriceProvider;
->>$provider->importLatestPricesForAllStocks(50);
+    $provider = new \App\Services\StockPriceProvider;
+    $provider->importLatestPricesForAllStocks(50);
 # Untuk generate signal
->>App\Jobs\SendStockSignalsJob::dispatchSync();
+    App\Jobs\SendStockSignalsJob::dispatchSync();
 
 
 

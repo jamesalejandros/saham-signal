@@ -23,12 +23,26 @@
             </div>
 
 
-            <!-- Add User -->
+            <div class="flex flex-col gap-3 sm:flex-row">
+                <form
+                    action="{{ route('users.refresh-stock-signals') }}"
+                    method="POST"
+                    onsubmit="return confirm('Jalankan impor harga dan generate signal untuk saham yang diikuti?');"
+                >
+                    @csrf
+                    <button
+                        type="submit"
+                        class="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-green-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-green-700 sm:w-auto"
+                    >
+                        Perbarui Harga &amp; Signal
+                    </button>
+                </form>
 
-            <a
-                href="{{ route('users.create') }}"
-                class="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-blue-700"
-            >
+                <!-- Add User -->
+                <a
+                    href="{{ route('users.create') }}"
+                    class="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-blue-700"
+                >
 
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -45,11 +59,17 @@
                     />
                 </svg>
 
-                Tambah User
-
-            </a>
+                    Tambah User
+                </a>
+            </div>
 
         </div>
+
+        @if(session('success'))
+            <div class="rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm font-medium text-green-800">
+                {{ session('success') }}
+            </div>
+        @endif
 
 
         <!-- Summary -->
