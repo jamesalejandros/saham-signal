@@ -8,7 +8,6 @@ use Illuminate\Notifications\Notification;
 use Illuminate\Support\Facades\Log;
 use NotificationChannels\Telegram\TelegramMessage;
 
-
 class StockSignalTelegramNotification extends Notification
 {
     use Queueable;
@@ -27,21 +26,31 @@ class StockSignalTelegramNotification extends Notification
 
     public function toTelegram(object $notifiable): TelegramMessage
     {
-        $signalId = (string)$this->stockSignal->id;
-        $appUrl ="http:://localhost/signals/".$signalId;
+        $signalId = (string) $this->stockSignal->id;
+
+        $appUrl = "http://localhost/signals/{$signalId}";
+
+        $stockCode = $this->stockSignal->stock_code;
         $stockName = $this->stockSignal->stock?->stock_name ?? 'Unknown stock';
+
+        $stockbitUrl = "https://stockbit.com/symbol/{$stockCode}";
+
         Log::info("Signal generated for {$appUrl}");
+
         $message =
-            "📈 STOCK SIGNAL\n\n" .
-            "Stock: {$this->stockSignal->stock_code}\n" .
+            "📈 <b>STOCK SIGNAL</b>\n\n" .
+            "Stock: {$stockCode}\n" .
             "Name: {$stockName}\n" .
             "Signal: {$this->stockSignal->signal}\n" .
             "Strength: {$this->stockSignal->signal_strength}\n\n" .
-            "details : {$appUrl}";
-            
+            "🔗 <a href=\"{$appUrl}\">View Signal Details</a>\n" .
+            "📊 <a href=\"{$stockbitUrl}\">View on Stockbit</a>";
 
         return TelegramMessage::create()
             ->to(config('services.telegram-bot-api.chat_id'))
-            ->content($message);
+            ->content($message)
+            ->options([
+                'parse_mode' => 'HTML',
+            ]);
     }
 }
