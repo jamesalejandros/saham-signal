@@ -12,15 +12,34 @@
 
                 @auth
 
-                    <!-- Sidebar Toggle -->
+                    <!-- =====================================================
+                             MOBILE SIDEBAR TOGGLE
+                             ===================================================== -->
+
+                    <button id="ss-mobile-sidebar-toggle" type="button" title="Buka menu" aria-label="Buka menu navigasi"
+                        aria-controls="ss-mobile-sidebar" aria-expanded="false"
+                        class="mr-3 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 md:hidden">
+
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8"
+                            stroke="currentColor" class="h-6 w-6">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5" />
+                        </svg>
+
+                    </button>
+
+
+                    <!-- Sidebar Toggle Desktop -->
 
                     <button id="ss-sidebar-toggle" type="button" title="Ciutkan / lebarkan sidebar"
                         class="mr-3 hidden h-10 w-10 shrink-0 items-center justify-center rounded-lg text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 md:flex">
+
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                             stroke="currentColor" class="h-5 w-5">
                             <path stroke-linecap="round" stroke-linejoin="round"
                                 d="M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5" />
                         </svg>
+
                     </button>
 
                 @endauth
@@ -32,10 +51,12 @@
 
                     <span class="flex h-9 w-9 items-center justify-center rounded-xl text-white shadow-sm"
                         style="background: #2196f3;">
+
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
                             stroke="currentColor" class="h-5 w-5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M3 17l6-6 4 4 8-8M15 7h6v6" />
                         </svg>
+
                     </span>
 
                     <span class="text-xl font-extrabold tracking-tight" style="color: #2196f3;">
@@ -91,14 +112,32 @@
                     </summary>
 
 
-                    <!-- Notification Popup -->
+                    <!-- ================================================================
+         NOTIFICATION POPUP
+         Desktop  : tetap absolute mengikuti icon
+         Mobile   : fixed agar tidak terpotong oleh viewport/console
+         ================================================================ -->
 
-                    <div
-                        class="absolute right-0 mt-3 w-96 max-w-[calc(100vw-2rem)] overflow-hidden rounded-xl border border-gray-200 bg-white shadow-xl">
+                    <div class="
+            absolute right-0 mt-3 w-96 max-w-[calc(100vw-2rem)]
+            overflow-hidden rounded-xl border border-gray-200 bg-white shadow-xl
+            z-50
+
+            max-md:fixed
+            max-md:top-14
+            max-md:right-2
+            max-md:left-2
+            max-md:mt-0
+            max-md:w-auto
+            max-md:max-w-none
+            max-md:rounded-xl
+        ">
+
+                        <!-- Header -->
 
                         <div class="flex items-center justify-between border-b border-gray-200 px-4 py-3">
 
-                            <div>
+                            <div class="min-w-0">
 
                                 <h3 class="text-sm font-semibold text-gray-900">
                                     Notifications
@@ -122,14 +161,19 @@
 
 
                             <a href="{{ route('notifications.index') }}"
-                                class="text-xs font-medium text-blue-600 hover:text-blue-700">
+                                class="ml-3 shrink-0 text-xs font-medium text-blue-600 hover:text-blue-700">
                                 Lihat semua
                             </a>
 
                         </div>
 
 
-                        <div class="max-h-96 overflow-y-auto">
+                        <!-- Notification List -->
+
+                        <div class="
+                max-h-96 overflow-y-auto
+                max-md:max-h-[calc(100vh-8rem)]
+            ">
 
                             @php
 
@@ -144,17 +188,24 @@
 
                             @forelse($recentNotifications as $notification)
 
-                                                    <div class="border-b border-gray-100 px-4 py-4 last:border-b-0
-                                                                                    {{ $notification->read_at
+                                                    <div class="
+                                                border-b border-gray-100 px-4 py-4 last:border-b-0
+                                                {{ $notification->read_at
                                 ? 'bg-white'
-                                : 'bg-blue-50' }}">
+                                : 'bg-blue-50' }}
+                                            ">
 
                                                         <div class="flex gap-3">
 
-                                                            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full
-                                                                                            {{ $notification->read_at
+                                                            <!-- Notification Icon -->
+
+                                                            <div class="
+                                                        flex h-10 w-10 shrink-0 items-center justify-center
+                                                        rounded-full
+                                                        {{ $notification->read_at
                                 ? 'bg-gray-100 text-gray-500'
-                                : 'bg-blue-100 text-blue-600' }}">
+                                : 'bg-blue-100 text-blue-600' }}
+                                                    ">
 
                                                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                                                     stroke-width="1.5" stroke="currentColor" class="h-5 w-5">
@@ -165,11 +216,13 @@
                                                             </div>
 
 
+                                                            <!-- Notification Content -->
+
                                                             <div class="min-w-0 flex-1">
 
                                                                 <div class="flex items-start justify-between gap-2">
 
-                                                                    <p class="text-sm font-semibold text-gray-900">
+                                                                    <p class="truncate text-sm font-semibold text-gray-900">
                                                                         {{ $notification->data['stock_code'] ?? 'Stock Signal' }}
                                                                     </p>
 
@@ -213,7 +266,9 @@
                                                                 @endif
 
 
-                                                                <div class="mt-2 flex items-center justify-between gap-3">
+                                                                <div class="
+                                                            mt-2 flex items-center justify-between gap-3
+                                                        ">
 
                                                                     <p class="text-[11px] text-gray-400">
                                                                         {{ $notification->created_at->diffForHumans() }}
@@ -228,7 +283,7 @@
                                                                             @csrf
 
                                                                             <button type="submit"
-                                                                                class="text-xs font-medium text-blue-600 hover:text-blue-800">
+                                                                                class="whitespace-nowrap text-xs font-medium text-blue-600 hover:text-blue-800">
                                                                                 Tandai dibaca
                                                                             </button>
 
@@ -236,7 +291,7 @@
 
                                                                     @else
 
-                                                                        <span class="text-[11px] text-gray-400">
+                                                                        <span class="whitespace-nowrap text-[11px] text-gray-400">
                                                                             Sudah dibaca
                                                                         </span>
 
@@ -277,185 +332,488 @@
 
                             @endforelse
 
-                            </div>
-
-
-                    <div class="border-t border-gray-200 bg-gray-50 px-4 py-3">
-
-                        <div class="flex items-center justify-between gap-3">
-
-                            @if($unreadCount > 0)
-
-                                <form action="{{ route('notifications.markAllAsRead') }}" method="POST">
-
-                                    @csrf
-
-                                    <button type="submit"
-                                        class="inline-flex items-center gap-1.5 text-xs font-medium text-blue-600 hover:text-blue-800">
-                                        Tandai semua dibaca
-                                    </button>
-
-                                </form>
-
-                            @else
-
-                                <span class="text-xs text-gray-400">
-                                    Semua sudah dibaca
-                                </span>
-
-                            @endif
-
-
-                            @if($recentNotifications->count() > 0)
-
-                                <a href="{{ route('notifications.index') }}"
-                                    class="text-xs font-medium text-blue-600 hover:text-blue-700">
-                                    Lihat semua
-                                </a>
-
-                            @endif
-
                         </div>
 
-                    </div>
 
-                </div>
+                        <!-- Footer -->
 
-            </details>
+                        <div class="border-t border-gray-200 bg-gray-50 px-4 py-3">
 
+                            <div class="flex items-center justify-between gap-3">
 
-            <!-- =====================================================
-                 PROFILE DROPDOWN
-                 ===================================================== -->
+                                @if($unreadCount > 0)
 
-            <details class="relative ss-profile-dropdown">
+                                    <form action="{{ route('notifications.markAllAsRead') }}" method="POST">
 
-                <summary
-                    class="flex cursor-pointer list-none items-center gap-2.5 rounded-full py-1 pl-1 pr-2 transition hover:bg-gray-100 sm:pr-3">
+                                        @csrf
 
-                    <span
-                        class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-sm font-bold text-white shadow-sm"
-                        style="background: #2196f3;">
-                        {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
-                    </span>
+                                        <button type="submit"
+                                            class="whitespace-nowrap text-xs font-medium text-blue-600 hover:text-blue-800">
+                                            Tandai semua dibaca
+                                        </button>
 
+                                    </form>
 
-                    <div class="hidden text-left sm:block">
+                                @else
 
-                        <div class="text-sm font-semibold leading-tight text-gray-900">
-                            {{ auth()->user()->name }}
-                        </div>
+                                    <span class="text-xs text-gray-400">
+                                        Semua sudah dibaca
+                                    </span>
 
-                        <div class="text-xs leading-tight text-gray-500">
-
-                            @if(auth()->user()->hasRole('admin'))
-                                Administrator
-                            @else
-                                User
-                            @endif
-
-                        </div>
-
-                    </div>
+                                @endif
 
 
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                        stroke="currentColor" class="hidden h-4 w-4 shrink-0 text-gray-400 sm:block">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                    </svg>
+                                @if($recentNotifications->count() > 0)
 
-                </summary>
+                                    <a href="{{ route('notifications.index') }}"
+                                        class="whitespace-nowrap text-xs font-medium text-blue-600 hover:text-blue-700">
+                                        Lihat semua
+                                    </a>
 
-
-                <!-- Dropdown Panel -->
-
-                <div
-                    class="absolute right-0 z-50 mt-3 w-64 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-xl">
-
-                    <!-- Profile Header -->
-
-                    <div class="px-4 py-4" style="background: #e3f2fd;">
-
-                        <div class="flex items-center gap-3">
-
-                            <span
-                                class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-base font-bold text-white shadow-sm"
-                                style="background: #2196f3;">
-                                {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
-                            </span>
-
-
-                            <div class="min-w-0">
-
-                                <p class="truncate text-sm font-semibold text-gray-900">
-                                    {{ auth()->user()->name }}
-                                </p>
-
-                                <p class="truncate text-xs text-gray-500">
-                                    {{ auth()->user()->email }}
-                                </p>
+                                @endif
 
                             </div>
 
                         </div>
 
+                    </div>
+
+                </details>
+
+
+
+                <!-- =====================================================
+                     PROFILE DROPDOWN
+                     ===================================================== -->
+
+                <details class="relative ss-profile-dropdown">
+
+                    <summary
+                        class="flex cursor-pointer list-none items-center gap-2.5 rounded-full py-1 pl-1 pr-2 transition hover:bg-gray-100 sm:pr-3">
 
                         <span
-                            class="mt-3 inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-semibold"
-                            style="{{ auth()->user()->hasRole('admin')
+                            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-sm font-bold text-white shadow-sm"
+                            style="background: #2196f3;">
+                            {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                        </span>
 
+
+                        <div class="hidden text-left sm:block">
+
+                            <div class="text-sm font-semibold leading-tight text-gray-900">
+                                {{ auth()->user()->name }}
+                            </div>
+
+                            <div class="text-xs leading-tight text-gray-500">
+
+                                @if(auth()->user()->hasRole('admin'))
+                                    Administrator
+                                @else
+                                    User
+                                @endif
+
+                            </div>
+
+                        </div>
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                            stroke="currentColor" class="hidden h-4 w-4 shrink-0 text-gray-400 sm:block">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                        </svg>
+
+                    </summary>
+
+
+                    <!-- Dropdown Panel -->
+
+                    <div
+                        class="absolute right-0 z-50 mt-3 w-64 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-xl">
+
+                        <!-- Profile Header -->
+
+                        <div class="px-4 py-4" style="background: #e3f2fd;">
+
+                            <div class="flex items-center gap-3">
+
+                                <span
+                                    class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-base font-bold text-white shadow-sm"
+                                    style="background: #2196f3;">
+                                    {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                                </span>
+
+
+                                <div class="min-w-0">
+
+                                    <p class="truncate text-sm font-semibold text-gray-900">
+                                        {{ auth()->user()->name }}
+                                    </p>
+
+                                    <p class="truncate text-xs text-gray-500">
+                                        {{ auth()->user()->email }}
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+
+                            <span
+                                class="mt-3 inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-semibold"
+                                style="{{ auth()->user()->hasRole('admin')
     ? 'background: rgba(33,150,243,0.15); color:#1565c0;'
     : 'background: rgba(148,163,184,0.18); color:#475569;' }}">
 
-                            @if(auth()->user()->hasRole('admin'))
-                                Administrator
-                            @else
-                                User
-                            @endif
+                                @if(auth()->user()->hasRole('admin'))
+                                    Administrator
+                                @else
+                                    User
+                                @endif
 
-                        </span>
+                            </span>
+
+                        </div>
+
+
+                        <!-- Actions -->
+
+                        <div class="p-2">
+
+                            <form method="POST" action="{{ route('logout') }}">
+
+                                @csrf
+
+                                <button type="submit"
+                                    class="flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-medium text-red-600 transition hover:bg-red-50">
+
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                        stroke-width="1.5" stroke="currentColor" class="h-5 w-5 shrink-0">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l3 3m0 0l-3 3m3-3H3" />
+                                    </svg>
+
+                                    <span>
+                                        Logout
+                                    </span>
+
+                                </button>
+
+                            </form>
+
+                        </div>
 
                     </div>
 
+                </details>
 
-                    <!-- Actions -->
-
-                    <div class="p-2">
-
-                        <form method="POST" action="{{ route('logout') }}">
-
-                            @csrf
-
-                            <button type="submit"
-                                class="flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-medium text-red-600 transition hover:bg-red-50">
-
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                    stroke-width="1.5" stroke="currentColor" class="h-5 w-5 shrink-0">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l3 3m0 0l-3 3m3-3H3" />
-                                </svg>
-
-                                <span>
-                                    Logout
-                                </span>
-
-                            </button>
-
-                        </form>
-
-                    </div>
-
-                </div>
-
-            </details>
+            </div>
 
         </div>
 
     </div>
 
-</div>
-
 </nav>
+
+
+{{-- =====================================================================
+MOBILE SIDEBAR
+TIDAK MENGGUNAKAN sidebar.blade.php
+===================================================================== --}}
+
+@auth
+
+    <!-- ================================================================
+             MOBILE SIDEBAR BACKDROP
+             ================================================================ -->
+
+    <div id="ss-mobile-sidebar-backdrop" class="fixed inset-0 z-[100] hidden bg-gray-950/50 backdrop-blur-[1px] md:hidden"
+        aria-hidden="true"></div>
+
+
+    <!-- ================================================================
+             MOBILE SIDEBAR
+             ================================================================ -->
+
+    <aside id="ss-mobile-sidebar"
+        class="fixed left-0 top-0 bottom-0 z-[110] flex w-[290px] max-w-[85vw] -translate-x-full flex-col bg-white shadow-2xl transition-transform duration-300 ease-in-out md:hidden"
+        aria-label="Menu navigasi mobile">
+
+        <div class="flex h-full flex-col">
+
+            <!-- =========================================================
+                     MOBILE SIDEBAR HEADER
+                     ========================================================= -->
+
+            <div class="flex shrink-0 items-center justify-between border-b border-gray-200 px-4 py-3">
+
+                <a href="{{ route('dashboard') }}" class="flex items-center gap-2.5" onclick="closeMobileSidebar()">
+
+                    <span class="flex h-9 w-9 items-center justify-center rounded-xl text-white shadow-sm"
+                        style="background: #2196f3;">
+
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                            stroke="currentColor" class="h-5 w-5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 17l6-6 4 4 8-8M15 7h6v6" />
+                        </svg>
+
+                    </span>
+
+                    <span class="text-lg font-extrabold tracking-tight" style="color: #2196f3;">
+                        Saham Signal
+                    </span>
+
+                </a>
+
+
+                <button id="ss-mobile-sidebar-close" type="button" title="Tutup menu" aria-label="Tutup menu navigasi"
+                    class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-gray-500 transition hover:bg-gray-100 hover:text-gray-900">
+
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8"
+                        stroke="currentColor" class="h-6 w-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+
+                </button>
+
+            </div>
+
+
+            <!-- =========================================================
+                     MOBILE NAVIGATION
+                     ========================================================= -->
+
+            <nav class="min-h-0 flex-1 overflow-y-auto px-3 py-4">
+
+                <div class="space-y-1">
+
+                    <!-- Dashboard -->
+
+                    <a href="{{ route('dashboard') }}" onclick="closeMobileSidebar()" class="flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium
+                            {{ request()->routeIs('dashboard')
+            ? 'bg-blue-50 text-blue-700'
+            : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900' }}">
+
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="h-5 w-5 shrink-0">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M3.75 3.75h6.5v6.5h-6.5v-6.5zm10 0h6.5v6.5h-6.5v-6.5zm-10 10h6.5v6.5h-6.5v-6.5zm10 0h6.5v6.5h-6.5v-6.5z" />
+                        </svg>
+
+                        <span>
+                            Dashboard
+                        </span>
+
+                    </a>
+
+
+                    <!-- Signal Saham -->
+
+                    <a href="{{ route('signals.index') }}" onclick="closeMobileSidebar()" class="flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium
+                            {{ request()->routeIs('signals.*')
+            ? 'bg-blue-50 text-blue-700'
+            : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900' }}">
+
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="h-5 w-5 shrink-0">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.5l6-6 4 4 8-8" />
+                        </svg>
+
+                        <span>
+                            Signal Saham
+                        </span>
+
+                    </a>
+
+
+                    <!-- Notification -->
+
+                    <a href="{{ route('notifications.index') }}" onclick="closeMobileSidebar()" class="flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium
+                            {{ request()->routeIs('notifications.*')
+            ? 'bg-blue-50 text-blue-700'
+            : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900' }}">
+
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="h-5 w-5 shrink-0">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75V9a6 6 0 10-12 0v.75a8.967 8.967 0 01-2.31 6.022c1.733.64 3.56 1.08 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
+                        </svg>
+
+                        <span>
+                            Notification
+                        </span>
+
+
+                        @if($unreadCount > 0)
+
+                            <span
+                                class="ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-red-600 px-1 text-[10px] font-bold text-white">
+                                {{ $unreadCount > 99 ? '99+' : $unreadCount }}
+                            </span>
+
+                        @endif
+
+                    </a>
+
+
+                    @if(auth()->user()->hasRole('admin'))
+
+                            <!-- Divider -->
+
+                            <div class="my-4 border-t border-gray-200"></div>
+
+
+                            <!-- Administration -->
+
+                            <div class="px-3 pb-2">
+
+                                <p class="text-xs font-semibold uppercase tracking-wider text-gray-400">
+                                    Administration
+                                </p>
+
+                            </div>
+
+
+                            <!-- User Management -->
+
+                            <a href="{{ route('users.index') }}" onclick="closeMobileSidebar()" class="flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium
+                                        {{ request()->routeIs('users.*')
+                        ? 'bg-blue-50 text-blue-700'
+                        : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900' }}">
+
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                    stroke="currentColor" class="h-5 w-5 shrink-0">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
+                                </svg>
+
+                                <span>
+                                    User Management
+                                </span>
+
+                            </a>
+
+                    @endif
+
+                </div>
+
+            </nav>
+
+
+            <!-- =========================================================
+                     TELEGRAM GROUP CARD
+                     ========================================================= -->
+
+            <div class="shrink-0 px-4 pb-3">
+
+                <div class="overflow-hidden rounded-xl border border-blue-100 bg-blue-50">
+
+                    <div class="p-4">
+
+                        <div class="flex items-start gap-3">
+
+                            <!-- Telegram Icon -->
+
+                            <div
+                                class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#229ED9] text-white shadow-sm">
+
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
+                                    class="h-5 w-5">
+                                    <path
+                                        d="M21.4 3.6c.3-1.1-.7-2-1.7-1.6L2.8 8.7c-1.2.4-1.2 2.1-.1 2.6l4.8 2.1 1.8 5.8c.3 1 1.5 1.3 2.2.6l2.8-2.8 4.8 3.5c.9.6 2.1.1 2.3-1l2.1-15.9zM9.4 13.1l-.4 3.8-1.1-3.5 10.6-8.1-9.1 7.8zm2.1 2.1l.2-1.9 1.2 1.1-1.4 1.4z" />
+                                </svg>
+
+                            </div>
+
+
+                            <!-- Text -->
+
+                            <div class="min-w-0">
+
+                                <p class="text-sm font-semibold text-gray-900">
+                                    Gabung Telegram
+                                </p>
+
+                                <p class="mt-1 text-xs leading-5 text-gray-600">
+                                    Dapatkan update signal dan informasi terbaru.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- Telegram Button -->
+
+                        <a href="https://t.me/+Vi_93vFguhQ2ZDU1" target="_blank" rel="noopener noreferrer"
+                            class="mt-3 flex w-full items-center justify-center gap-2 rounded-lg bg-[#229ED9] px-3 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-[#168AC0] hover:shadow-md">
+
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-4 w-4">
+                                <path
+                                    d="M21.4 3.6c.3-1.1-.7-2-1.7-1.6L2.8 8.7c-1.2.4-1.2 2.1-.1 2.6l4.8 2.1c.3.1.5.3.6.6l1.8 5.8c.3 1 1.5 1.3 2.2.6l2.8-2.8 4.8 3.5c.9.6 2.1.1 2.3-1l2.1-15.9zM9.4 13.1l-.4 3.8-1.1-3.5 10.6-8.1-9.1 7.8zm2.1 2.1l.2-1.9 1.2 1.1-1.4 1.4z" />
+                            </svg>
+
+                            <span>
+                                Gabung Sekarang
+                            </span>
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =========================================================
+                     MOBILE SIDEBAR FOOTER
+                     ========================================================= -->
+
+            <div class="shrink-0 border-t border-gray-200 p-3">
+
+                <div class="flex items-center gap-3 rounded-xl p-2.5" style="background: #e3f2fd;">
+
+                    <span
+                        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-bold text-white shadow-sm"
+                        style="background: #2196f3;">
+                        {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                    </span>
+
+                    <div class="min-w-0 flex-1">
+
+                        <p class="truncate text-sm font-semibold text-gray-900">
+                            {{ auth()->user()->name }}
+                        </p>
+
+                        <p class="truncate text-[11px] text-gray-500">
+                            {{ auth()->user()->email }}
+                        </p>
+
+                    </div>
+
+                    <span class="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold" style="{{ auth()->user()->hasRole('admin')
+            ? 'background: rgba(33,150,243,0.15); color:#1565c0;'
+            : 'background: rgba(148,163,184,0.18); color:#475569;' }}">
+
+                        @if(auth()->user()->hasRole('admin'))
+                            Admin
+                        @else
+                            User
+                        @endif
+
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </aside>
+
+@endauth
+
+
 {{-- =====================================================================
 FLOATING STOCK SETTINGS BUTTON
 ===================================================================== --}}
@@ -479,15 +837,12 @@ FLOATING STOCK SETTINGS BUTTON
         </svg>
 
     </button>
-
-
     {{-- =================================================================
     STOCK SETTINGS MODAL
     ================================================================= --}}
 
-    <div id="stockSignalModal"
-        class="ss-stock-modal fixed inset-0 z-[200] hidden items-center justify-center p-4 sm:p-6" role="dialog"
-        aria-modal="true" aria-labelledby="stockSignalModalTitle">
+    <div id="stockSignalModal" class="ss-stock-modal fixed inset-0 z-[200] hidden items-center justify-center p-4 sm:p-6"
+        role="dialog" aria-modal="true" aria-labelledby="stockSignalModalTitle">
 
         {{-- Backdrop --}}
 
@@ -552,8 +907,8 @@ FLOATING STOCK SETTINGS BUTTON
                             <div
                                 class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-gray-400">
 
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                    stroke-width="1.7" stroke="currentColor" class="h-5 w-5">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7"
+                                    stroke="currentColor" class="h-5 w-5">
                                     <path stroke-linecap="round" stroke-linejoin="round"
                                         d="m21 21-4.35-4.35m1.35-5.4a6.75 6.75 0 11-13.5 0 6.75 6.75 0 0113.5 0z" />
                                 </svg>
@@ -574,8 +929,8 @@ FLOATING STOCK SETTINGS BUTTON
                                 class="absolute inset-y-0 right-0 hidden items-center justify-center px-3 text-gray-400 transition hover:text-gray-700"
                                 aria-label="Hapus pencarian" title="Hapus pencarian">
 
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                    stroke-width="1.7" stroke="currentColor" class="h-5 w-5">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.7"
+                                    stroke="currentColor" class="h-5 w-5">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                                 </svg>
 
@@ -605,16 +960,13 @@ FLOATING STOCK SETTINGS BUTTON
                     SELECT ALL
                     ============================================================= --}}
 
-                    <div class="mt-3 flex items-center justify-between rounded-xl border border-gray-200 bg-gray-50 px-3.5 py-3">
+                    <div
+                        class="mt-3 flex items-center justify-between rounded-xl border border-gray-200 bg-gray-50 px-3.5 py-3">
 
-                        <label for="stockSignalSelectAll"
-                            class="flex cursor-pointer items-center gap-3">
+                        <label for="stockSignalSelectAll" class="flex cursor-pointer items-center gap-3">
 
-                            <input
-                                id="stockSignalSelectAll"
-                                type="checkbox"
-                                class="h-4.5 w-4.5 rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-0"
-                            >
+                            <input id="stockSignalSelectAll" type="checkbox"
+                                class="h-4.5 w-4.5 rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-0">
 
                             <span class="text-sm font-semibold text-gray-700">
                                 Pilih Semua
@@ -623,10 +975,7 @@ FLOATING STOCK SETTINGS BUTTON
                         </label>
 
 
-                        <span
-                            id="stockSignalSelectAllInfo"
-                            class="text-xs text-gray-500"
-                        >
+                        <span id="stockSignalSelectAllInfo" class="text-xs text-gray-500">
                             0 saham dipilih
                         </span>
 
@@ -689,7 +1038,6 @@ FLOATING STOCK SETTINGS BUTTON
                             data-stock-name="{{ strtolower($stock->stock_name) }}"
                             class="group mb-2.5 flex cursor-pointer items-start gap-3 rounded-xl border border-gray-200 bg-white p-3.5 transition duration-150 last:mb-0 hover:border-blue-300 hover:bg-blue-50/50 hover:shadow-sm">
 
-
                             <input id="stock-{{ $stock->stock_code }}" type="checkbox" name="stock_codes[]"
                                 value="{{ $stock->stock_code }}" {{ in_array($stock->stock_code, $selectedStockCodes) ? 'checked' : '' }}
                                 class="stock-signal-checkbox mt-0.5 h-4.5 w-4.5 shrink-0 rounded border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-0">
@@ -730,8 +1078,7 @@ FLOATING STOCK SETTINGS BUTTON
 
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                                     stroke="currentColor" class="h-6 w-6 text-gray-400">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M3 13.5l3.75-3.75 3 3 6.75-6.75" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.5l3.75-3.75 3 3 6.75-6.75" />
                                 </svg>
 
                             </div>
@@ -760,8 +1107,8 @@ FLOATING STOCK SETTINGS BUTTON
                         <div
                             class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-blue-50 text-blue-500">
 
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                stroke-width="1.6" stroke="currentColor" class="h-6 w-6">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.6"
+                                stroke="currentColor" class="h-6 w-6">
                                 <path stroke-linecap="round" stroke-linejoin="round"
                                     d="m21 21-4.35-4.35m1.35-5.4a6.75 6.75 0 11-13.5 0 6.75 6.75 0 0113.5 0z" />
                             </svg>
@@ -823,4 +1170,761 @@ FLOATING STOCK SETTINGS BUTTON
 
 @endauth
 
-<script> /* ================================================================ SIDEBAR TOGGLE ================================================================ */ document .getElementById('ss-sidebar-toggle') ?.addEventListener('click', function () { document.documentElement.classList.toggle( 'ss-sidebar-collapsed' ); try { localStorage.setItem( 'ss_sidebar_collapsed', document.documentElement.classList.contains( 'ss-sidebar-collapsed' ) ? '1' : '0' ); } catch (e) { } }); /* ================================================================ STOCK SIGNAL MODAL ================================================================ */ function openStockSignalModal() { const modal = document.getElementById('stockSignalModal'); if (!modal) { return; } /* * Reset pencarian setiap modal dibuka. */ if (typeof window.resetStockSignalSearch === 'function') { window.resetStockSignalSearch(); } /* * Update Select All setiap modal dibuka. */ if (typeof window.updateStockSignalSelectAll === 'function') { window.updateStockSignalSelectAll(); } modal.classList.remove('hidden'); modal.classList.add('flex'); document.body.classList.add('overflow-hidden'); document.body.setAttribute( 'data-stock-modal-open', 'true' ); requestAnimationFrame(function () { document .getElementById('stockSignalSearch') ?.focus(); }); } function closeStockSignalModal() { const modal = document.getElementById('stockSignalModal'); if (!modal) { return; } modal.classList.add('hidden'); modal.classList.remove('flex'); /* * Kembalikan scrolling body. */ document.body.classList.remove('overflow-hidden'); document.body.removeAttribute( 'data-stock-modal-open' ); /* * Kembalikan focus ke floating button. */ document .getElementById('ss-stock-settings-button') ?.focus(); } /* ================================================================ STOCK SEARCH + SELECT ALL ================================================================ */ (function () { const searchInput = document.getElementById('stockSignalSearch'); const searchClear = document.getElementById('stockSignalSearchClear'); const searchInfo = document.getElementById('stockSignalSearchInfo'); const searchResultText = document.getElementById('stockSignalSearchResultText'); const searchReset = document.getElementById('stockSignalSearchReset'); const searchEmptyReset = document.getElementById('stockSignalSearchEmptyReset'); const noSearchResult = document.getElementById('stockSignalNoSearchResult'); const selectAllCheckbox = document.getElementById('stockSignalSelectAll'); const selectAllInfo = document.getElementById('stockSignalSelectAllInfo'); const stockItems = Array.from( document.querySelectorAll('[data-stock-item]') ); if (!searchInput || !stockItems.length) { return; } function normalize(value) { return String(value || '') .toLowerCase() .trim() .normalize('NFD') .replace(/[\u0300-\u036f]/g, ''); } /* * Ambil checkbox dari semua stock item. */ function getStockCheckboxes() { return stockItems .map(function (item) { return item.querySelector( '.stock-signal-checkbox' ); }) .filter(Boolean); } /* * Ambil stock item yang sedang terlihat. * * Jika search aktif, hanya hasil search * yang dihitung oleh Select All. */ function getVisibleStockCheckboxes() { return stockItems .filter(function (item) { return !item.classList.contains('hidden'); }) .map(function (item) { return item.querySelector( '.stock-signal-checkbox' ); }) .filter(Boolean); } /* * Update informasi jumlah saham terpilih. */ function updateSelectedCount() { if (!selectAllInfo) { return; } const allCheckboxes = getStockCheckboxes(); const selectedCount = allCheckboxes.filter( function (checkbox) { return checkbox.checked; } ).length; selectAllInfo.textContent = selectedCount + ' saham dipilih'; } /* * Update status checkbox Select All. * * checked: * semua saham yang terlihat terpilih. * * indeterminate: * sebagian saham yang terlihat terpilih. */ function updateStockSignalSelectAll() { if (!selectAllCheckbox) { return; } const visibleCheckboxes = getVisibleStockCheckboxes(); if (!visibleCheckboxes.length) { selectAllCheckbox.checked = false; selectAllCheckbox.indeterminate = false; updateSelectedCount(); return; } const checkedCount = visibleCheckboxes.filter( function (checkbox) { return checkbox.checked; } ).length; selectAllCheckbox.checked = checkedCount === visibleCheckboxes.length; selectAllCheckbox.indeterminate = checkedCount > 0 && checkedCount < visibleCheckboxes.length; updateSelectedCount(); } /* * Select All. * * Hanya memilih saham yang sedang terlihat. */ selectAllCheckbox?.addEventListener( 'change', function () { const visibleCheckboxes = getVisibleStockCheckboxes(); visibleCheckboxes.forEach( function (checkbox) { checkbox.checked = selectAllCheckbox.checked; } ); selectAllCheckbox.indeterminate = false; updateSelectedCount(); } ); /* * Update Select All ketika checkbox saham * diubah secara manual. */ getStockCheckboxes().forEach( function (checkbox) { checkbox.addEventListener( 'change', function () { updateStockSignalSelectAll(); } ); } ); function updateStockSearch() { const query = normalize(searchInput.value); let visibleCount = 0; stockItems.forEach(function (item) { const stockCode = normalize( item.dataset.stockCode ); const stockName = normalize( item.dataset.stockName ); const matched = query === '' || stockCode.includes(query) || stockName.includes(query); if (matched) { item.classList.remove('hidden'); visibleCount++; } else { item.classList.add('hidden'); } }); /* * Search kosong */ if (query === '') { searchClear.classList.add('hidden'); searchClear.classList.remove('flex'); searchInfo.classList.add('hidden'); searchInfo.classList.remove('flex'); noSearchResult.classList.add('hidden'); updateStockSignalSelectAll(); return; } /* * Search sedang digunakan */ searchClear.classList.remove('hidden'); searchClear.classList.add('flex'); searchInfo.classList.remove('hidden'); searchInfo.classList.add('flex'); searchResultText.textContent = visibleCount + ' saham ditemukan untuk "' + searchInput.value.trim() + '"'; /* * Tidak ada hasil */ if (visibleCount === 0) { noSearchResult.classList.remove('hidden'); } else { noSearchResult.classList.add('hidden'); } /* * Update Select All berdasarkan hasil search. */ updateStockSignalSelectAll(); } function resetStockSearch() { searchInput.value = ''; updateStockSearch(); searchInput.focus(); } /* * Ketik pencarian */ searchInput.addEventListener( 'input', updateStockSearch ); /* * Tombol X */ searchClear?.addEventListener( 'click', resetStockSearch ); /* * Tombol Reset di bawah search */ searchReset?.addEventListener( 'click', resetStockSearch ); /* * Tombol reset ketika tidak ada hasil */ searchEmptyReset?.addEventListener( 'click', resetStockSearch ); /* * Escape ketika sedang mengetik search * * Jika ada teks search: * Escape -> hapus search terlebih dahulu. */ searchInput.addEventListener( 'keydown', function (event) { if ( event.key === 'Escape' && searchInput.value !== '' ) { event.stopPropagation(); resetStockSearch(); } } ); /* * Reset search setiap kali modal dibuka. */ window.resetStockSignalSearch = function () { searchInput.value = ''; updateStockSearch(); }; /* * Expose fungsi update Select All * agar bisa dipanggil ketika modal dibuka. */ window.updateStockSignalSelectAll = updateStockSignalSelectAll; /* * Initial state. */ updateStockSignalSelectAll(); })(); /* ================================================================ ESCAPE KEY ================================================================ */ document.addEventListener('keydown', function (event) { if ( event.key === 'Escape' && document .getElementById('stockSignalModal') ?.classList.contains('flex') ) { closeStockSignalModal(); } }); /* ================================================================ PREVENT DETAILS DROPDOWN FROM REMAINING OPEN ================================================================ */ document.addEventListener('click', function (event) { const profileDropdown = document.querySelector( '.ss-profile-dropdown' ); if ( profileDropdown && !profileDropdown.contains(event.target) ) { profileDropdown.removeAttribute('open'); } }); </script>
+
+<script>
+
+    /* ================================================================
+       MOBILE SIDEBAR
+       ================================================================ */
+
+    (function () {
+
+        const mobileSidebar = document.getElementById('ss-mobile-sidebar');
+        const mobileSidebarBackdrop = document.getElementById('ss-mobile-sidebar-backdrop');
+        const mobileSidebarToggle = document.getElementById('ss-mobile-sidebar-toggle');
+        const mobileSidebarClose = document.getElementById('ss-mobile-sidebar-close');
+
+        if (!mobileSidebar || !mobileSidebarBackdrop || !mobileSidebarToggle) {
+            return;
+        }
+
+
+        window.openMobileSidebar = function () {
+
+            mobileSidebar.classList.remove('-translate-x-full');
+            mobileSidebar.classList.add('translate-x-0');
+
+            mobileSidebarBackdrop.classList.remove('hidden');
+
+            mobileSidebarToggle.setAttribute('aria-expanded', 'true');
+
+            document.body.classList.add('overflow-hidden');
+
+        };
+
+
+        window.closeMobileSidebar = function () {
+
+            mobileSidebar.classList.remove('translate-x-0');
+            mobileSidebar.classList.add('-translate-x-full');
+
+            mobileSidebarBackdrop.classList.add('hidden');
+
+            mobileSidebarToggle.setAttribute('aria-expanded', 'false');
+
+            /*
+             * Hanya kembalikan overflow jika modal saham
+             * tidak sedang terbuka.
+             */
+            if (!document.getElementById('stockSignalModal')?.classList.contains('flex')) {
+                document.body.classList.remove('overflow-hidden');
+            }
+
+        };
+
+
+        mobileSidebarToggle.addEventListener('click', function () {
+
+            const isOpen = mobileSidebar.classList.contains('translate-x-0');
+
+            if (isOpen) {
+
+                closeMobileSidebar();
+
+            } else {
+
+                openMobileSidebar();
+
+            }
+
+        });
+
+
+        mobileSidebarClose?.addEventListener('click', function () {
+
+            closeMobileSidebar();
+
+        });
+
+
+        mobileSidebarBackdrop.addEventListener('click', function () {
+
+            closeMobileSidebar();
+
+        });
+
+
+        /*
+         * Escape untuk menutup mobile sidebar.
+         * Jika modal saham terbuka, handler modal existing
+         * tetap menangani modal tersebut.
+         */
+
+        document.addEventListener('keydown', function (event) {
+
+            if (event.key !== 'Escape') {
+                return;
+            }
+
+            if (mobileSidebar.classList.contains('translate-x-0')) {
+
+                closeMobileSidebar();
+
+            }
+
+        });
+
+
+        /*
+         * Jika viewport berubah ke desktop,
+         * pastikan mobile sidebar ditutup.
+         */
+
+        window.addEventListener('resize', function () {
+
+            if (window.innerWidth >= 768) {
+
+                closeMobileSidebar();
+
+            }
+
+        });
+
+    })();
+
+
+    /* ================================================================
+       SIDEBAR TOGGLE DESKTOP
+       ================================================================ */
+
+    document
+        .getElementById('ss-sidebar-toggle')
+        ?.addEventListener('click', function () {
+
+            document.documentElement.classList.toggle(
+                'ss-sidebar-collapsed'
+            );
+
+            try {
+
+                localStorage.setItem(
+                    'ss_sidebar_collapsed',
+                    document.documentElement.classList.contains(
+                        'ss-sidebar-collapsed'
+                    )
+                        ? '1'
+                        : '0'
+                );
+
+            } catch (e) { }
+
+        });
+
+
+    /* ================================================================
+       STOCK SIGNAL MODAL
+       ================================================================ */
+
+    function openStockSignalModal() {
+
+        const modal = document.getElementById('stockSignalModal');
+
+        if (!modal) {
+            return;
+        }
+
+
+        /*
+         * Reset pencarian setiap modal dibuka.
+         */
+
+        if (typeof window.resetStockSignalSearch === 'function') {
+
+            window.resetStockSignalSearch();
+
+        }
+
+
+        /*
+         * Update Select All setiap modal dibuka.
+         */
+
+        if (typeof window.updateStockSignalSelectAll === 'function') {
+
+            window.updateStockSignalSelectAll();
+
+        }
+
+
+        /*
+         * Jika mobile sidebar masih terbuka,
+         * tutup terlebih dahulu.
+         */
+
+        if (typeof window.closeMobileSidebar === 'function') {
+
+            window.closeMobileSidebar();
+
+        }
+
+
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+
+        document.body.classList.add('overflow-hidden');
+
+        document.body.setAttribute(
+            'data-stock-modal-open',
+            'true'
+        );
+
+
+        requestAnimationFrame(function () {
+
+            document
+                .getElementById('stockSignalSearch')
+                ?.focus();
+
+        });
+
+    }
+
+
+    function closeStockSignalModal() {
+
+        const modal = document.getElementById('stockSignalModal');
+
+        if (!modal) {
+            return;
+        }
+
+
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+
+
+        /*
+         * Kembalikan scrolling body.
+         */
+
+        document.body.classList.remove('overflow-hidden');
+
+        document.body.removeAttribute(
+            'data-stock-modal-open'
+        );
+
+
+        /*
+         * Kembalikan focus ke floating button.
+         */
+
+        document
+            .getElementById('ss-stock-settings-button')
+            ?.focus();
+
+    }
+
+
+    /* ================================================================
+       STOCK SEARCH + SELECT ALL
+       ================================================================ */
+
+    (function () {
+
+        const searchInput =
+            document.getElementById('stockSignalSearch');
+
+        const searchClear =
+            document.getElementById('stockSignalSearchClear');
+
+        const searchInfo =
+            document.getElementById('stockSignalSearchInfo');
+
+        const searchResultText =
+            document.getElementById('stockSignalSearchResultText');
+
+        const searchReset =
+            document.getElementById('stockSignalSearchReset');
+
+        const searchEmptyReset =
+            document.getElementById('stockSignalSearchEmptyReset');
+
+        const noSearchResult =
+            document.getElementById('stockSignalNoSearchResult');
+
+        const selectAllCheckbox =
+            document.getElementById('stockSignalSelectAll');
+
+        const selectAllInfo =
+            document.getElementById('stockSignalSelectAllInfo');
+
+        const stockItems = Array.from(
+            document.querySelectorAll('[data-stock-item]')
+        );
+
+
+        if (!searchInput || !stockItems.length) {
+            return;
+        }
+
+
+        function normalize(value) {
+
+            return String(value || '')
+                .toLowerCase()
+                .trim()
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '');
+
+        }
+
+
+        /*
+         * Ambil checkbox dari semua stock item.
+         */
+
+        function getStockCheckboxes() {
+
+            return stockItems
+                .map(function (item) {
+
+                    return item.querySelector(
+                        '.stock-signal-checkbox'
+                    );
+
+                })
+                .filter(Boolean);
+
+        }
+
+
+        /*
+         * Ambil stock item yang sedang terlihat.
+         *
+         * Jika search aktif, hanya hasil search
+         * yang dihitung oleh Select All.
+         */
+
+        function getVisibleStockCheckboxes() {
+
+            return stockItems
+                .filter(function (item) {
+
+                    return !item.classList.contains('hidden');
+
+                })
+                .map(function (item) {
+
+                    return item.querySelector(
+                        '.stock-signal-checkbox'
+                    );
+
+                })
+                .filter(Boolean);
+
+        }
+
+
+        /*
+         * Update informasi jumlah saham terpilih.
+         */
+
+        function updateSelectedCount() {
+
+            if (!selectAllInfo) {
+                return;
+            }
+
+            const allCheckboxes =
+                getStockCheckboxes();
+
+            const selectedCount =
+                allCheckboxes.filter(function (checkbox) {
+
+                    return checkbox.checked;
+
+                }).length;
+
+            selectAllInfo.textContent =
+                selectedCount + ' saham dipilih';
+
+        }
+
+
+        /*
+         * Update status checkbox Select All.
+         *
+         * checked:
+         * semua saham yang terlihat terpilih.
+         *
+         * indeterminate:
+         * sebagian saham yang terlihat terpilih.
+         */
+
+        function updateStockSignalSelectAll() {
+
+            if (!selectAllCheckbox) {
+                return;
+            }
+
+
+            const visibleCheckboxes =
+                getVisibleStockCheckboxes();
+
+
+            if (!visibleCheckboxes.length) {
+
+                selectAllCheckbox.checked = false;
+
+                selectAllCheckbox.indeterminate = false;
+
+                updateSelectedCount();
+
+                return;
+
+            }
+
+
+            const checkedCount =
+                visibleCheckboxes.filter(
+                    function (checkbox) {
+
+                        return checkbox.checked;
+
+                    }
+                ).length;
+
+
+            selectAllCheckbox.checked =
+                checkedCount === visibleCheckboxes.length;
+
+
+            selectAllCheckbox.indeterminate =
+                checkedCount > 0 &&
+                checkedCount < visibleCheckboxes.length;
+
+
+            updateSelectedCount();
+
+        }
+
+
+        /*
+         * Select All.
+         *
+         * Hanya memilih saham yang sedang terlihat.
+         */
+
+        selectAllCheckbox?.addEventListener(
+            'change',
+            function () {
+
+                const visibleCheckboxes =
+                    getVisibleStockCheckboxes();
+
+
+                visibleCheckboxes.forEach(
+                    function (checkbox) {
+
+                        checkbox.checked =
+                            selectAllCheckbox.checked;
+
+                    }
+                );
+
+
+                selectAllCheckbox.indeterminate = false;
+
+                updateSelectedCount();
+
+            }
+        );
+
+
+        /*
+         * Update Select All ketika checkbox saham
+         * diubah secara manual.
+         */
+
+        getStockCheckboxes().forEach(
+            function (checkbox) {
+
+                checkbox.addEventListener(
+                    'change',
+                    function () {
+
+                        updateStockSignalSelectAll();
+
+                    }
+                );
+
+            }
+        );
+
+
+        function updateStockSearch() {
+
+            const query =
+                normalize(searchInput.value);
+
+            let visibleCount = 0;
+
+
+            stockItems.forEach(
+                function (item) {
+
+                    const stockCode =
+                        normalize(
+                            item.dataset.stockCode
+                        );
+
+                    const stockName =
+                        normalize(
+                            item.dataset.stockName
+                        );
+
+
+                    const matched =
+                        query === '' ||
+                        stockCode.includes(query) ||
+                        stockName.includes(query);
+
+
+                    if (matched) {
+
+                        item.classList.remove('hidden');
+
+                        visibleCount++;
+
+                    } else {
+
+                        item.classList.add('hidden');
+
+                    }
+
+                }
+            );
+
+
+            /*
+             * Search kosong
+             */
+
+            if (query === '') {
+
+                searchClear.classList.add('hidden');
+                searchClear.classList.remove('flex');
+
+                searchInfo.classList.add('hidden');
+                searchInfo.classList.remove('flex');
+
+                noSearchResult.classList.add('hidden');
+
+                updateStockSignalSelectAll();
+
+                return;
+
+            }
+
+
+            /*
+             * Search sedang digunakan
+             */
+
+            searchClear.classList.remove('hidden');
+            searchClear.classList.add('flex');
+
+            searchInfo.classList.remove('hidden');
+            searchInfo.classList.add('flex');
+
+
+            searchResultText.textContent =
+                visibleCount +
+                ' saham ditemukan untuk "' +
+                searchInput.value.trim() +
+                '"';
+
+
+            /*
+             * Tidak ada hasil
+             */
+
+            if (visibleCount === 0) {
+
+                noSearchResult.classList.remove('hidden');
+
+            } else {
+
+                noSearchResult.classList.add('hidden');
+
+            }
+
+
+            /*
+             * Update Select All berdasarkan hasil search.
+             */
+
+            updateStockSignalSelectAll();
+
+        }
+
+
+        function resetStockSearch() {
+
+            searchInput.value = '';
+
+            updateStockSearch();
+
+            searchInput.focus();
+
+        }
+
+
+        /*
+         * Ketik pencarian
+         */
+
+        searchInput.addEventListener(
+            'input',
+            updateStockSearch
+        );
+
+
+        /*
+         * Tombol X
+         */
+
+        searchClear?.addEventListener(
+            'click',
+            resetStockSearch
+        );
+
+
+        /*
+         * Tombol Reset di bawah search
+         */
+
+        searchReset?.addEventListener(
+            'click',
+            resetStockSearch
+        );
+
+
+        /*
+         * Tombol reset ketika tidak ada hasil
+         */
+
+        searchEmptyReset?.addEventListener(
+            'click',
+            resetStockSearch
+        );
+
+
+        /*
+         * Escape ketika sedang mengetik search
+         *
+         * Jika ada teks search:
+         * Escape -> hapus search terlebih dahulu.
+         */
+
+        searchInput.addEventListener(
+            'keydown',
+            function (event) {
+
+                if (
+                    event.key === 'Escape' &&
+                    searchInput.value !== ''
+                ) {
+
+                    event.stopPropagation();
+
+                    resetStockSearch();
+
+                }
+
+            }
+        );
+
+
+        /*
+         * Reset search setiap kali modal dibuka.
+         */
+
+        window.resetStockSignalSearch =
+            function () {
+
+                searchInput.value = '';
+
+                updateStockSearch();
+
+            };
+
+
+        /*
+         * Expose fungsi update Select All
+         * agar bisa dipanggil ketika modal dibuka.
+         */
+
+        window.updateStockSignalSelectAll =
+            updateStockSignalSelectAll;
+
+
+        /*
+         * Initial state.
+         */
+
+        updateStockSignalSelectAll();
+
+    })();
+
+
+    /* ================================================================
+       ESCAPE KEY - STOCK MODAL
+       ================================================================ */
+
+    document.addEventListener(
+        'keydown',
+        function (event) {
+
+            if (
+                event.key === 'Escape' &&
+                document
+                    .getElementById('stockSignalModal')
+                    ?.classList.contains('flex')
+            ) {
+
+                closeStockSignalModal();
+
+            }
+
+        }
+    );
+
+
+    /* ================================================================
+       PREVENT DETAILS DROPDOWN FROM REMAINING OPEN
+       ================================================================ */
+
+    document.addEventListener(
+        'click',
+        function (event) {
+
+            const profileDropdown =
+                document.querySelector(
+                    '.ss-profile-dropdown'
+                );
+
+
+            if (
+                profileDropdown &&
+                !profileDropdown.contains(event.target)
+            ) {
+
+                profileDropdown.removeAttribute('open');
+
+            }
+
+        }
+    );
+
+</script>
