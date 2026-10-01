@@ -14,6 +14,101 @@
         </p>
     </div>
 
+    @php
+    $automation = \App\Models\AutomationSetting::first();
+@endphp
+
+@if(auth()->user()->hasRole('admin'))
+    <div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+
+            <div>
+                <h2 class="font-bold text-gray-900">
+                    Stock Automation
+                </h2>
+
+                <p class="mt-1 text-sm text-gray-500">
+                    Import harga dan generate signal otomatis pada hari kerja.
+                </p>
+
+                <div class="mt-2">
+                    @if($automation?->enabled)
+                        <span class="inline-flex items-center rounded-full bg-green-100 px-3 py-1 text-xs font-bold text-green-700">
+                            ● ACTIVE
+                        </span>
+                    @else
+                        <span class="inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-xs font-bold text-gray-600">
+                            ● OFF
+                        </span>
+                    @endif
+                </div>
+            </div>
+
+            <div class="flex gap-2">
+
+                @if($automation?->enabled)
+
+                    <form method="POST" action="{{ route('automation.stop') }}">
+                        @csrf
+
+                        <button
+                            type="submit"
+                            class="rounded-xl bg-red-600 px-5 py-2.5 text-sm font-bold text-white hover:bg-red-700"
+                        >
+                            STOP
+                        </button>
+                    </form>
+
+                @else
+
+                    <form method="POST" action="{{ route('automation.start') }}">
+                        @csrf
+
+                        <button
+                            type="submit"
+                            class="rounded-xl bg-green-600 px-5 py-2.5 text-sm font-bold text-white hover:bg-green-700"
+                        >
+                            START
+                        </button>
+                    </form>
+
+                @endif
+
+            </div>
+
+        </div>
+
+        @if($automation)
+            <div class="mt-4 grid grid-cols-1 gap-3 border-t border-gray-100 pt-4 sm:grid-cols-2">
+
+                <div>
+                    <p class="text-xs text-gray-400">
+                        Import terakhir
+                    </p>
+
+                    <p class="text-sm font-semibold text-gray-700">
+                        {{ $automation->last_import_date?->format('d M Y') ?? '-' }}
+                    </p>
+                </div>
+
+                <div>
+                    <p class="text-xs text-gray-400">
+                        Signal terakhir
+                    </p>
+
+                    <p class="text-sm font-semibold text-gray-700">
+                        {{ $automation->last_signal_date?->format('d M Y') ?? '-' }}
+                    </p>
+                </div>
+
+            </div>
+        @endif
+
+    </div>
+@endif
+
+
 
     {{-- SUMMARY CARDS --}}
     <div class="grid grid-cols-2 gap-4 lg:grid-cols-4">

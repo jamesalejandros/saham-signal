@@ -7,6 +7,7 @@ use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\UserStockSignalController;
+use App\Http\Controllers\AutomationController;
 
 Route::middleware('auth')->group(function () {
 
@@ -71,8 +72,8 @@ Route::middleware('auth')->group(function () {
     */
 
     Route::get('/dashboard', [StockSignalController::class, 'dashboard'])
-    ->middleware(['auth'])
-    ->name('dashboard');
+        ->middleware(['auth'])
+        ->name('dashboard');
 
 
     /*
@@ -113,6 +114,17 @@ Route::middleware('auth')->group(function () {
             [StockSignalController::class, 'store']
         )->name('signals.store');
 
+        Route::post(
+            '/automation/start',
+            [AutomationController::class, 'start']
+        )->name('automation.start');
+
+        Route::post(
+            '/automation/stop',
+            [AutomationController::class, 'stop']
+        )->name('automation.stop');
+
+
 
         /*
         |--------------------------------------------------------------------------
@@ -142,9 +154,9 @@ Route::middleware('auth')->group(function () {
         */
 
         Route::get(
-    '/notification-test',
-    [NotificationTestController::class, 'send']
-)->name('notification.test');
+            '/notification-test',
+            [NotificationTestController::class, 'send']
+        )->name('notification.test');
 
 
     });
@@ -205,6 +217,12 @@ Route::middleware('auth')->group(function () {
 
 
 });
+
+Route::get(
+    '/automation/run',
+    [AutomationController::class, 'run']
+)->name('automation.run');
+
 
 
 /*
