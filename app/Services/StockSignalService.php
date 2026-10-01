@@ -16,7 +16,8 @@ class StockSignalService
 {
     public function __construct(
         private StockPriceProvider $provider,
-    ) {}
+    ) {
+    }
 
     public function generateSignal(string $stockCode): StockSignal
     {
@@ -152,7 +153,7 @@ class StockSignalService
         |
         */
 
-       if ($signal !== 'HOLD' && $signalStrength !== 'WEAK') {
+        if ($signal !== 'HOLD' && $signalStrength !== 'WEAK') {
             $this->notify($signalRecord);
         }
 
@@ -180,14 +181,14 @@ class StockSignalService
         $points = [
             "- {$signal} {$signalStrength}: {$strength}/3 kondisi terpenuhi.",
             $result['condition_1']
-                ? ($signal === 'BUY' ? '- MA20 > MA50: tren bullish terkonfirmasi.' : '- MA20 < MA50: tren bearish terkonfirmasi.')
-                : '- MA20 dan MA50: belum mengonfirmasi tren.',
+            ? ($signal === 'BUY' ? '- MA20 > MA50: tren bullish terkonfirmasi.' : '- MA20 < MA50: tren bearish terkonfirmasi.')
+            : '- MA20 dan MA50: belum mengonfirmasi tren.',
             $result['condition_2']
-                ? ($signal === 'BUY' ? '- RSI oversold: ada peluang rebound.' : '- RSI overbought: ada risiko koreksi.')
-                : '- RSI: belum memberi konfirmasi tambahan.',
+            ? ($signal === 'BUY' ? '- RSI oversold: ada peluang rebound.' : '- RSI overbought: ada risiko koreksi.')
+            : '- RSI: belum memberi konfirmasi tambahan.',
             $result['condition_3']
-                ? '- Volume: meningkat dan mendukung pergerakan harga.'
-                : '- Volume: belum meningkat signifikan.',
+            ? '- Volume: meningkat dan mendukung pergerakan harga.'
+            : '- Volume: belum meningkat signifikan.',
             "- Kesimpulan: sinyal {$signal} dengan kekuatan {$signalStrength}.",
         ];
 
@@ -197,10 +198,13 @@ class StockSignalService
     /**
      * Mengirim notifikasi kepada seluruh user dan Telegram.
      */
+    /**
+     * Mengirim notifikasi hanya kepada user yang
+     * memilih saham tersebut di user_stocks.
+     */
     private function notify(StockSignal $signalRecord): void
     {
         try {
-
             Log::info(
                 "Sending notifications for {$signalRecord->stock_code} ({$signalRecord->signal})..."
             );
@@ -210,43 +214,51 @@ class StockSignalService
             | Notifikasi aplikasi
             |--------------------------------------------------------------------------
             |
-            | Semua user menerima signal untuk semua saham.
-            | Tidak menggunakan watchlist karena sistem memang
-            | tidak membatasi saham berdasarkan preferensi user.
+            | Hanya user yang memiliki stock_code ini di user_stocks
+            | yang akan menerima notifikasi.
             |
             */
 
-            $users = User::role('user')
-    ->whereHas('stocks', function ($query) use ($signalRecord) {
-        $query->where(
-            'stocks.stock_code',
-            $signalRecord->stock_code
-        );
-    })
-    ->get();
+            $users = User::whereHas('stocks', function ($query) use ($signalRecord) {
+                $query->where(
+                    'stocks.stock_code',
+                    $signalRecord->stock_code
+                );
+            })->get();
 
-foreach ($users as $user) {
-    $user->notify(
-        new StockSignalNotification($signalRecord)
-    );
-}
-
+            foreach ($users as $user) {
+                $user->notify(
+                    new StockSignalNotification($signalRecord)
+                );
+            }
 
             /*
             |--------------------------------------------------------------------------
             | Notifikasi Telegram
             |--------------------------------------------------------------------------
+            |
+            | Jangan mengirim ke chat_id global karena itu tidak terkait
+            | dengan user yang memilih saham.
+            |
+            | Jika Telegram notification memang harus dikirim per-user,
+            | gunakan routeNotificationForTelegram() dari masing-masing user.
+            |
             */
 
-            Notification::route(
-                'telegram',
-                config('services.telegram-bot-api.chat_id')
-            )->notify(
-                new StockSignalTelegramNotification($signalRecord)
-            );
+            foreach ($users as $user) {
+                if (!empty($user->telegram_chat_id)) {
+                    $user->notify(
+                        new StockSignalTelegramNotification($signalRecord)
+                    );
+                }
+            }
 
             Log::info(
-                "Notifications sent for {$signalRecord->stock_code}"
+                "Notifications sent for {$signalRecord->stock_code}",
+                [
+                    'users_count' => $users->count(),
+                    'users' => $users->pluck('id')->values()->all(),
+                ]
             );
 
         } catch (Throwable $err) {
@@ -260,4 +272,5 @@ foreach ($users as $user) {
             );
         }
     }
+
 }

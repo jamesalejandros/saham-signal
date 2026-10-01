@@ -28,7 +28,7 @@ class StockSignalTelegramNotification extends Notification
     {
         $signalId = (string) $this->stockSignal->id;
 
-        $appUrl = "http://localhost/signals/{$signalId}";
+        $appUrl = "https://sahamsignal.ct.ws/signals/{$signalId}";
 
         $stockCode = $this->stockSignal->stock_code;
         $stockName = $this->stockSignal->stock?->stock_name ?? 'Unknown stock';

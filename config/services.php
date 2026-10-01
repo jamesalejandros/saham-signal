@@ -47,4 +47,8 @@ return [
         ],
     ],
 
+    'automation' => [
+        'token' => env('AUTOMATION_TOKEN'),
+    ],
+
 ];

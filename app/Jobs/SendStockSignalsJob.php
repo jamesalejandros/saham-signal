@@ -26,7 +26,9 @@ class SendStockSignalsJob implements ShouldQueue
             'summary' => null,
             'summary_updated' => null,
         ]);
-        $stocks = Stock::all();
+        $stocks = Stock::query()
+            ->whereHas('users')
+            ->get();
         foreach ($stocks as $stock) {
             $service->generateSignal($stock->stock_code);
         }
