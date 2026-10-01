@@ -97,6 +97,35 @@ Route::middleware('auth')->group(function () {
 
     Route::middleware('role:admin')->group(function () {
 
+
+        Route::resource('users', UserController::class);
+
+        Route::post(
+            'users/{user}/stocks',
+            [UserController::class, 'storeStock']
+        )->name('users.stocks.store');
+
+        Route::delete(
+            'users/{user}/stocks/{stockCode}',
+            [UserController::class, 'destroyStock']
+        )->name('users.stocks.destroy');
+
+        /*
+        |--------------------------------------------------------------------------
+        | User Management
+        |--------------------------------------------------------------------------
+        */
+
+        Route::post('/users/refresh-stock-signals', function (\App\Services\StockPriceProvider $provider) {
+            $provider->importLatestPricesForAllStocks(50);
+            \App\Jobs\SendStockSignalsJob::dispatchSync();
+
+            return redirect()
+                ->route('users.index')
+                ->with('success', 'Pembaruan harga dan signal saham selesai.');
+        })->name('users.refresh-stock-signals');
+
+
         /*
         |--------------------------------------------------------------------------
         | Stock Signal Generation
@@ -122,29 +151,7 @@ Route::middleware('auth')->group(function () {
         Route::post(
             '/automation/stop',
             [AutomationController::class, 'stop']
-        )->name('automation.stop');
-
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | User Management
-        |--------------------------------------------------------------------------
-        */
-
-        Route::resource(
-            'users',
-            UserController::class
-        );
-
-        Route::post('/users/refresh-stock-signals', function (\App\Services\StockPriceProvider $provider) {
-            $provider->importLatestPricesForAllStocks(50);
-            \App\Jobs\SendStockSignalsJob::dispatchSync();
-
-            return redirect()
-                ->route('users.index')
-                ->with('success', 'Pembaruan harga dan signal saham selesai.');
-        })->name('users.refresh-stock-signals');
+        )->name('automation.stop');        
 
 
         /*

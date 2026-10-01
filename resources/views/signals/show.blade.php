@@ -56,6 +56,7 @@
             'ma20' => $ma20,
             'ma50' => $ma50,
         ]);
+
         /*
         |--------------------------------------------------------------------------
         | RSI
@@ -205,6 +206,7 @@
             </div>
 
             <div class="flex flex-wrap items-center gap-3">
+
                 <a href="{{ route('signals.index') }}"
                     class="inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-semibold text-gray-700 shadow-sm transition hover:bg-gray-50">
                     ← Kembali
@@ -238,11 +240,18 @@
 
             @else
 
-                <canvas id="priceChart" height="100"></canvas>
+                {{-- Responsive professional chart container --}}
+                <div class="relative h-[320px] w-full sm:h-[360px] lg:h-[400px]">
+
+                    <canvas id="priceChart"></canvas>
+
+                </div>
 
             @endif
 
         </div>
+
+
         {{-- Stock Information --}}
         <div class="overflow-hidden rounded-xl bg-white shadow">
 
@@ -432,6 +441,7 @@
                     <div class="mt-4 space-y-2 text-sm">
 
                         <div class="flex justify-between">
+
                             <span class="text-gray-500">
                                 MA(20)
                             </span>
@@ -439,9 +449,11 @@
                             <span class="font-semibold text-gray-900">
                                 {{ $formatPrice($ma20) }}
                             </span>
+
                         </div>
 
                         <div class="flex justify-between">
+
                             <span class="text-gray-500">
                                 MA(50)
                             </span>
@@ -449,6 +461,7 @@
                             <span class="font-semibold text-gray-900">
                                 {{ $formatPrice($ma50) }}
                             </span>
+
                         </div>
 
                     </div>
@@ -845,18 +858,27 @@
                                 <span
                                     class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-blue-600 text-white shadow-sm"
                                     aria-hidden="true">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none"
-                                        stroke="currentColor" stroke-width="2" stroke-linecap="round"
+
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                         stroke-linejoin="round">
+
                                         <path d="M19 20H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v1" />
+
                                         <path d="M16 19h5V9h-5v10Z" />
+
                                         <path d="M6 8h6" />
+
                                         <path d="M6 12h6" />
+
                                         <path d="M6 16h4" />
+
                                     </svg>
+
                                 </span>
 
                                 <div>
+
                                     <h3 class="text-base font-bold text-gray-900 sm:text-lg">
                                         Berita Terkini
                                     </h3>
@@ -867,6 +889,7 @@
                                             {{ $signal->stock_code }}
                                         </span>
                                     </p>
+
                                 </div>
 
                             </div>
@@ -875,14 +898,18 @@
 
 
                         {{-- Search Button --}}
-                        <button type="button" onclick="getStockNews('{{ $signal->id }}', '{{ $signal->stock_code }}', this)"
+                        <button type="button"
+                            onclick="getStockNews('{{ $signal->id }}', '{{ $signal->stock_code }}', this)"
                             class="inline-flex h-11 w-full shrink-0 items-center justify-center gap-2 rounded-lg bg-blue-600 px-5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-blue-100 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto">
 
                             <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
                                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                                 aria-hidden="true">
+
                                 <circle cx="11" cy="11" r="7"></circle>
+
                                 <path d="m20 20-4-4"></path>
+
                             </svg>
 
                             <span>Search News</span>
@@ -905,13 +932,17 @@
 
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none"
                                 stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+
                                 <circle cx="11" cy="11" r="7" />
+
                                 <path d="m20 20-4-4" />
+
                             </svg>
 
                         </div>
 
                         <div>
+
                             <p class="text-sm font-semibold text-gray-700">
                                 Belum ada berita yang dicari
                             </p>
@@ -920,6 +951,7 @@
                                 Klik tombol <span class="font-semibold">Search News</span>
                                 untuk mencari berita terbaru mengenai {{ $signal->stock_code }}.
                             </p>
+
                         </div>
 
                     </div>
@@ -966,6 +998,7 @@
 
         </div>
 
+
         <div class="flex justify-center">
 
             <a href="https://stockbit.com/symbol/{{ urlencode($signal->stock_code) }}" target="_blank"
@@ -1009,7 +1042,6 @@
                 ">
 
                     {{-- Red --}}
-
                     <span style="
                         position: absolute;
                         width: 11px;
@@ -1021,9 +1053,7 @@
                         border-radius: 2px;
                     "></span>
 
-
                     {{-- Blue --}}
-
                     <span style="
                         position: absolute;
                         width: 11px;
@@ -1035,9 +1065,7 @@
                         border-radius: 2px;
                     "></span>
 
-
                     {{-- Yellow --}}
-
                     <span style="
                         position: absolute;
                         width: 10px;
@@ -1049,9 +1077,7 @@
                         border-radius: 2px;
                     "></span>
 
-
                     {{-- Green --}}
-
                     <span style="
                         position: absolute;
                         width: 10px;
@@ -1067,7 +1093,6 @@
 
 
                 {{-- Stockbit Text --}}
-
                 <span style="
                     letter-spacing: -0.04em;
                     font-size: 1rem;
@@ -1078,7 +1103,6 @@
 
 
                 {{-- External Link --}}
-
                 <span aria-hidden="true" style="
                     margin-left: 0.15rem;
                     font-size: 1rem;
@@ -1091,7 +1115,6 @@
             </a>
 
         </div>
-
 
 
         {{-- Description --}}
@@ -1121,6 +1144,8 @@
             </a>
 
         </div>
+
+
         <script>
             async function getStockNews(signalId, stockCode, button) {
 
@@ -1188,7 +1213,7 @@
                             <path
                                 class="opacity-75"
                                 fill="currentColor"
-                                d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                                d="M4 12a8 8 0 018 8v4a4 4 0 00-4-4H4z"
                             ></path>
                         </svg>
                     </div>
@@ -1374,7 +1399,6 @@
             <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
 
             <script>
-
                 const ctx = document.getElementById('priceChart');
 
                 new Chart(ctx, {
@@ -1407,7 +1431,15 @@
 
                             fill: true,
 
-                            pointRadius: 2
+                            pointRadius: 2,
+
+                            pointHoverRadius: 5,
+
+                            pointBackgroundColor: 'rgb(37, 99, 235)',
+
+                            pointBorderColor: '#ffffff',
+
+                            pointBorderWidth: 2
 
                         }]
 
@@ -1417,17 +1449,61 @@
 
                         responsive: true,
 
+                        maintainAspectRatio: false,
+
+                        interaction: {
+                            intersect: false,
+                            mode: 'index'
+                        },
+
                         plugins: {
 
                             legend: {
                                 display: false
+                            },
+
+                            tooltip: {
+
+                                displayColors: false,
+
+                                callbacks: {
+
+                                    label: function(context) {
+
+                                        return 'Rp ' +
+                                            Number(context.parsed.y).toLocaleString('id-ID');
+
+                                    }
+
+                                }
+
                             }
 
                         },
 
                         scales: {
 
+                            x: {
+
+                                grid: {
+                                    display: false
+                                },
+
+                                ticks: {
+                                    maxRotation: 0,
+                                    autoSkip: true,
+                                    maxTicksLimit: 8
+                                }
+
+                            },
+
                             y: {
+
+                                beginAtZero: false,
+
+                                grid: {
+                                    color: 'rgba(156, 163, 175, 0.15)'
+                                },
 
                                 ticks: {
 
@@ -1444,7 +1520,6 @@
                     }
 
                 });
-
             </script>
 
         @endpush

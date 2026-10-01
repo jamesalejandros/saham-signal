@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Stock;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -11,11 +12,21 @@ class UserController extends Controller
 {
     public function index()
     {
-        $users = User::with('roles')
+        $users = User::with([
+            'roles',
+            'stocks',
+        ])
             ->latest()
             ->get();
 
-        return view('users.index', compact('users'));
+        $stocks = Stock::query()
+            ->orderBy('stock_code')
+            ->get();
+
+        return view('users.index', compact(
+            'users',
+            'stocks'
+        ));
     }
 
     public function create()
@@ -69,7 +80,10 @@ class UserController extends Controller
 
     public function show(User $user)
     {
-        $user->load('roles');
+        $user->load([
+            'roles',
+            'stocks',
+        ]);
 
         return view('users.show', compact('user'));
     }
@@ -135,7 +149,10 @@ class UserController extends Controller
     public function destroy(User $user)
     {
         if ($user->id === auth()->id()) {
-            return back()->with('error', 'Anda tidak dapat menghapus akun sendiri.');
+            return back()->with(
+                'error',
+                'Anda tidak dapat menghapus akun sendiri.'
+            );
         }
 
         $user->delete();
@@ -143,5 +160,91 @@ class UserController extends Controller
         return redirect()
             ->route('users.index')
             ->with('success', 'User berhasil dihapus.');
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | User Stock Management
+    |--------------------------------------------------------------------------
+    */
+
+    /**
+     * Tambahkan satu stock ke user.
+     */
+    public function storeStock(Request $request, User $user)
+    {
+        $validated = $request->validate([
+            'stock_code' => [
+                'required',
+                'string',
+                'exists:stocks,stock_code',
+            ],
+        ]);
+
+        $stockCode = $validated['stock_code'];
+
+        // Cek agar tidak menambahkan saham yang sudah dimiliki user.
+        if (
+            $user->stocks()
+                ->where('stocks.stock_code', $stockCode)
+                ->exists()
+        ) {
+            return redirect()
+                ->route('users.index')
+                ->with(
+                    'error',
+                    "Saham {$stockCode} sudah terdaftar untuk user {$user->name}."
+                );
+        }
+
+        $user->stocks()->attach($stockCode);
+
+        return redirect()
+            ->route('users.index')
+            ->with(
+                'success',
+                "Saham {$stockCode} berhasil ditambahkan ke {$user->name}."
+            );
+    }
+
+
+    /**
+     * Hapus satu stock dari user.
+     */
+    public function destroyStock(
+        User $user,
+        string $stockCode
+    ) {
+        $stock = Stock::query()
+            ->where('stock_code', $stockCode)
+            ->first();
+
+        if (!$stock) {
+            return redirect()
+                ->route('users.index')
+                ->with(
+                    'error',
+                    "Saham {$stockCode} tidak ditemukan."
+                );
+        }
+
+        $detached = $user->stocks()->detach($stockCode);
+
+        if ($detached === 0) {
+            return redirect()
+                ->route('users.index')
+                ->with(
+                    'error',
+                    "Saham {$stockCode} tidak terdaftar pada user {$user->name}."
+                );
+        }
+
+        return redirect()
+            ->route('users.index')
+            ->with(
+                'success',
+                "Saham {$stockCode} berhasil dihapus dari {$user->name}."
+            );
     }
 }
