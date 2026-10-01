@@ -626,13 +626,14 @@ foreach ($users as $user) {
 
             Jawab dalam Bahasa Indonesia, maksimal 6-7 kalimat total, tanpa heading atau bullet point — tulis sebagai paragraf naratif yang mengalir.
             PROMPT;
-
-        $apiResponse = Http::withToken(config('services.groq.key'))
+        $model = config('services.deepseek.model');
+        $url = config('services.deepseek.url');
+        $apiResponse = Http::withToken(config('services.deepseek.key'))
             ->acceptJson()
             ->post(
-                'https://api.groq.com/openai/v1/chat/completions',
+                $url,
                 [
-                    'model' => 'qwen/qwen3.8-27b',
+                    'model' => $model,
                     'messages' => [
                         [
                             'role' => 'user',
@@ -645,7 +646,7 @@ foreach ($users as $user) {
         if ($apiResponse->failed()) {
 
             Log::error(
-                'Groq summarization failed',
+                'LLM summarization failed',
                 [
                     'stock_code' => $stockCode,
                     'status' => $apiResponse->status(),
@@ -666,7 +667,7 @@ foreach ($users as $user) {
         if (!$summary) {
 
             Log::error(
-                'Groq response missing summary content',
+                'LLM response missing summary content',
                 [
                     'stock_code' => $stockCode,
                     'response' => $result

@@ -26,6 +26,13 @@ return [
     
     'groq' =>[
         'key' => env('GROQ_API_KEY'),
+        'model' => env('GROQ_MODEL'),
+        'url'=>env('GROQ_URL')
+    ],
+    'deepseek' =>[
+        'key' => env('DEEPSEEK_API_KEY'),
+        'model' => env('DEEPSEEK_MODEL'),
+        'url'=>env('DEEPSEEK_URL')
     ],
     'sectors'=>[
         'key'=> env('SECTORS_API_KEY')

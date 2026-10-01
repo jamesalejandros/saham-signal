@@ -49,7 +49,7 @@ class StockPriceProvider
     public function importLatestPricesForAllStocks(int $days = 50): void
     {
         $stocks = Stock::has('users')->with('users')->get();
-        Log::info($stocks);
+        Log::info($stocks); 
         $count = $stocks->count();
         Log::info($count);
         foreach ($stocks as $stock) {
