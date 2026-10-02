@@ -480,9 +480,10 @@
         }
 
     }
+    
 
 </style>
-
+<script> window.VAPID_PUBLIC_KEY = @json( config('webpush.vapid.public_key') ); </script>
 </head> <body class="ss-app-bg bg-gray-100 text-gray-900">
 <div class="min-h-screen">
 

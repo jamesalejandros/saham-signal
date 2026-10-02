@@ -7,6 +7,9 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use NotificationChannels\Telegram\TelegramMessage;
+use NotificationChannels\WebPush\WebPushChannel;
+use NotificationChannels\WebPush\WebPushMessage;
+
 
 class StockSignalNotification extends Notification
 {
@@ -17,10 +20,12 @@ class StockSignalNotification extends Notification
     ) {
     }
 
+
     public function via(object $notifiable): array
     {
         $channels = [
             'database',
+            WebPushChannel::class,
         ];
 
         if (!empty($notifiable->telegram_chat_id)) {
@@ -29,13 +34,14 @@ class StockSignalNotification extends Notification
 
         return $channels;
     }
+
     public function toDatabase(object $notifiable): array
     {
         $stockName = $this->stockSignal->stock?->stock_name ?? 'Unknown stock';
 
         return [
             'stock_code' => $this->stockSignal->stock_code,
-            'stock_name'=> $stockName,
+            'stock_name' => $stockName,
             'signal' => $this->stockSignal->signal,
 
             'signal_strength' => $this->stockSignal->signal_strength,
@@ -58,4 +64,37 @@ class StockSignalNotification extends Notification
         return TelegramMessage::create()
             ->content($message);
     }
+
+    public function toWebPush(
+        object $notifiable,
+        $notification
+    ): WebPushMessage {
+        $stockName = $this->stockSignal->stock?->stock_name
+            ?? 'Unknown stock';
+
+        return (new WebPushMessage)
+            ->title(
+                "{$this->stockSignal->signal} {$this->stockSignal->stock_code}"
+            )
+            ->body(
+                "{$stockName} • {$this->stockSignal->signal_strength}"
+            )
+            ->icon('/icons/icon-192.png')
+            ->badge('/icons/badge-72.png')
+            ->data([
+                'signal_id' => $this->stockSignal->id,
+                'stock_code' => $this->stockSignal->stock_code,
+                'url' => route(
+                    'signals.show',
+                    $this->stockSignal
+                ),
+            ])
+            ->tag(
+                'stock-signal-' . $this->stockSignal->stock_code
+            )
+            ->options([
+                'TTL' => 3600,
+            ]);
+    }
+
 }

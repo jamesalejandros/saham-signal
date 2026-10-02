@@ -5,9 +5,11 @@ use App\Http\Controllers\NotificationTestController;
 use App\Http\Controllers\StockSignalController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\UserStockSignalController;
 use App\Http\Controllers\AutomationController;
+
 
 Route::middleware('auth')->group(function () {
 
@@ -64,6 +66,72 @@ Route::get('/', function () {
 */
 
 Route::middleware('auth')->group(function () {
+
+    Route::post(
+    '/push/subscribe',
+    function (Request $request) {
+
+        $validated = $request->validate([
+            'endpoint' => [
+                'required',
+                'string',
+            ],
+
+            'keys.p256dh' => [
+                'required',
+                'string',
+            ],
+
+            'keys.auth' => [
+                'required',
+                'string',
+            ],
+
+            'contentEncoding' => [
+                'nullable',
+                'string',
+            ],
+        ]);
+
+        $user = $request->user();
+
+        $user->updatePushSubscription(
+            $validated['endpoint'],
+            $validated['keys']['p256dh'],
+            $validated['keys']['auth'],
+            $validated['contentEncoding'] ?? null
+        );
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Push subscription berhasil disimpan.',
+        ]);
+    }
+);
+
+Route::delete(
+    '/push/unsubscribe',
+    function (Request $request) {
+
+        $user = $request->user();
+
+        $endpoint = $request->input('endpoint');
+
+        if ($endpoint) {
+
+            $user
+                ->pushSubscriptions()
+                ->where('endpoint', $endpoint)
+                ->delete();
+
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Push subscription berhasil dihapus.',
+        ]);
+    }
+);
 
     /*
     |--------------------------------------------------------------------------

@@ -74,6 +74,72 @@
                  ========================================================= -->
 
             <div class="flex items-center gap-4">
+                <!-- =====================================================
+     WEB PUSH NOTIFICATION
+     ===================================================== -->
+
+<div class="relative">
+
+    <button
+        id="enable-push"
+        type="button"
+        title="Aktifkan notifikasi browser"
+        aria-label="Aktifkan notifikasi browser"
+        class="group inline-flex h-10 items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 text-sm font-medium text-gray-600 shadow-sm transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
+    >
+
+        <!-- Push Icon -->
+
+        <svg
+            id="push-bell-icon"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.7"
+            stroke="currentColor"
+            class="h-5 w-5 shrink-0 transition-colors"
+        >
+            <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M12 18.75a6.75 6.75 0 006.75-6.75V9a6.75 6.75 0 00-13.5 0v3A6.75 6.75 0 0012 18.75z"
+            />
+
+            <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M9.75 18.75a2.25 2.25 0 004.5 0"
+            />
+        </svg>
+
+
+        <!-- Button Text -->
+
+        <span id="push-button-text">
+            Aktifkan Push
+        </span>
+
+
+        <!-- Active Indicator -->
+
+        <span
+            id="push-active-indicator"
+            class="hidden h-2 w-2 shrink-0 rounded-full bg-green-500"
+        ></span>
+
+    </button>
+
+
+    <!-- Status Message -->
+
+    <div
+        id="push-status"
+        class="absolute right-0 top-12 z-[100] hidden w-max max-w-[280px] rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs text-gray-600 shadow-lg"
+    ></div>
+
+</div>
+
+
 
                 <!-- =====================================================
                      NOTIFICATION
@@ -1926,5 +1992,764 @@ FLOATING STOCK SETTINGS BUTTON
 
         }
     );
+
+</script>
+<script>
+
+    /* ================================================================
+       WEB PUSH NOTIFICATION
+       ================================================================ */
+
+    document.addEventListener('DOMContentLoaded', function () {
+
+        const button =
+            document.getElementById('enable-push');
+
+        const status =
+            document.getElementById('push-status');
+
+        const activeIndicator =
+            document.getElementById('push-active-indicator');
+
+        const buttonText =
+            document.getElementById('push-button-text');
+
+        const bellIcon =
+            document.getElementById('push-bell-icon');
+
+
+        if (!button) {
+            return;
+        }
+
+
+        /* ============================================================
+           STATUS HELPER
+           ============================================================ */
+
+        function showStatus(message, type = 'info') {
+
+            if (!status) {
+                return;
+            }
+
+
+            status.textContent = message;
+
+
+            status.classList.remove(
+                'hidden',
+                'border-green-200',
+                'border-red-200',
+                'border-blue-200',
+                'bg-green-50',
+                'bg-red-50',
+                'bg-blue-50',
+                'text-green-700',
+                'text-red-700',
+                'text-blue-700'
+            );
+
+
+            if (type === 'success') {
+
+                status.classList.add(
+                    'border-green-200',
+                    'bg-green-50',
+                    'text-green-700'
+                );
+
+            } else if (type === 'error') {
+
+                status.classList.add(
+                    'border-red-200',
+                    'bg-red-50',
+                    'text-red-700'
+                );
+
+            } else {
+
+                status.classList.add(
+                    'border-blue-200',
+                    'bg-blue-50',
+                    'text-blue-700'
+                );
+
+            }
+
+
+            status.classList.remove('hidden');
+
+
+            clearTimeout(
+                window.__pushStatusTimeout
+            );
+
+
+            window.__pushStatusTimeout =
+                setTimeout(function () {
+
+                    status.classList.add('hidden');
+
+                }, 5000);
+
+        }
+
+
+        /* ============================================================
+           ACTIVE STATE
+           ============================================================ */
+
+        function setPushActive() {
+
+            button.disabled = true;
+
+            button.title =
+                'Notifikasi browser sudah aktif';
+
+            button.setAttribute(
+                'aria-label',
+                'Notifikasi browser sudah aktif'
+            );
+
+
+            /*
+             * Ubah teks tombol
+             */
+
+            if (buttonText) {
+
+                buttonText.textContent =
+                    'Push Aktif';
+
+            }
+
+
+            /*
+             * Ubah warna tombol
+             */
+
+            button.classList.remove(
+                'text-gray-600',
+                'border-gray-200',
+                'bg-white'
+            );
+
+            button.classList.add(
+                'text-blue-600',
+                'border-blue-200',
+                'bg-blue-50'
+            );
+
+
+            /*
+             * Aktifkan indikator hijau
+             */
+
+            if (activeIndicator) {
+
+                activeIndicator.classList.remove(
+                    'hidden'
+                );
+
+            }
+
+
+            /*
+             * Ubah warna icon
+             */
+
+            if (bellIcon) {
+
+                bellIcon.classList.remove(
+                    'text-gray-600'
+                );
+
+                bellIcon.classList.add(
+                    'text-blue-600'
+                );
+
+            }
+
+        }
+
+
+        /* ============================================================
+           INACTIVE STATE
+           ============================================================ */
+
+        function setPushInactive() {
+
+            button.disabled = false;
+
+            button.title =
+                'Aktifkan notifikasi browser';
+
+            button.setAttribute(
+                'aria-label',
+                'Aktifkan notifikasi browser'
+            );
+
+
+            /*
+             * Kembalikan teks tombol
+             */
+
+            if (buttonText) {
+
+                buttonText.textContent =
+                    'Aktifkan Push';
+
+            }
+
+
+            /*
+             * Kembalikan warna tombol
+             */
+
+            button.classList.remove(
+                'text-blue-600',
+                'border-blue-200',
+                'bg-blue-50'
+            );
+
+            button.classList.add(
+                'text-gray-600',
+                'border-gray-200',
+                'bg-white'
+            );
+
+
+            /*
+             * Sembunyikan indikator hijau
+             */
+
+            if (activeIndicator) {
+
+                activeIndicator.classList.add(
+                    'hidden'
+                );
+
+            }
+
+
+            /*
+             * Kembalikan warna icon
+             */
+
+            if (bellIcon) {
+
+                bellIcon.classList.remove(
+                    'text-blue-600'
+                );
+
+            }
+
+        }
+
+
+        /* ============================================================
+           PROCESSING STATE
+           ============================================================ */
+
+        function setPushProcessing() {
+
+            button.disabled = true;
+
+
+            if (buttonText) {
+
+                buttonText.textContent =
+                    'Memproses...';
+
+            }
+
+
+            button.classList.remove(
+                'text-blue-600'
+            );
+
+            button.classList.add(
+                'text-gray-500'
+            );
+
+        }
+
+
+        /* ============================================================
+           BROWSER SUPPORT CHECK
+           ============================================================ */
+
+        if (!('Notification' in window)) {
+
+            button.disabled = true;
+
+            button.title =
+                'Browser tidak mendukung notifikasi';
+
+            if (buttonText) {
+
+                buttonText.textContent =
+                    'Tidak Didukung';
+
+            }
+
+            showStatus(
+                'Browser ini tidak mendukung notification.',
+                'error'
+            );
+
+            return;
+
+        }
+
+
+        if (!('serviceWorker' in navigator)) {
+
+            button.disabled = true;
+
+            button.title =
+                'Browser tidak mendukung Service Worker';
+
+            if (buttonText) {
+
+                buttonText.textContent =
+                    'Tidak Didukung';
+
+            }
+
+            showStatus(
+                'Browser ini tidak mendukung Service Worker.',
+                'error'
+            );
+
+            return;
+
+        }
+
+
+        if (!('PushManager' in window)) {
+
+            button.disabled = true;
+
+            button.title =
+                'Browser tidak mendukung Web Push';
+
+            if (buttonText) {
+
+                buttonText.textContent =
+                    'Tidak Didukung';
+
+            }
+
+            showStatus(
+                'Browser ini tidak mendukung Web Push.',
+                'error'
+            );
+
+            return;
+
+        }
+
+
+        /* ============================================================
+           VAPID CHECK
+           ============================================================ */
+
+        if (!window.VAPID_PUBLIC_KEY) {
+
+            console.error(
+                'VAPID public key tidak ditemukan.'
+            );
+
+            button.disabled = true;
+
+            button.title =
+                'Konfigurasi VAPID belum tersedia';
+
+            if (buttonText) {
+
+                buttonText.textContent =
+                    'Konfigurasi Belum Siap';
+
+            }
+
+            showStatus(
+                'Konfigurasi VAPID belum tersedia.',
+                'error'
+            );
+
+            return;
+
+        }
+
+
+        /* ============================================================
+           BASE64 URL → UINT8 ARRAY
+           ============================================================ */
+
+        function urlBase64ToUint8Array(
+            base64String
+        ) {
+
+            const padding =
+                '='.repeat(
+                    (4 - base64String.length % 4) % 4
+                );
+
+
+            const base64 =
+                (
+                    base64String + padding
+                )
+                    .replace(/-/g, '+')
+                    .replace(/_/g, '/');
+
+
+            const rawData =
+                window.atob(base64);
+
+
+            const outputArray =
+                new Uint8Array(
+                    rawData.length
+                );
+
+
+            for (
+                let i = 0;
+                i < rawData.length;
+                ++i
+            ) {
+
+                outputArray[i] =
+                    rawData.charCodeAt(i);
+
+            }
+
+
+            return outputArray;
+
+        }
+
+
+        /* ============================================================
+           CHECK EXISTING SUBSCRIPTION
+           ============================================================ */
+
+        async function checkExistingSubscription() {
+
+            try {
+
+                await navigator.serviceWorker.register(
+                    '/service-worker.js'
+                );
+
+
+                const readyRegistration =
+                    await navigator.serviceWorker.ready;
+
+
+                const subscription =
+                    await readyRegistration
+                        .pushManager
+                        .getSubscription();
+
+
+                if (
+                    subscription &&
+                    Notification.permission === 'granted'
+                ) {
+
+                    setPushActive();
+
+                } else {
+
+                    setPushInactive();
+
+                }
+
+            } catch (error) {
+
+                console.error(
+                    'Push subscription check error:',
+                    error
+                );
+
+                setPushInactive();
+
+            }
+
+        }
+
+
+        /* ============================================================
+           ENABLE PUSH
+           ============================================================ */
+
+        async function enablePush() {
+
+            try {
+
+                setPushProcessing();
+
+
+                showStatus(
+                    'Meminta izin notification...',
+                    'info'
+                );
+
+
+                /* ====================================================
+                   REQUEST PERMISSION
+                   ==================================================== */
+
+                const permission =
+                    await Notification.requestPermission();
+
+
+                if (permission !== 'granted') {
+
+                    setPushInactive();
+
+                    showStatus(
+                        'Izin notification tidak diberikan.',
+                        'error'
+                    );
+
+                    return;
+
+                }
+
+
+                /* ====================================================
+                   REGISTER SERVICE WORKER
+                   ==================================================== */
+
+                showStatus(
+                    'Mendaftarkan service worker...',
+                    'info'
+                );
+
+
+                const registration =
+                    await navigator.serviceWorker.register(
+                        '/service-worker.js'
+                    );
+
+
+                console.log(
+                    'Service Worker:',
+                    registration
+                );
+
+
+                /* ====================================================
+                   WAIT SERVICE WORKER
+                   ==================================================== */
+
+                const readyRegistration =
+                    await navigator.serviceWorker.ready;
+
+
+                /* ====================================================
+                   CHECK EXISTING SUBSCRIPTION
+                   ==================================================== */
+
+                let subscription =
+                    await readyRegistration
+                        .pushManager
+                        .getSubscription();
+
+
+                /* ====================================================
+                   CREATE SUBSCRIPTION
+                   ==================================================== */
+
+                if (!subscription) {
+
+                    showStatus(
+                        'Mendaftarkan perangkat...',
+                        'info'
+                    );
+
+
+                    subscription =
+                        await readyRegistration
+                            .pushManager
+                            .subscribe({
+
+                                userVisibleOnly: true,
+
+                                applicationServerKey:
+                                    urlBase64ToUint8Array(
+                                        window.VAPID_PUBLIC_KEY
+                                    )
+
+                            });
+
+                }
+
+
+                /* ====================================================
+                   CONVERT SUBSCRIPTION
+                   ==================================================== */
+
+                const subscriptionJson =
+                    subscription.toJSON();
+
+
+                console.log(
+                    'Push subscription:',
+                    subscriptionJson
+                );
+
+
+                /* ====================================================
+                   CSRF TOKEN
+                   ==================================================== */
+
+                const csrfToken =
+                    document
+                        .querySelector(
+                            'meta[name="csrf-token"]'
+                        )
+                        ?.getAttribute('content');
+
+
+                if (!csrfToken) {
+
+                    throw new Error(
+                        'CSRF token tidak ditemukan.'
+                    );
+
+                }
+
+
+                /* ====================================================
+                   SEND TO LARAVEL
+                   ==================================================== */
+
+                showStatus(
+                    'Menyimpan subscription...',
+                    'info'
+                );
+
+
+                const response =
+                    await fetch(
+                        '/push/subscribe',
+                        {
+
+                            method: 'POST',
+
+                            headers: {
+
+                                'Content-Type':
+                                    'application/json',
+
+                                'Accept':
+                                    'application/json',
+
+                                'X-CSRF-TOKEN':
+                                    csrfToken
+
+                            },
+
+                            body:
+                                JSON.stringify(
+                                    subscriptionJson
+                                )
+
+                        }
+                    );
+
+
+                let result = {};
+
+
+                try {
+
+                    result =
+                        await response.json();
+
+                } catch (jsonError) {
+
+                    console.error(
+                        'Response bukan JSON:',
+                        jsonError
+                    );
+
+                }
+
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        result.message ||
+                        'Gagal menyimpan push subscription.'
+                    );
+
+                }
+
+
+                /* ====================================================
+                   SUCCESS
+                   ==================================================== */
+
+                console.log(
+                    'Push subscription saved:',
+                    result
+                );
+
+
+                setPushActive();
+
+
+                showStatus(
+                    'Notifikasi berhasil diaktifkan.',
+                    'success'
+                );
+
+
+            } catch (error) {
+
+                console.error(
+                    'Web Push error:',
+                    error
+                );
+
+
+                setPushInactive();
+
+
+                showStatus(
+                    'Gagal mengaktifkan notifikasi: ' +
+                    error.message,
+                    'error'
+                );
+
+            }
+
+        }
+
+
+        /* ============================================================
+           BUTTON EVENT
+           ============================================================ */
+
+        button.addEventListener(
+            'click',
+            enablePush
+        );
+
+
+        /* ============================================================
+           INITIAL STATE
+           ============================================================ */
+
+        checkExistingSubscription();
+
+    });
 
 </script>

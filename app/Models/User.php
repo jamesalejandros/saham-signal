@@ -7,12 +7,13 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
-
+use NotificationChannels\WebPush\HasPushSubscriptions;
 class User extends Authenticatable
 {
     use HasApiTokens;
     use HasRoles;
     use Notifiable;
+    use HasPushSubscriptions;
 
     protected $fillable = [
         'name',
