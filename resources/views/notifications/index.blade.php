@@ -162,147 +162,156 @@
 
                     <div class="min-w-0 flex-1">
 
-                        <!-- Top Row -->
+                        <!-- Clickable Notification Content -->
 
-                        <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                        <a
+                            href="{{ route('notifications.open', $notification->id) }}"
+                            class="block rounded-xl transition focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                        >
 
-                            <div class="min-w-0">
+                            <!-- Top Row -->
 
-                                <div class="flex flex-wrap items-center gap-2">
+                            <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
 
-                                    <h2 class="text-base font-semibold text-gray-900">
-                                        {{ $notification->data['stock_code'] ?? 'Stock Signal' }}
-                                    </h2>
+                                <div class="min-w-0">
 
-                                    @if(!$notification->read_at)
+                                    <div class="flex flex-wrap items-center gap-2">
+
+                                        <h2 class="text-base font-semibold text-gray-900">
+                                            {{ $notification->data['stock_code'] ?? 'Stock Signal' }}
+                                        </h2>
+
+                                        @if(!$notification->read_at)
+
+                                            <span
+                                                class="inline-flex items-center gap-1.5 rounded-full bg-blue-100 px-2 py-0.5 text-[11px] font-semibold text-blue-700"
+                                            >
+                                                <span class="h-1.5 w-1.5 rounded-full bg-blue-600"></span>
+                                                Baru
+                                            </span>
+
+                                        @endif
+
+                                    </div>
+
+
+                                    <p class="mt-1 text-sm text-gray-600">
+
+                                        Signal
+
+                                        <span class="font-semibold text-gray-900">
+                                            {{ $notification->data['signal'] ?? '-' }}
+                                        </span>
+
+                                    </p>
+
+                                </div>
+
+
+                                <!-- Read Status -->
+
+                                <div class="flex shrink-0 items-center gap-3">
+
+                                    <span class="text-xs text-gray-400">
+                                        {{ $notification->created_at->diffForHumans() }}
+                                    </span>
+
+                                    @if($notification->read_at)
 
                                         <span
-                                            class="inline-flex items-center gap-1.5 rounded-full bg-blue-100 px-2 py-0.5 text-[11px] font-semibold text-blue-700"
+                                            class="inline-flex items-center gap-1.5 text-xs font-medium text-gray-400"
                                         >
-                                            <span class="h-1.5 w-1.5 rounded-full bg-blue-600"></span>
-                                            Baru
+
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                fill="none"
+                                                viewBox="0 0 24 24"
+                                                stroke-width="1.5"
+                                                stroke="currentColor"
+                                                class="h-4 w-4"
+                                            >
+                                                <path
+                                                    stroke-linecap="round"
+                                                    stroke-linejoin="round"
+                                                    d="M5 13l4 4L19 7"
+                                                />
+                                            </svg>
+
+                                            Dibaca
+
                                         </span>
 
                                     @endif
 
                                 </div>
 
+                            </div>
 
-                                <p class="mt-1 text-sm text-gray-600">
 
-                                    Signal
+                            <!-- Information Cards -->
 
-                                    <span class="font-semibold text-gray-900">
+                            <div class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+
+                                <div class="rounded-xl border border-gray-100 bg-white px-4 py-3 shadow-sm">
+
+                                    <p class="text-[11px] font-medium uppercase tracking-wider text-gray-400">
+                                        Signal
+                                    </p>
+
+                                    <p class="mt-1 text-sm font-semibold text-gray-900">
                                         {{ $notification->data['signal'] ?? '-' }}
-                                    </span>
+                                    </p>
 
-                                </p>
-
-                            </div>
+                                </div>
 
 
-                            <!-- Read Status -->
+                                <div class="rounded-xl border border-gray-100 bg-white px-4 py-3 shadow-sm">
 
-                            <div class="flex shrink-0 items-center gap-3">
+                                    <p class="text-[11px] font-medium uppercase tracking-wider text-gray-400">
+                                        Strength
+                                    </p>
 
-                                <span class="text-xs text-gray-400">
-                                    {{ $notification->created_at->diffForHumans() }}
-                                </span>
+                                    <p class="mt-1 text-sm font-semibold text-gray-900">
+                                        {{ $notification->data['signal_strength'] ?? '-' }}
+                                    </p>
 
-                                @if($notification->read_at)
-
-                                    <span
-                                        class="inline-flex items-center gap-1.5 text-xs font-medium text-gray-400"
-                                    >
-
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            fill="none"
-                                            viewBox="0 0 24 24"
-                                            stroke-width="1.5"
-                                            stroke="currentColor"
-                                            class="h-4 w-4"
-                                        >
-                                            <path
-                                                stroke-linecap="round"
-                                                stroke-linejoin="round"
-                                                d="M5 13l4 4L19 7"
-                                            />
-                                        </svg>
-
-                                        Dibaca
-
-                                    </span>
-
-                                @endif
-
-                            </div>
-
-                        </div>
+                                </div>
 
 
-                        <!-- Information Cards -->
+                                <div class="rounded-xl border border-gray-100 bg-white px-4 py-3 shadow-sm">
 
-                        <div class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                                    <p class="text-[11px] font-medium uppercase tracking-wider text-gray-400">
+                                        Waktu
+                                    </p>
 
-                            <div class="rounded-xl border border-gray-100 bg-white px-4 py-3 shadow-sm">
+                                    <p class="mt-1 text-sm font-semibold text-gray-900">
+                                        {{ $notification->created_at->format('d M Y, H:i') }}
+                                    </p>
 
-                                <p class="text-[11px] font-medium uppercase tracking-wider text-gray-400">
-                                    Signal
-                                </p>
-
-                                <p class="mt-1 text-sm font-semibold text-gray-900">
-                                    {{ $notification->data['signal'] ?? '-' }}
-                                </p>
+                                </div>
 
                             </div>
 
 
-                            <div class="rounded-xl border border-gray-100 bg-white px-4 py-3 shadow-sm">
+                            <!-- Description -->
 
-                                <p class="text-[11px] font-medium uppercase tracking-wider text-gray-400">
-                                    Strength
-                                </p>
+                            @if(isset($notification->data['description']))
 
-                                <p class="mt-1 text-sm font-semibold text-gray-900">
-                                    {{ $notification->data['signal_strength'] ?? '-' }}
-                                </p>
+                                <div class="mt-4 rounded-xl border border-gray-100 bg-white px-4 py-3">
 
-                            </div>
+                                    <p class="text-[11px] font-medium uppercase tracking-wider text-gray-400">
+                                        Description
+                                    </p>
 
+                                    <p class="mt-1 text-sm leading-6 text-gray-600">
+                                        {{ $notification->data['description'] }}
+                                    </p>
 
-                            <div class="rounded-xl border border-gray-100 bg-white px-4 py-3 shadow-sm">
+                                </div>
 
-                                <p class="text-[11px] font-medium uppercase tracking-wider text-gray-400">
-                                    Waktu
-                                </p>
+                            @endif
 
-                                <p class="mt-1 text-sm font-semibold text-gray-900">
-                                    {{ $notification->created_at->format('d M Y, H:i') }}
-                                </p>
-
-                            </div>
-
-                        </div>
-
-
-                        <!-- Description -->
-
-                        @if(isset($notification->data['description']))
-
-                            <div class="mt-4 rounded-xl border border-gray-100 bg-white px-4 py-3">
-
-                                <p class="text-[11px] font-medium uppercase tracking-wider text-gray-400">
-                                    Description
-                                </p>
-
-                                <p class="mt-1 text-sm leading-6 text-gray-600">
-                                    {{ $notification->data['description'] }}
-                                </p>
-
-                            </div>
-
-                        @endif
+                        </a>
 
 
                         <!-- Actions -->

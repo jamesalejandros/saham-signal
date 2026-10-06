@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\UserStockSignalController;
 use App\Http\Controllers\AutomationController;
+use App\Models\User;
 
 
 Route::middleware('auth')->group(function () {
@@ -68,70 +69,113 @@ Route::get('/', function () {
 Route::middleware('auth')->group(function () {
 
     Route::post(
-    '/push/subscribe',
-    function (Request $request) {
+        '/push/subscribe',
+        function (Request $request) {
 
-        $validated = $request->validate([
-            'endpoint' => [
-                'required',
-                'string',
-            ],
+            $validated = $request->validate([
+                'endpoint' => [
+                    'required',
+                    'string',
+                ],
 
-            'keys.p256dh' => [
-                'required',
-                'string',
-            ],
+                'keys.p256dh' => [
+                    'required',
+                    'string',
+                ],
 
-            'keys.auth' => [
-                'required',
-                'string',
-            ],
+                'keys.auth' => [
+                    'required',
+                    'string',
+                ],
 
-            'contentEncoding' => [
-                'nullable',
-                'string',
-            ],
-        ]);
+                'contentEncoding' => [
+                    'nullable',
+                    'string',
+                ],
+            ]);
 
-        $user = $request->user();
+            $user = $request->user();
 
-        $user->updatePushSubscription(
-            $validated['endpoint'],
-            $validated['keys']['p256dh'],
-            $validated['keys']['auth'],
-            $validated['contentEncoding'] ?? null
-        );
+            /*
+            |--------------------------------------------------------------------------
+            | WEB PUSH SUBSCRIPTION
+            |--------------------------------------------------------------------------
+            |
+            | Satu endpoint browser hanya boleh dimiliki oleh SATU user.
+            |
+            | Kalau browser/device ini sebelumnya terdaftar pada User A
+            | lalu sekarang login sebagai User B, subscription tersebut
+            | harus dipindahkan dari User A ke User B.
+            |
+            */
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Push subscription berhasil disimpan.',
-        ]);
-    }
-);
+            $endpoint = $validated['endpoint'];
 
-Route::delete(
-    '/push/unsubscribe',
-    function (Request $request) {
+            /*
+            |--------------------------------------------------------------------------
+            | HAPUS ENDPOINT YANG SAMA DARI USER LAIN
+            |--------------------------------------------------------------------------
+            */
 
-        $user = $request->user();
-
-        $endpoint = $request->input('endpoint');
-
-        if ($endpoint) {
-
-            $user
-                ->pushSubscriptions()
+            \DB::table('push_subscriptions')
                 ->where('endpoint', $endpoint)
+                ->where('subscribable_type', User::class)
+                ->where('subscribable_id', '!=', $user->id)
                 ->delete();
 
-        }
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Push subscription berhasil dihapus.',
-        ]);
-    }
-);
+            /*
+            |--------------------------------------------------------------------------
+            | SIMPAN / UPDATE SUBSCRIPTION USER SEKARANG
+            |--------------------------------------------------------------------------
+            */
+
+            $user->updatePushSubscription(
+                $endpoint,
+                $validated['keys']['p256dh'],
+                $validated['keys']['auth'],
+                $validated['contentEncoding'] ?? null
+            );
+
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Push subscription berhasil disimpan.',
+                'user_id' => $user->id,
+                'endpoint' => $endpoint,
+            ]);
+        }
+    );
+
+
+    Route::delete(
+        '/push/unsubscribe',
+        function (Request $request) {
+
+            $user = $request->user();
+
+            $endpoint = $request->input('endpoint');
+
+            if ($endpoint) {
+
+                /*
+                |--------------------------------------------------------------------------
+                | Hapus hanya subscription milik user yang sedang login
+                |--------------------------------------------------------------------------
+                */
+
+                $user
+                    ->pushSubscriptions()
+                    ->where('endpoint', $endpoint)
+                    ->delete();
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Push subscription berhasil dihapus.',
+            ]);
+        }
+    );
 
     /*
     |--------------------------------------------------------------------------
@@ -219,7 +263,7 @@ Route::delete(
         Route::post(
             '/automation/stop',
             [AutomationController::class, 'stop']
-        )->name('automation.stop');        
+        )->name('automation.stop');
 
 
         /*
@@ -252,20 +296,26 @@ Route::delete(
 
 
     /*
-    |--------------------------------------------------------------------------
-    | Notifications
-    |--------------------------------------------------------------------------
-    */
+|--------------------------------------------------------------------------
+| Notifications
+|--------------------------------------------------------------------------
+*/
 
     Route::get(
         '/notifications',
         [NotificationController::class, 'index']
     )->name('notifications.index');
 
+    Route::get(
+        '/notifications/{id}/open',
+        [NotificationController::class, 'open']
+    )->name('notifications.open');
+
     Route::post(
         '/notifications/{id}/read',
         [NotificationController::class, 'read']
     )->name('notifications.read');
+
 
     Route::post('/notifications/mark-all-as-read', [NotificationController::class, 'markAllAsRead'])
         ->name('notifications.markAllAsRead');
