@@ -4,7 +4,6 @@ namespace App\Notifications;
 
 use App\Models\StockSignal;
 use Illuminate\Bus\Queueable;
-use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use NotificationChannels\Telegram\TelegramMessage;
 use NotificationChannels\WebPush\WebPushChannel;
@@ -40,6 +39,7 @@ class StockSignalNotification extends Notification
         $stockName = $this->stockSignal->stock?->stock_name ?? 'Unknown stock';
 
         return [
+            'signal_id' => $this->stockSignal->id,
             'stock_code' => $this->stockSignal->stock_code,
             'stock_name' => $stockName,
             'signal' => $this->stockSignal->signal,
@@ -47,6 +47,11 @@ class StockSignalNotification extends Notification
             'signal_strength' => $this->stockSignal->signal_strength,
 
             'description' => $this->stockSignal->description,
+
+            'url' => route(
+                'signals.show',
+                $this->stockSignal
+            ),
         ];
     }
 

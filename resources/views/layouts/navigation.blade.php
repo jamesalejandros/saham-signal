@@ -13,8 +13,8 @@
                 @auth
 
                     <!-- =====================================================
-                             MOBILE SIDEBAR TOGGLE
-                             ===================================================== -->
+                                 MOBILE SIDEBAR TOGGLE
+                                 ===================================================== -->
 
                     <button id="ss-mobile-sidebar-toggle" type="button" title="Buka menu" aria-label="Buka menu navigasi"
                         aria-controls="ss-mobile-sidebar" aria-expanded="false"
@@ -78,66 +78,45 @@
      WEB PUSH NOTIFICATION
      ===================================================== -->
 
-<div class="relative">
+                <div class="relative">
 
-    <button
-        id="enable-push"
-        type="button"
-        title="Aktifkan notifikasi browser"
-        aria-label="Aktifkan notifikasi browser"
-        class="group inline-flex h-10 items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 text-sm font-medium text-gray-600 shadow-sm transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
-    >
+                    <button id="enable-push" type="button" title="Aktifkan notifikasi browser"
+                        aria-label="Aktifkan notifikasi browser"
+                        class="group inline-flex h-10 items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 text-sm font-medium text-gray-600 shadow-sm transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60">
 
-        <!-- Push Icon -->
+                        <!-- Push Icon -->
 
-        <svg
-            id="push-bell-icon"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="1.7"
-            stroke="currentColor"
-            class="h-5 w-5 shrink-0 transition-colors"
-        >
-            <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M12 18.75a6.75 6.75 0 006.75-6.75V9a6.75 6.75 0 00-13.5 0v3A6.75 6.75 0 0012 18.75z"
-            />
+                        <svg id="push-bell-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                            stroke-width="1.7" stroke="currentColor" class="h-5 w-5 shrink-0 transition-colors">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M12 18.75a6.75 6.75 0 006.75-6.75V9a6.75 6.75 0 00-13.5 0v3A6.75 6.75 0 0012 18.75z" />
 
-            <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M9.75 18.75a2.25 2.25 0 004.5 0"
-            />
-        </svg>
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 18.75a2.25 2.25 0 004.5 0" />
+                        </svg>
 
 
-        <!-- Button Text -->
+                        <!-- Button Text -->
 
-        <span id="push-button-text">
-            Aktifkan Push
-        </span>
-
-
-        <!-- Active Indicator -->
-
-        <span
-            id="push-active-indicator"
-            class="hidden h-2 w-2 shrink-0 rounded-full bg-green-500"
-        ></span>
-
-    </button>
+                        <span id="push-button-text">
+                            Aktifkan Push
+                        </span>
 
 
-    <!-- Status Message -->
+                        <!-- Active Indicator -->
 
-    <div
-        id="push-status"
-        class="absolute right-0 top-12 z-[100] hidden w-max max-w-[280px] rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs text-gray-600 shadow-lg"
-    ></div>
+                        <span id="push-active-indicator"
+                            class="hidden h-2 w-2 shrink-0 rounded-full bg-green-500"></span>
 
-</div>
+                    </button>
+
+
+                    <!-- Status Message -->
+
+                    <div id="push-status"
+                        class="absolute right-0 top-12 z-[100] hidden w-max max-w-[280px] rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs text-gray-600 shadow-lg">
+                    </div>
+
+                </div>
 
 
 
@@ -254,114 +233,125 @@
 
                             @forelse($recentNotifications as $notification)
 
-                                                    <div class="
-                                                border-b border-gray-100 px-4 py-4 last:border-b-0
-                                                {{ $notification->read_at
-                                ? 'bg-white'
-                                : 'bg-blue-50' }}
-                                            ">
+                                                        <div class="
+                                    border-b border-gray-100 px-4 py-4 last:border-b-0
+                                    {{ $notification->read_at
+                                    ? 'bg-white'
+                                    : 'bg-blue-50' }}
+                                ">
 
-                                                        <div class="flex gap-3">
+                                                            <div class="flex gap-3">
 
-                                                            <!-- Notification Icon -->
+                                                                <!-- Notification Icon -->
 
-                                                            <div class="
-                                                        flex h-10 w-10 shrink-0 items-center justify-center
-                                                        rounded-full
-                                                        {{ $notification->read_at
-                                ? 'bg-gray-100 text-gray-500'
-                                : 'bg-blue-100 text-blue-600' }}
-                                                    ">
+                                                                <div class="
+                                            flex h-10 w-10 shrink-0 items-center justify-center
+                                            rounded-full
+                                            {{ $notification->read_at
+                                    ? 'bg-gray-100 text-gray-500'
+                                    : 'bg-blue-100 text-blue-600' }}
+                                        ">
 
-                                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                                                    stroke-width="1.5" stroke="currentColor" class="h-5 w-5">
-                                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                                        d="M3.75 13.5l3.75-3.75 3 3 6.75-6.75" />
-                                                                </svg>
-
-                                                            </div>
-
-
-                                                            <!-- Notification Content -->
-
-                                                            <div class="min-w-0 flex-1">
-
-                                                                <div class="flex items-start justify-between gap-2">
-
-                                                                    <p class="truncate text-sm font-semibold text-gray-900">
-                                                                        {{ $notification->data['stock_code'] ?? 'Stock Signal' }}
-                                                                    </p>
-
-
-                                                                    @if(!$notification->read_at)
-
-                                                                        <span class="mt-1 h-2 w-2 shrink-0 rounded-full bg-blue-600"></span>
-
-                                                                    @endif
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                                                        stroke-width="1.5" stroke="currentColor" class="h-5 w-5">
+                                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                                            d="M3.75 13.5l3.75-3.75 3 3 6.75-6.75" />
+                                                                    </svg>
 
                                                                 </div>
 
 
-                                                                <p class="mt-1 text-sm text-gray-700">
+                                                                <!-- Notification Content -->
 
-                                                                    Signal:
+                                                                <div class="min-w-0 flex-1">
 
-                                                                    <span class="font-medium">
-                                                                        {{ $notification->data['signal'] ?? '-' }}
-                                                                    </span>
+                                                                    <a href="{{ route('notifications.open', $notification->id) }}"
+                                                                        class="block rounded-lg transition hover:bg-black/[0.02] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
 
-                                                                </p>
+                                                                        <div class="flex items-start justify-between gap-2">
 
-
-                                                                @if(isset($notification->data['signal_strength']))
-
-                                                                    <p class="mt-1 text-xs text-gray-500">
-                                                                        Strength:
-                                                                        {{ $notification->data['signal_strength'] }}
-                                                                    </p>
-
-                                                                @endif
+                                                                            <p class="truncate text-sm font-semibold text-gray-900">
+                                                                                {{ $notification->data['stock_code'] ?? 'Stock Signal' }}
+                                                                            </p>
 
 
-                                                                @if(isset($notification->data['description']))
+                                                                            @if(!$notification->read_at)
 
-                                                                    <p class="mt-1 line-clamp-2 text-xs text-gray-500">
-                                                                        {{ $notification->data['description'] }}
-                                                                    </p>
+                                                                                <span class="mt-1 h-2 w-2 shrink-0 rounded-full bg-blue-600"></span>
 
-                                                                @endif
+                                                                            @endif
 
-
-                                                                <div class="
-                                                            mt-2 flex items-center justify-between gap-3
-                                                        ">
-
-                                                                    <p class="text-[11px] text-gray-400">
-                                                                        {{ $notification->created_at->diffForHumans() }}
-                                                                    </p>
+                                                                        </div>
 
 
-                                                                    @if(!$notification->read_at)
+                                                                        <p class="mt-1 text-sm text-gray-700">
 
-                                                                        <form action="{{ route('notifications.read', $notification->id) }}"
-                                                                            method="POST">
+                                                                            Signal:
 
-                                                                            @csrf
+                                                                            <span class="font-medium">
+                                                                                {{ $notification->data['signal'] ?? '-' }}
+                                                                            </span>
 
-                                                                            <button type="submit"
-                                                                                class="whitespace-nowrap text-xs font-medium text-blue-600 hover:text-blue-800">
-                                                                                Tandai dibaca
-                                                                            </button>
+                                                                        </p>
 
-                                                                        </form>
 
-                                                                    @else
+                                                                        @if(isset($notification->data['signal_strength']))
 
-                                                                        <span class="whitespace-nowrap text-[11px] text-gray-400">
-                                                                            Sudah dibaca
-                                                                        </span>
+                                                                            <p class="mt-1 text-xs text-gray-500">
+                                                                                Strength:
+                                                                                {{ $notification->data['signal_strength'] }}
+                                                                            </p>
 
-                                                                    @endif
+                                                                        @endif
+
+
+                                                                        @if(isset($notification->data['description']))
+
+                                                                            <p class="mt-1 line-clamp-2 text-xs text-gray-500">
+                                                                                {{ $notification->data['description'] }}
+                                                                            </p>
+
+                                                                        @endif
+
+
+                                                                        <div class="mt-2 flex items-center justify-between gap-3">
+
+                                                                            <p class="text-[11px] text-gray-400">
+                                                                                {{ $notification->created_at->diffForHumans() }}
+                                                                            </p>
+
+                                                                        </div>
+
+                                                                    </a>
+
+
+                                                                    <!-- Actions -->
+
+                                                                    <div class="mt-2 flex justify-end">
+
+                                                                        @if(!$notification->read_at)
+
+                                                                            <form action="{{ route('notifications.read', $notification->id) }}"
+                                                                                method="POST">
+
+                                                                                @csrf
+
+                                                                                <button type="submit"
+                                                                                    class="whitespace-nowrap text-xs font-medium text-blue-600 hover:text-blue-800">
+                                                                                    Tandai dibaca
+                                                                                </button>
+
+                                                                            </form>
+
+                                                                        @else
+
+                                                                            <span class="whitespace-nowrap text-[11px] text-gray-400">
+                                                                                Sudah dibaca
+                                                                            </span>
+
+                                                                        @endif
+
+                                                                    </div>
 
                                                                 </div>
 
@@ -369,9 +359,8 @@
 
                                                         </div>
 
-                                                    </div>
-
                             @empty
+
 
                                 <div class="px-6 py-10 text-center">
 
@@ -589,16 +578,16 @@ TIDAK MENGGUNAKAN sidebar.blade.php
 @auth
 
     <!-- ================================================================
-             MOBILE SIDEBAR BACKDROP
-             ================================================================ -->
+                 MOBILE SIDEBAR BACKDROP
+                 ================================================================ -->
 
     <div id="ss-mobile-sidebar-backdrop" class="fixed inset-0 z-[100] hidden bg-gray-950/50 backdrop-blur-[1px] md:hidden"
         aria-hidden="true"></div>
 
 
     <!-- ================================================================
-             MOBILE SIDEBAR
-             ================================================================ -->
+                 MOBILE SIDEBAR
+                 ================================================================ -->
 
     <aside id="ss-mobile-sidebar"
         class="fixed left-0 top-0 bottom-0 z-[110] flex w-[290px] max-w-[85vw] -translate-x-full flex-col bg-white shadow-2xl transition-transform duration-300 ease-in-out md:hidden"
@@ -607,8 +596,8 @@ TIDAK MENGGUNAKAN sidebar.blade.php
         <div class="flex h-full flex-col">
 
             <!-- =========================================================
-                     MOBILE SIDEBAR HEADER
-                     ========================================================= -->
+                         MOBILE SIDEBAR HEADER
+                         ========================================================= -->
 
             <div class="flex shrink-0 items-center justify-between border-b border-gray-200 px-4 py-3">
 
@@ -645,8 +634,8 @@ TIDAK MENGGUNAKAN sidebar.blade.php
 
 
             <!-- =========================================================
-                     MOBILE NAVIGATION
-                     ========================================================= -->
+                         MOBILE NAVIGATION
+                         ========================================================= -->
 
             <nav class="min-h-0 flex-1 overflow-y-auto px-3 py-4">
 
@@ -655,7 +644,7 @@ TIDAK MENGGUNAKAN sidebar.blade.php
                     <!-- Dashboard -->
 
                     <a href="{{ route('dashboard') }}" onclick="closeMobileSidebar()" class="flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium
-                            {{ request()->routeIs('dashboard')
+                                {{ request()->routeIs('dashboard')
             ? 'bg-blue-50 text-blue-700'
             : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900' }}">
 
@@ -675,7 +664,7 @@ TIDAK MENGGUNAKAN sidebar.blade.php
                     <!-- Signal Saham -->
 
                     <a href="{{ route('signals.index') }}" onclick="closeMobileSidebar()" class="flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium
-                            {{ request()->routeIs('signals.*')
+                                {{ request()->routeIs('signals.*')
             ? 'bg-blue-50 text-blue-700'
             : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900' }}">
 
@@ -694,7 +683,7 @@ TIDAK MENGGUNAKAN sidebar.blade.php
                     <!-- Notification -->
 
                     <a href="{{ route('notifications.index') }}" onclick="closeMobileSidebar()" class="flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium
-                            {{ request()->routeIs('notifications.*')
+                                {{ request()->routeIs('notifications.*')
             ? 'bg-blue-50 text-blue-700'
             : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900' }}">
 
@@ -742,7 +731,7 @@ TIDAK MENGGUNAKAN sidebar.blade.php
                             <!-- User Management -->
 
                             <a href="{{ route('users.index') }}" onclick="closeMobileSidebar()" class="flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium
-                                        {{ request()->routeIs('users.*')
+                                                    {{ request()->routeIs('users.*')
                         ? 'bg-blue-50 text-blue-700'
                         : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900' }}">
 
@@ -766,8 +755,8 @@ TIDAK MENGGUNAKAN sidebar.blade.php
 
 
             <!-- =========================================================
-                     TELEGRAM GROUP CARD
-                     ========================================================= -->
+                         TELEGRAM GROUP CARD
+                         ========================================================= -->
 
             <div class="shrink-0 px-4 pb-3">
 
@@ -832,8 +821,8 @@ TIDAK MENGGUNAKAN sidebar.blade.php
 
 
             <!-- =========================================================
-                     MOBILE SIDEBAR FOOTER
-                     ========================================================= -->
+                         MOBILE SIDEBAR FOOTER
+                         ========================================================= -->
 
             <div class="shrink-0 border-t border-gray-200 p-3">
 
@@ -1994,762 +1983,4 @@ FLOATING STOCK SETTINGS BUTTON
     );
 
 </script>
-<script>
-
-    /* ================================================================
-       WEB PUSH NOTIFICATION
-       ================================================================ */
-
-    document.addEventListener('DOMContentLoaded', function () {
-
-        const button =
-            document.getElementById('enable-push');
-
-        const status =
-            document.getElementById('push-status');
-
-        const activeIndicator =
-            document.getElementById('push-active-indicator');
-
-        const buttonText =
-            document.getElementById('push-button-text');
-
-        const bellIcon =
-            document.getElementById('push-bell-icon');
-
-
-        if (!button) {
-            return;
-        }
-
-
-        /* ============================================================
-           STATUS HELPER
-           ============================================================ */
-
-        function showStatus(message, type = 'info') {
-
-            if (!status) {
-                return;
-            }
-
-
-            status.textContent = message;
-
-
-            status.classList.remove(
-                'hidden',
-                'border-green-200',
-                'border-red-200',
-                'border-blue-200',
-                'bg-green-50',
-                'bg-red-50',
-                'bg-blue-50',
-                'text-green-700',
-                'text-red-700',
-                'text-blue-700'
-            );
-
-
-            if (type === 'success') {
-
-                status.classList.add(
-                    'border-green-200',
-                    'bg-green-50',
-                    'text-green-700'
-                );
-
-            } else if (type === 'error') {
-
-                status.classList.add(
-                    'border-red-200',
-                    'bg-red-50',
-                    'text-red-700'
-                );
-
-            } else {
-
-                status.classList.add(
-                    'border-blue-200',
-                    'bg-blue-50',
-                    'text-blue-700'
-                );
-
-            }
-
-
-            status.classList.remove('hidden');
-
-
-            clearTimeout(
-                window.__pushStatusTimeout
-            );
-
-
-            window.__pushStatusTimeout =
-                setTimeout(function () {
-
-                    status.classList.add('hidden');
-
-                }, 5000);
-
-        }
-
-
-        /* ============================================================
-           ACTIVE STATE
-           ============================================================ */
-
-        function setPushActive() {
-
-            button.disabled = true;
-
-            button.title =
-                'Notifikasi browser sudah aktif';
-
-            button.setAttribute(
-                'aria-label',
-                'Notifikasi browser sudah aktif'
-            );
-
-
-            /*
-             * Ubah teks tombol
-             */
-
-            if (buttonText) {
-
-                buttonText.textContent =
-                    'Push Aktif';
-
-            }
-
-
-            /*
-             * Ubah warna tombol
-             */
-
-            button.classList.remove(
-                'text-gray-600',
-                'border-gray-200',
-                'bg-white'
-            );
-
-            button.classList.add(
-                'text-blue-600',
-                'border-blue-200',
-                'bg-blue-50'
-            );
-
-
-            /*
-             * Aktifkan indikator hijau
-             */
-
-            if (activeIndicator) {
-
-                activeIndicator.classList.remove(
-                    'hidden'
-                );
-
-            }
-
-
-            /*
-             * Ubah warna icon
-             */
-
-            if (bellIcon) {
-
-                bellIcon.classList.remove(
-                    'text-gray-600'
-                );
-
-                bellIcon.classList.add(
-                    'text-blue-600'
-                );
-
-            }
-
-        }
-
-
-        /* ============================================================
-           INACTIVE STATE
-           ============================================================ */
-
-        function setPushInactive() {
-
-            button.disabled = false;
-
-            button.title =
-                'Aktifkan notifikasi browser';
-
-            button.setAttribute(
-                'aria-label',
-                'Aktifkan notifikasi browser'
-            );
-
-
-            /*
-             * Kembalikan teks tombol
-             */
-
-            if (buttonText) {
-
-                buttonText.textContent =
-                    'Aktifkan Push';
-
-            }
-
-
-            /*
-             * Kembalikan warna tombol
-             */
-
-            button.classList.remove(
-                'text-blue-600',
-                'border-blue-200',
-                'bg-blue-50'
-            );
-
-            button.classList.add(
-                'text-gray-600',
-                'border-gray-200',
-                'bg-white'
-            );
-
-
-            /*
-             * Sembunyikan indikator hijau
-             */
-
-            if (activeIndicator) {
-
-                activeIndicator.classList.add(
-                    'hidden'
-                );
-
-            }
-
-
-            /*
-             * Kembalikan warna icon
-             */
-
-            if (bellIcon) {
-
-                bellIcon.classList.remove(
-                    'text-blue-600'
-                );
-
-            }
-
-        }
-
-
-        /* ============================================================
-           PROCESSING STATE
-           ============================================================ */
-
-        function setPushProcessing() {
-
-            button.disabled = true;
-
-
-            if (buttonText) {
-
-                buttonText.textContent =
-                    'Memproses...';
-
-            }
-
-
-            button.classList.remove(
-                'text-blue-600'
-            );
-
-            button.classList.add(
-                'text-gray-500'
-            );
-
-        }
-
-
-        /* ============================================================
-           BROWSER SUPPORT CHECK
-           ============================================================ */
-
-        if (!('Notification' in window)) {
-
-            button.disabled = true;
-
-            button.title =
-                'Browser tidak mendukung notifikasi';
-
-            if (buttonText) {
-
-                buttonText.textContent =
-                    'Tidak Didukung';
-
-            }
-
-            showStatus(
-                'Browser ini tidak mendukung notification.',
-                'error'
-            );
-
-            return;
-
-        }
-
-
-        if (!('serviceWorker' in navigator)) {
-
-            button.disabled = true;
-
-            button.title =
-                'Browser tidak mendukung Service Worker';
-
-            if (buttonText) {
-
-                buttonText.textContent =
-                    'Tidak Didukung';
-
-            }
-
-            showStatus(
-                'Browser ini tidak mendukung Service Worker.',
-                'error'
-            );
-
-            return;
-
-        }
-
-
-        if (!('PushManager' in window)) {
-
-            button.disabled = true;
-
-            button.title =
-                'Browser tidak mendukung Web Push';
-
-            if (buttonText) {
-
-                buttonText.textContent =
-                    'Tidak Didukung';
-
-            }
-
-            showStatus(
-                'Browser ini tidak mendukung Web Push.',
-                'error'
-            );
-
-            return;
-
-        }
-
-
-        /* ============================================================
-           VAPID CHECK
-           ============================================================ */
-
-        if (!window.VAPID_PUBLIC_KEY) {
-
-            console.error(
-                'VAPID public key tidak ditemukan.'
-            );
-
-            button.disabled = true;
-
-            button.title =
-                'Konfigurasi VAPID belum tersedia';
-
-            if (buttonText) {
-
-                buttonText.textContent =
-                    'Konfigurasi Belum Siap';
-
-            }
-
-            showStatus(
-                'Konfigurasi VAPID belum tersedia.',
-                'error'
-            );
-
-            return;
-
-        }
-
-
-        /* ============================================================
-           BASE64 URL → UINT8 ARRAY
-           ============================================================ */
-
-        function urlBase64ToUint8Array(
-            base64String
-        ) {
-
-            const padding =
-                '='.repeat(
-                    (4 - base64String.length % 4) % 4
-                );
-
-
-            const base64 =
-                (
-                    base64String + padding
-                )
-                    .replace(/-/g, '+')
-                    .replace(/_/g, '/');
-
-
-            const rawData =
-                window.atob(base64);
-
-
-            const outputArray =
-                new Uint8Array(
-                    rawData.length
-                );
-
-
-            for (
-                let i = 0;
-                i < rawData.length;
-                ++i
-            ) {
-
-                outputArray[i] =
-                    rawData.charCodeAt(i);
-
-            }
-
-
-            return outputArray;
-
-        }
-
-
-        /* ============================================================
-           CHECK EXISTING SUBSCRIPTION
-           ============================================================ */
-
-        async function checkExistingSubscription() {
-
-            try {
-
-                await navigator.serviceWorker.register(
-                    '/service-worker.js'
-                );
-
-
-                const readyRegistration =
-                    await navigator.serviceWorker.ready;
-
-
-                const subscription =
-                    await readyRegistration
-                        .pushManager
-                        .getSubscription();
-
-
-                if (
-                    subscription &&
-                    Notification.permission === 'granted'
-                ) {
-
-                    setPushActive();
-
-                } else {
-
-                    setPushInactive();
-
-                }
-
-            } catch (error) {
-
-                console.error(
-                    'Push subscription check error:',
-                    error
-                );
-
-                setPushInactive();
-
-            }
-
-        }
-
-
-        /* ============================================================
-           ENABLE PUSH
-           ============================================================ */
-
-        async function enablePush() {
-
-            try {
-
-                setPushProcessing();
-
-
-                showStatus(
-                    'Meminta izin notification...',
-                    'info'
-                );
-
-
-                /* ====================================================
-                   REQUEST PERMISSION
-                   ==================================================== */
-
-                const permission =
-                    await Notification.requestPermission();
-
-
-                if (permission !== 'granted') {
-
-                    setPushInactive();
-
-                    showStatus(
-                        'Izin notification tidak diberikan.',
-                        'error'
-                    );
-
-                    return;
-
-                }
-
-
-                /* ====================================================
-                   REGISTER SERVICE WORKER
-                   ==================================================== */
-
-                showStatus(
-                    'Mendaftarkan service worker...',
-                    'info'
-                );
-
-
-                const registration =
-                    await navigator.serviceWorker.register(
-                        '/service-worker.js'
-                    );
-
-
-                console.log(
-                    'Service Worker:',
-                    registration
-                );
-
-
-                /* ====================================================
-                   WAIT SERVICE WORKER
-                   ==================================================== */
-
-                const readyRegistration =
-                    await navigator.serviceWorker.ready;
-
-
-                /* ====================================================
-                   CHECK EXISTING SUBSCRIPTION
-                   ==================================================== */
-
-                let subscription =
-                    await readyRegistration
-                        .pushManager
-                        .getSubscription();
-
-
-                /* ====================================================
-                   CREATE SUBSCRIPTION
-                   ==================================================== */
-
-                if (!subscription) {
-
-                    showStatus(
-                        'Mendaftarkan perangkat...',
-                        'info'
-                    );
-
-
-                    subscription =
-                        await readyRegistration
-                            .pushManager
-                            .subscribe({
-
-                                userVisibleOnly: true,
-
-                                applicationServerKey:
-                                    urlBase64ToUint8Array(
-                                        window.VAPID_PUBLIC_KEY
-                                    )
-
-                            });
-
-                }
-
-
-                /* ====================================================
-                   CONVERT SUBSCRIPTION
-                   ==================================================== */
-
-                const subscriptionJson =
-                    subscription.toJSON();
-
-
-                console.log(
-                    'Push subscription:',
-                    subscriptionJson
-                );
-
-
-                /* ====================================================
-                   CSRF TOKEN
-                   ==================================================== */
-
-                const csrfToken =
-                    document
-                        .querySelector(
-                            'meta[name="csrf-token"]'
-                        )
-                        ?.getAttribute('content');
-
-
-                if (!csrfToken) {
-
-                    throw new Error(
-                        'CSRF token tidak ditemukan.'
-                    );
-
-                }
-
-
-                /* ====================================================
-                   SEND TO LARAVEL
-                   ==================================================== */
-
-                showStatus(
-                    'Menyimpan subscription...',
-                    'info'
-                );
-
-
-                const response =
-                    await fetch(
-                        '/push/subscribe',
-                        {
-
-                            method: 'POST',
-
-                            headers: {
-
-                                'Content-Type':
-                                    'application/json',
-
-                                'Accept':
-                                    'application/json',
-
-                                'X-CSRF-TOKEN':
-                                    csrfToken
-
-                            },
-
-                            body:
-                                JSON.stringify(
-                                    subscriptionJson
-                                )
-
-                        }
-                    );
-
-
-                let result = {};
-
-
-                try {
-
-                    result =
-                        await response.json();
-
-                } catch (jsonError) {
-
-                    console.error(
-                        'Response bukan JSON:',
-                        jsonError
-                    );
-
-                }
-
-
-                if (!response.ok) {
-
-                    throw new Error(
-                        result.message ||
-                        'Gagal menyimpan push subscription.'
-                    );
-
-                }
-
-
-                /* ====================================================
-                   SUCCESS
-                   ==================================================== */
-
-                console.log(
-                    'Push subscription saved:',
-                    result
-                );
-
-
-                setPushActive();
-
-
-                showStatus(
-                    'Notifikasi berhasil diaktifkan.',
-                    'success'
-                );
-
-
-            } catch (error) {
-
-                console.error(
-                    'Web Push error:',
-                    error
-                );
-
-
-                setPushInactive();
-
-
-                showStatus(
-                    'Gagal mengaktifkan notifikasi: ' +
-                    error.message,
-                    'error'
-                );
-
-            }
-
-        }
-
-
-        /* ============================================================
-           BUTTON EVENT
-           ============================================================ */
-
-        button.addEventListener(
-            'click',
-            enablePush
-        );
-
-
-        /* ============================================================
-           INITIAL STATE
-           ============================================================ */
-
-        checkExistingSubscription();
-
-    });
-
-</script>
+<script> /* ================================================================ WEB PUSH NOTIFICATION ================================================================ */ document.addEventListener('DOMContentLoaded', function () { const button = document.getElementById('enable-push'); const status = document.getElementById('push-status'); const activeIndicator = document.getElementById('push-active-indicator'); const buttonText = document.getElementById('push-button-text'); const bellIcon = document.getElementById('push-bell-icon'); if (!button) { return; } /* ============================================================ STATUS HELPER ============================================================ */ function showStatus(message, type = 'info') { if (!status) { return; } status.textContent = message; status.classList.remove('hidden', 'border-green-200', 'border-red-200', 'border-blue-200', 'bg-green-50', 'bg-red-50', 'bg-blue-50', 'text-green-700', 'text-red-700', 'text-blue-700'); if (type === 'success') { status.classList.add('border-green-200', 'bg-green-50', 'text-green-700'); } else if (type === 'error') { status.classList.add('border-red-200', 'bg-red-50', 'text-red-700'); } else { status.classList.add('border-blue-200', 'bg-blue-50', 'text-blue-700'); } status.classList.remove('hidden'); clearTimeout(window.__pushStatusTimeout); window.__pushStatusTimeout = setTimeout(function () { status.classList.add('hidden'); }, 5000); } /* ============================================================ ACTIVE STATE ============================================================ */ function setPushActive() { button.disabled = true; button.title = 'Notifikasi browser sudah aktif'; button.setAttribute('aria-label', 'Notifikasi browser sudah aktif'); if (buttonText) { buttonText.textContent = 'Push Aktif'; } button.classList.remove('text-gray-600', 'border-gray-200', 'bg-white', 'text-gray-500'); button.classList.add('text-blue-600', 'border-blue-200', 'bg-blue-50'); if (activeIndicator) { activeIndicator.classList.remove('hidden'); } if (bellIcon) { bellIcon.classList.remove('text-gray-600'); bellIcon.classList.add('text-blue-600'); } } /* ============================================================ INACTIVE STATE ============================================================ */ function setPushInactive() { button.disabled = false; button.title = 'Aktifkan notifikasi browser'; button.setAttribute('aria-label', 'Aktifkan notifikasi browser'); if (buttonText) { buttonText.textContent = 'Aktifkan Push'; } button.classList.remove('text-blue-600', 'border-blue-200', 'bg-blue-50', 'text-gray-500'); button.classList.add('text-gray-600', 'border-gray-200', 'bg-white'); if (activeIndicator) { activeIndicator.classList.add('hidden'); } if (bellIcon) { bellIcon.classList.remove('text-blue-600'); bellIcon.classList.add('text-gray-600'); } } /* ============================================================ PROCESSING STATE ============================================================ */ function setPushProcessing() { button.disabled = true; if (buttonText) { buttonText.textContent = 'Memproses...'; } button.classList.remove('text-blue-600'); button.classList.add('text-gray-500'); } /* ============================================================ BROWSER SUPPORT CHECK ============================================================ */ if (!('Notification' in window)) { button.disabled = true; button.title = 'Browser tidak mendukung notifikasi'; if (buttonText) { buttonText.textContent = 'Tidak Didukung'; } showStatus('Browser ini tidak mendukung notification.', 'error'); return; } if (!('serviceWorker' in navigator)) { button.disabled = true; button.title = 'Browser tidak mendukung Service Worker'; if (buttonText) { buttonText.textContent = 'Tidak Didukung'; } showStatus('Browser ini tidak mendukung Service Worker.', 'error'); return; } if (!('PushManager' in window)) { button.disabled = true; button.title = 'Browser tidak mendukung Web Push'; if (buttonText) { buttonText.textContent = 'Tidak Didukung'; } showStatus('Browser ini tidak mendukung Web Push.', 'error'); return; } /* ============================================================ VAPID CHECK ============================================================ */ if (!window.VAPID_PUBLIC_KEY) { console.error('VAPID public key tidak ditemukan.'); button.disabled = true; button.title = 'Konfigurasi VAPID belum tersedia'; if (buttonText) { buttonText.textContent = 'Konfigurasi Belum Siap'; } showStatus('Konfigurasi VAPID belum tersedia.', 'error'); return; } /* ============================================================ BASE64 URL → UINT8 ARRAY ============================================================ */ function urlBase64ToUint8Array(base64String) { const padding = '='.repeat((4 - base64String.length % 4) % 4); const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/'); const rawData = window.atob(base64); const outputArray = new Uint8Array(rawData.length); for (let i = 0; i < rawData.length; ++i) { outputArray[i] = rawData.charCodeAt(i); } return outputArray; } /* ============================================================ GET CSRF TOKEN ============================================================ */ function getCsrfToken() { return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'); } /* ============================================================ SEND SUBSCRIPTION TO SERVER ============================================================ */ async function saveSubscription(subscription) { const csrfToken = getCsrfToken(); if (!csrfToken) { throw new Error('CSRF token tidak ditemukan.'); } const subscriptionJson = subscription.toJSON(); console.log('Sending push subscription:', subscriptionJson); const response = await fetch('/push/subscribe', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': csrfToken }, body: JSON.stringify(subscriptionJson) }); let result = {}; try { result = await response.json(); } catch (jsonError) { console.error('Response bukan JSON:', jsonError); } if (!response.ok) { throw new Error(result.message || 'Gagal menyimpan push subscription.'); } console.log('Push subscription saved:', result); return result; } /* ============================================================ GET CURRENT BROWSER SUBSCRIPTION ============================================================ */ async function getCurrentSubscription() { const registration = await navigator.serviceWorker.ready; return await registration.pushManager.getSubscription(); } /* ============================================================ CREATE NEW SUBSCRIPTION ============================================================ */ async function createSubscription() { const registration = await navigator.serviceWorker.ready; return await registration.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: urlBase64ToUint8Array(window.VAPID_PUBLIC_KEY) }); } /* ============================================================ CHECK EXISTING SUBSCRIPTION ============================================================ */ async function checkExistingSubscription() { try { showStatus('Memeriksa status notifikasi...', 'info'); await navigator.serviceWorker.register('/service-worker.js'); await navigator.serviceWorker.ready; const subscription = await getCurrentSubscription(); if (subscription && Notification.permission === 'granted') { /* |-------------------------------------------------------------------------- | PENTING |-------------------------------------------------------------------------- | | Jangan langsung menganggap subscription ini milik user | yang sedang login. | | Kirim ulang ke Laravel. | | Laravel akan memastikan endpoint tersebut hanya | dimiliki oleh user yang sedang login. | */ await saveSubscription(subscription); setPushActive(); } else { setPushInactive(); if (Notification.permission !== 'granted') { showStatus('Notifikasi belum diaktifkan.', 'info'); } } } catch (error) { console.error('Push subscription check error:', error); setPushInactive(); showStatus('Gagal memeriksa notifikasi: ' + error.message, 'error'); } } /* ============================================================ ENABLE PUSH ============================================================ */ async function enablePush() { try { setPushProcessing(); showStatus('Meminta izin notification...', 'info'); /* ==================================================== REQUEST PERMISSION ==================================================== */ const permission = await Notification.requestPermission(); if (permission !== 'granted') { setPushInactive(); showStatus('Izin notification tidak diberikan.', 'error'); return; } /* ==================================================== REGISTER SERVICE WORKER ==================================================== */ showStatus('Mendaftarkan service worker...', 'info'); await navigator.serviceWorker.register('/service-worker.js'); await navigator.serviceWorker.ready; /* ==================================================== GET EXISTING SUBSCRIPTION ==================================================== */ let subscription = await getCurrentSubscription(); /* ==================================================== CREATE SUBSCRIPTION IF NEEDED ==================================================== */ if (!subscription) { showStatus('Mendaftarkan perangkat...', 'info'); subscription = await createSubscription(); } /* ==================================================== SAVE SUBSCRIPTION ==================================================== */ showStatus('Menghubungkan notifikasi dengan akun ini...', 'info'); await saveSubscription(subscription); /* ==================================================== SUCCESS ==================================================== */ setPushActive(); showStatus('Notifikasi berhasil diaktifkan untuk akun ini.', 'success'); } catch (error) { console.error('Web Push error:', error); setPushInactive(); showStatus('Gagal mengaktifkan notifikasi: ' + error.message, 'error'); } } /* ============================================================ BUTTON EVENT ============================================================ */ button.addEventListener('click', enablePush); /* ============================================================ INITIAL STATE ============================================================ */ checkExistingSubscription(); }); </script>

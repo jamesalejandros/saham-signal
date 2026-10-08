@@ -17,6 +17,28 @@ class NotificationController extends Controller
         );
     }
 
+    public function open(string $id)
+    {
+        $notification = auth()->user()
+            ->notifications()
+            ->findOrFail($id);
+
+        $notification->markAsRead();
+
+        $signalId = $notification->data['signal_id'] ?? null;
+
+        if (!$signalId) {
+            return redirect()
+                ->route('notifications.index')
+                ->with('error', 'Signal pada notification tidak ditemukan.');
+        }
+
+        return redirect()->route(
+            'signals.show',
+            $signalId
+        );
+    }
+
     public function read(string $id)
     {
         $notification = auth()->user()
