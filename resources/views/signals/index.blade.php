@@ -1255,10 +1255,10 @@
             ])->filter()->count();
         @endphp
 
-        <div class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+        <div class="overflow-hidden rounded-xl border shadow-sm {{ $signal->condition_2 ? 'border-green-200 bg-green-50' : 'border-gray-200 bg-white' }}">
 
             {{-- Card Header --}}
-            <div class="border-b border-gray-100 bg-gray-50 px-4 py-3">
+            <div class="border-b px-4 py-3 {{ $signal->condition_2 ? 'border-green-200 bg-green-100' : 'border-gray-100 bg-gray-50' }}">
 
                 <div class="flex min-w-0 items-start justify-between gap-3">
 
@@ -1480,7 +1480,7 @@
             </div>
 
             {{-- Card Footer --}}
-            <div class="flex items-center justify-end gap-3 border-t border-gray-100 bg-white px-4 py-3">
+            <div class="flex items-center justify-end gap-3 border-t px-4 py-3 {{ $signal->condition_2 ? 'border-green-200 bg-green-50' : 'border-gray-100 bg-white' }}">
 
                 <a
                     href="{{ route('signals.show', $signal) }}"
